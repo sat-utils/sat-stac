@@ -1,0 +1,6 @@
+{
+    "id": "test-thing-id",
+    "links": [
+        { "rel": "self", "href": "./catalog.json"}
+    ]
+}
