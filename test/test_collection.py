@@ -19,19 +19,26 @@ class Test(unittest.TestCase):
         if os.path.exists(cls.path):
             shutil.rmtree(cls.path)
 
-    #@classmethod
-    #def get_collection(cls):
-    #    """ Open existing test catalog """
-    #    return Catalog.open(os.path.join(testpath, 'catalog'))
+    def open_collection(self):
+        filename = os.path.join(testpath, 'catalog/landsat-8-l1/catalog.json')
+        return Collection.open(filename)
 
-    #@classmethod
-    #def create_catalog(cls, name):
-    #    path = os.path.join(cls.path, name)
-    #    return Catalog.create(path)
+    def test_open(self):
+        cat = self.open_collection()
+        assert(cat.id == 'landsat-8-l1')
 
-    def test_init(self):
-        with open(os.path.join(testpath, 'catalog/catalog.json')) as f:
-            data = json.loads(f.read())
-        cat = Collection(data)
-        assert(cat.id == 'stac')
-
+    def test_title(self):
+        cat = self.open_collection()
+        assert(cat.title == 'Landsat 8 L1')
+        keys = cat.keywords
+        assert(len(keys) == 1)
+        assert(keys[0] == 'landsat')
+        version = cat.version
+        assert(version == '0.1.0')
+        license = cat.license
+        assert(license == 'PDDL-1.0')
+        assert(len(cat.providers) == 4)
+        ext = cat.extent
+        assert('spatial' in ext)
+        assert('temporal' in ext)
+        assert(len(cat.properties))

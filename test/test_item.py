@@ -3,7 +3,7 @@ import os
 import unittest
 import shutil
 import satsearch.config as config
-from stac.item import Item, Items, ItemError
+from stac.item import Item
 
 
 testpath = os.path.dirname(__file__)
@@ -11,74 +11,14 @@ testpath = os.path.dirname(__file__)
 
 class Test(unittest.TestCase):
 
-    path = os.path.dirname(__file__)
+    path = os.path.dirname(testpath, 'test-item')
 
-    prefix = 'http://landsat-pds.s3.amazonaws.com/L8/007/029/LC80070292016240LGN00/LC80070292016240LGN00_',
+    @classmethod
+    def _tearDownClass(cls):
+        """ Remove test files """
+        if os.path.exists(cls.path):
+            shutil.rmtree(cls.path)
 
-    item = {
-        'geometry': {},
-        'properties': {
-            'id': 'testscene',
-            'collection': 'test_collection',
-            'datetime': '2017-01-01T00:00:00.0000Z',
-            'eo:platform': 'test_platform'
-        },
-        "bbox": [
-            -71.46676936182894,
-            42.338371079679106,
-            -70.09532154452742,
-            43.347431265475954
-        ],
-        "geometry": {
-            "type": "Polygon",
-            "coordinates": [
-                [
-                    [
-                        -71.46676936182894,
-                        43.32623760511659
-                    ],
-                    [
-                        -70.11293433656888,
-                        43.347431265475954
-                    ],
-                    [
-                        -70.09532154452742,
-                        42.35884880571144
-                    ],
-                    [
-                        -71.42776890002204,
-                        42.338371079679106
-                    ],
-                    [
-                        -71.46676936182894,
-                        43.32623760511659
-                    ]
-                ]
-            ]
-        },
-        'assets': {
-            'MTL': {
-                'href': '%sMTL.txt' % prefix
-            },
-            'B1': {
-                'href': '%sB1.TIF' % prefix,
-                'eo:bands': ['B1']
-            },
-            'fake_asset': {
-                'href': 'nourl',
-            },
-            'thumbnail': {
-                'href': 'http://landsat-pds.s3.amazonaws.com/L8/007/029/LC80070292016240LGN00/LC80070292016240LGN00_thumb_small.jpg'
-            }
-        },
-        'links': {
-            'self': {'href': 'link/to/self'}
-        },
-        'eo:bands': {
-            'B1': {'common_name': 'coastal'}
-        }
-    }
-'''
     @classmethod
     def setUpClass(cls):
         """ Configure testing class """
@@ -174,5 +114,3 @@ class Test(unittest.TestCase):
         scene = Item.create_derived(scenes)
         assert(scene.date == scenes[0].date)
         assert(scene['c:id'] == scenes[0]['c:id'])
-'''
-
