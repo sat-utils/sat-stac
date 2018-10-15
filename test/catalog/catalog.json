@@ -9,11 +9,11 @@
         },
         {
             "rel": "child",
-            "href": "./collections/sentinel-2-l1c"
+            "href": "./sentinel-2-l1c"
         },
         {
             "rel": "child",
-            "href": "./collections/landsat-8-l1"
+            "href": "./landsat-8-l1"
         }
     ]
 }

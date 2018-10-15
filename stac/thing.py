@@ -15,6 +15,9 @@ class Thing(object):
         if 'links' not in self.data.keys():
             self.data['links'] = []
 
+    def __repr__(self):
+        return self.id
+
     @classmethod
     def open(cls, filename):
         """ Open an existing JSON data file """
