@@ -164,15 +164,15 @@
     "links": [
         {
             "rel": "self",
-            "href": "https://4nv3nj0r49.execute-api.us-east-1.amazonaws.com/stage/stac/search?id=L1C_T53MNQ_A017245_20181011T011722"
+            "href": "./item.json"
         },
         {
             "rel": "parent",
-            "href": "https://4nv3nj0r49.execute-api.us-east-1.amazonaws.com/stage/stac/collections/sentinel-2-l1c"
+            "href": "./catalog.json"
         },
         {
             "rel": "root",
-            "href": "https://4nv3nj0r49.execute-api.us-east-1.amazonaws.com/stage/stac"
+            "href": "../catalog.json"
         }
     ],
     "type": "Feature"

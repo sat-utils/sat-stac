@@ -159,15 +159,15 @@
     "links": [
         {
             "rel": "self",
-            "href": "https://4nv3nj0r49.execute-api.us-east-1.amazonaws.com/stage/stac/search?id=LC08_L1GT_120046_20181012_20181012_01_RT"
+            "href": "./item.json"
         },
         {
             "rel": "parent",
-            "href": "https://4nv3nj0r49.execute-api.us-east-1.amazonaws.com/stage/stac/collections/landsat-8-l1"
+            "href": "./catalog.json"
         },
         {
             "rel": "root",
-            "href": "https://4nv3nj0r49.execute-api.us-east-1.amazonaws.com/stage/stac"
+            "href": "../catalog.json"
         }
     ],
     "type": "Feature"

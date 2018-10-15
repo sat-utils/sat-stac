@@ -241,7 +241,7 @@
         },
         {
             "rel": "child",
-            "href": ""
+            "href": "./item.json"
         }
     ]
 }

@@ -224,19 +224,19 @@
     "links": [
         {
             "rel": "self",
-            "href": "https://odu9mlf7d6.execute-api.us-east-1.amazonaws.com/stage/stac/collections/landsat-8-l1"
+            "href": "./catalog.json"
         },
         {
             "rel": "parent",
-            "href": "https://odu9mlf7d6.execute-api.us-east-1.amazonaws.com/stage/stac"
+            "href": "../"
         },
         {
             "rel": "root",
-            "href": "https://odu9mlf7d6.execute-api.us-east-1.amazonaws.com/stage/stac"
+            "href": "../"
         },
         {
             "rel": "child",
-            "href": "https://odu9mlf7d6.execute-api.us-east-1.amazonaws.com/stage/stac/collections/landsat-8-l1/items"
+            "href": "./item.json"
         }
     ]
 }
