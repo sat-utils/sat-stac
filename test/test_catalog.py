@@ -40,7 +40,7 @@ class Test(unittest.TestCase):
         cat = self.get_catalog()
         assert(len(cat.keys()) == 4)
         assert(cat.id == 'stac')
-        assert(len(cat.links)==3)
+        assert(len(cat.links())==3)
 
     def test_properties(self):
         cat = self.get_catalog()

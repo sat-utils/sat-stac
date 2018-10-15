@@ -22,6 +22,7 @@ class Thing(object):
     @classmethod
     def open(cls, filename):
         """ Open an existing JSON data file """
+        # TODO - open remote URLs
         with open(filename) as f:
             dat = json.loads(f.read())
         return cls(dat, filename=filename)
@@ -34,9 +35,13 @@ class Thing(object):
         """ Get keys from catalog """
         return self.data.keys()
 
-    @property
-    def links(self):
-        return self.data.get('links', [])
+    def links(self, rel=None):
+        """ Get links for specific rel type """
+        links = self.data.get('links', [])
+        if rel is None:
+            return links
+        else:
+            return [l for l in links if l.get('rel') == rel]
 
     def __getitem__(self, key):
         """ Get key from properties """

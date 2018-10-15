@@ -28,11 +28,12 @@ class Test(unittest.TestCase):
     def test_init(self):
         thing1 = self.get_thing()
         assert(thing1.id == 'test-thing-id')
-        assert(len(thing1.links) == 1)
+        assert(len(thing1.links()) == 1)
+        assert(len(thing1.links('self')) == 1)
         data = thing1.data
         del data['links']
         thing2 = Thing(data)
-        assert(thing2.links == [])
+        assert(thing2.links() == [])
         with self.assertRaises(STACError):
             thing2.save()
         print(thing1)
@@ -41,7 +42,7 @@ class Test(unittest.TestCase):
         thing1 = self.get_thing()
         thing2 = Thing.open(self.fname)
         assert(thing1.id == thing2.id)
-        assert(thing1.links == thing2.links)
+        assert(thing1.links() == thing2.links())
 
     def test_keys(self):
         thing = self.get_thing()
@@ -53,7 +54,7 @@ class Test(unittest.TestCase):
         assert('links' in thing.keys())
         del thing.data['links']
         assert('links' not in thing.keys())
-        assert(thing.links == [])
+        assert(thing.links() == [])
 
     def test_getitem(self):
         thing = self.get_thing()
