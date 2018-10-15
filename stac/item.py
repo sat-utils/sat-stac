@@ -28,10 +28,7 @@ class Item(Thing):
                 return None
             link = self.links('collection')
             if len(link) == 1:
-                link = link[0]['href']
-                if not os.path.isabs(link):
-                    link = os.path.join(os.path.dirname(self.filename), link)
-                self._collection = Collection.open(link)
+                self._collection = Collection.open(link[0])
         return self._collection
 
     @property

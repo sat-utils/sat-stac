@@ -58,7 +58,12 @@ class Test(unittest.TestCase):
         cat = Catalog.create(path, description=desc)
         assert(cat.description == desc)
 
-    def _test_add_collection(self):
-        """ Add a collection to a catalog """
-        cat = self.create_catalog('add_collection')
-        cat.add_collection('collection.json')
+    def test_links(self):
+        root = self.get_catalog()
+        child = root.children()[0]
+        assert(child.parent().id == root.id)
+
+    #def _test_add_collection(self):
+    #    """ Add a collection to a catalog """
+    #    cat = self.create_catalog('add_collection')
+    #    cat.add_collection('collection.json')

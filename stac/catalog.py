@@ -42,6 +42,15 @@ class Catalog(Thing):
             f.write(json.dumps(kwargs))
         return cls.open(filename)
 
+    def parent(self):
+        """ Get parent link """
+        links = self.links('parent')
+        if len(links) == 1:
+            return Catalog.open(links[0])
+
+    def children(self):
+        """ Get child links """
+        return [Catalog.open(l) for l in self.links('child')]
     '''
     def add_collection(self, collection):
         """ Add a collection to this catalog """

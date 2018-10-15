@@ -58,9 +58,10 @@ class Test(unittest.TestCase):
         assert(item['eo:off_nadir'] == 0)
 
     def test_class_properties(self):
-        """ Test the property functions of the Scene class """
+        """ Test the property functions of the Item class """
         item = Item.open(self.filename)
-        assert(item.links()[0]['href'] == item.data['links'][0]['href'])
+        l = os.path.join(os.path.dirname(item.filename), item.data['links'][0]['href'])
+        assert(os.path.abspath(item.links()[0]) == os.path.abspath(l))
 
     def test_assets(self):
         """ Get assets for download """
