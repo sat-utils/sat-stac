@@ -4,9 +4,9 @@ import unittest
 testpath = os.path.dirname(__file__)
 
 
-class Test(unittest.TestCase):
+class _Test(unittest.TestCase):
     """ Test main module """
 
-    def test_main(self):
+    def _test_main(self):
         """ Run main function """
         pass

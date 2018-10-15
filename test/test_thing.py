@@ -35,6 +35,7 @@ class Test(unittest.TestCase):
         assert(thing2.links == [])
         with self.assertRaises(STACError):
             thing2.save()
+        print(thing1)
 
     def test_open(self):
         thing1 = self.get_thing()

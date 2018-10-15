@@ -14,7 +14,7 @@ class Test(unittest.TestCase):
     path = os.path.join(testpath, 'test-collection')
 
     @classmethod
-    def tearDownClass(cls):
+    def _tearDownClass(cls):
         """ Remove test files """
         if os.path.exists(cls.path):
             shutil.rmtree(cls.path)
@@ -32,6 +32,6 @@ class Test(unittest.TestCase):
     def test_init(self):
         with open(os.path.join(testpath, 'catalog/catalog.json')) as f:
             data = json.loads(f.read())
-        cat = Catalog(data)
+        cat = Collection(data)
         assert(cat.id == 'stac')
 

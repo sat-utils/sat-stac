@@ -44,11 +44,10 @@ class Catalog(Thing):
 
     def add_collection(self, collection):
         """ Add a collection to this catalog """
-        col = self.collections[self.collections['id']] = collection
-        #self.cat['links'].append({
-        #    'rel': 'collection',
-        #    'href': '%s/catalog.json' % col.id
-        #})
+        # add to links
+        self.data.links.append({
+            'rel': 'collection',
+            'href': '%s/catalog.json' % path
+            #[self.collections['id']] = collection
+        })
         self.save()
-
-

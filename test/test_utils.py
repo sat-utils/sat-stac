@@ -16,7 +16,7 @@ class Test(unittest.TestCase):
     def load_scenes(self):
         return Scenes.load(os.path.join(self.path, 'scenes.geojson'))
 
-    def test_text_calendar(self):
+    def _test_text_calendar(self):
         """ Get calendar """
         scenes = self.load_scenes()
         cal = scenes.text_calendar()
@@ -25,7 +25,7 @@ class Test(unittest.TestCase):
         self.assertTrue(' January ' in cal)
         self.assertTrue(' March ' in cal)
 
-    def test_text_calendar_multiyear(self):
+    def _test_text_calendar_multiyear(self):
         scenes = self.load_scenes()
         scenes[0].feature['properties']['datetime'] = '2010-02-01T00:00:00.000Z'
         cal = scenes.text_calendar()
