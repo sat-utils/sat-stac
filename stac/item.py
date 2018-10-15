@@ -17,22 +17,7 @@ class Item(Thing):
         """ Initialize a scene object """
         super(Item, self).__init__(*args, **kwargs)
         self._eo_bands = None
-        '''
-        # skip validation for now, use other library if available
-        required = ['id', 'datetime']
-        if 'geometry' not in feature:
-            raise ItemError('No geometry supplied')
-        if 'properties' not in feature:
-            raise ItemError('No properties supplied')
-        if not set(required).issubset(feature.get('properties', {}).keys()):
-            raise ItemError('Invalid Scene (required parameters: %s' % ' '.join(required))
-        '''
 
-        '''
-        # determine common_name to asset mapping
-        # it will map if an asset contains only a single band
-
-        '''
     @property
     def eo_bands(self):
         if self._eo_bands is None:
@@ -44,7 +29,6 @@ class Item(Thing):
                 if len(_bands) == 1 and _bands[0] in band_to_name:
                     self.name_to_band[band_to_name[_bands[0]]] = _bands[0]
         return self._eo_bands
-
 
     @property
     def datetime(self):

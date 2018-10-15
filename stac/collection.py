@@ -37,5 +37,5 @@ class Collection(Catalog):
 
     @property
     def properties(self):
-        """ Get properties """
+        """ Get dictionary of properties """
         return self.data.get('properties', {})

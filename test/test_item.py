@@ -28,13 +28,6 @@ class Test(unittest.TestCase):
         """ Get valid test scene """
         return Item(self.item)
 
-    def test_invalid_init(self):
-        """ Initialize a scene with insufficient metadata """
-        with self.assertRaises(ItemError):
-            Item({'meaninglesskey': 'meaninglessstring'})
-        with self.assertRaises(ItemError):
-            Item({'geometry': {}})
-
     def test_init(self):
         """ Initialize an item """
         scene = self.get_test_scene()
