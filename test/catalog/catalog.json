@@ -5,15 +5,15 @@
     "links": [
         {
             "rel": "self",
-            "href": "./"
+            "href": "./catalog.json"
         },
         {
             "rel": "child",
-            "href": "./sentinel-2-l1c"
+            "href": "./sentinel-2-l1c/catalog.json"
         },
         {
             "rel": "child",
-            "href": "./landsat-8-l1"
+            "href": "./landsat-8-l1/catalog.json"
         }
     ]
 }

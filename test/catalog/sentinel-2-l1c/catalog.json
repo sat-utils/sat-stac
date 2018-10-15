@@ -233,11 +233,11 @@
         },
         {
             "rel": "parent",
-            "href": "../"
+            "href": "../catalog.json"
         },
         {
             "rel": "root",
-            "href": "../"
+            "href": "../catalog.json"
         },
         {
             "rel": "child",
