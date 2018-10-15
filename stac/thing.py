@@ -2,6 +2,7 @@ import json
 import os
 from stac import __version__, utils
 
+
 class STACError(Exception):
     pass
 

@@ -16,6 +16,7 @@ class Item(Thing):
     def __init__(self, *args, **kwargs):
         """ Initialize a scene object """
         super(Item, self).__init__(*args, **kwargs)
+        self._eo_bands = None
         '''
         # skip validation for now, use other library if available
         required = ['id', 'datetime']
@@ -26,30 +27,24 @@ class Item(Thing):
         if not set(required).issubset(feature.get('properties', {}).keys()):
             raise ItemError('Invalid Scene (required parameters: %s' % ' '.join(required))
         '''
-        self.feature = feature
 
         '''
         # determine common_name to asset mapping
         # it will map if an asset contains only a single band
-        bands = self.eobands
-        band_to_name = {b: bands[b]['common_name'] for b in bands if bands[b].get('common_name', None)}
-        self.name_to_band = {}
-        for a in self.assets:
-            _bands = self.assets[a].get('eo:bands', [])
-            if len(_bands) == 1 and _bands[0] in band_to_name:
-                self.name_to_band[band_to_name[_bands[0]]] = _bands[0]
 
-        self.filenames = {}
         '''
-        '''
-        bands = self.eobands
-        band_to_name = {b: bands[b]['common_name'] for b in bands if bands[b].get('common_name', None)}
-        self.name_to_band = {}
-        for a in self.assets:
-            _bands = self.assets[a].get('eo:bands', [])
-            if len(_bands) == 1 and _bands[0] in band_to_name:
-                self.name_to_band[band_to_name[_bands[0]]] = _bands[0]
-        '''
+    @property
+    def eo_bands(self):
+        if self._eo_bands is None:
+            bands = self.data.get('eo:bands', [])
+            band_to_name = {b['id']: bands[b]['common_name'] for b in bands if bands[b].get('common_name', None)}
+            self.name_to_band = {}
+            for a in self.assets:
+                _bands = self.assets[a].get('eo:bands', [])
+                if len(_bands) == 1 and _bands[0] in band_to_name:
+                    self.name_to_band[band_to_name[_bands[0]]] = _bands[0]
+        return self._eo_bands
+
 
     @property
     def datetime(self):
@@ -71,10 +66,10 @@ class Item(Thing):
     @property
     def assets(self):
         """ Return dictionary of assets """
-        return self.feature.get('assets', {})
+        return self.data.get('assets', {})
 
     def asset(self, key):
-        """ Get asset info for this key OR common_name """
+        """ Get asset for this key OR common_name """
         if key not in self.assets:
             if key not in self.name_to_band:
                 logging.warning('No such asset (%s)' % key)

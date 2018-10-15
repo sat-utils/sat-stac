@@ -42,6 +42,7 @@ class Catalog(Thing):
             f.write(json.dumps(kwargs))
         return cls.open(filename)
 
+    '''
     def add_collection(self, collection):
         """ Add a collection to this catalog """
         # add to links
@@ -51,3 +52,4 @@ class Catalog(Thing):
             #[self.collections['id']] = collection
         })
         self.save()
+    '''
