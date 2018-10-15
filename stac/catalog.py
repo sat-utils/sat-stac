@@ -51,14 +51,16 @@ class Catalog(Thing):
     def children(self):
         """ Get child links """
         return [Catalog.open(l) for l in self.links('child')]
-    '''
-    def add_collection(self, collection):
-        """ Add a collection to this catalog """
+
+    def add_catalog(self, catalog):
+        """ Add a catalog to this catalog """
         # add to links
-        self.data.links.append({
-            'rel': 'collection',
-            'href': '%s/catalog.json' % path
-            #[self.collections['id']] = collection
+        link = '%s/catalog.json' % catalog.id
+        self.data['links'].append({
+            'rel': 'child',
+            'href': link
         })
         self.save()
-    '''
+        # create catalog
+        fname = os.path.abspath(os.path.join(os.path.dirname(self.filename), link))
+        catalog.save_as(fname)

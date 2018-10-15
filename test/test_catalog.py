@@ -63,7 +63,9 @@ class Test(unittest.TestCase):
         child = root.children()[0]
         assert(child.parent().id == root.id)
 
-    #def _test_add_collection(self):
-    #    """ Add a collection to a catalog """
-    #    cat = self.create_catalog('add_collection')
-    #    cat.add_collection('collection.json')
+    def test_add_catalog(self):
+        """ Add a collection to a catalog """
+        cat = self.create_catalog('add_collection')
+        col = Catalog.open(os.path.join(testpath, 'catalog/landsat-8-l1/catalog.json'))
+        cat.add_catalog(col)
+        assert(cat.children()[0].id == col.id)

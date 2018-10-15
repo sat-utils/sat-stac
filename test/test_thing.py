@@ -11,7 +11,7 @@ testpath = os.path.dirname(__file__)
 class Test(unittest.TestCase):
 
     path = os.path.join(testpath, 'test-thing')
-    fname = os.path.join(testpath, 'test-thing.json')
+    fname = os.path.join(testpath, 'thing.json')
 
     @classmethod
     def tearDownClass(cls):
