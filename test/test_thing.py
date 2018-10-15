@@ -1,7 +1,8 @@
-import os
 import json
+import os
+import shutil
 import unittest
-from stac.thing import Thing
+from stac.thing import Thing, STACError
 
 
 testpath = os.path.dirname(__file__)
@@ -9,7 +10,14 @@ testpath = os.path.dirname(__file__)
 
 class Test(unittest.TestCase):
 
+    path = os.path.join(testpath, 'test-thing')
     fname = os.path.join(testpath, 'test-thing.json')
+
+    @classmethod
+    def tearDownClass(cls):
+        """ Remove test files """
+        if os.path.exists(cls.path):
+            shutil.rmtree(cls.path)
 
     def get_thing(self):
         """ Configure testing class """
@@ -25,6 +33,8 @@ class Test(unittest.TestCase):
         del data['links']
         thing2 = Thing(data)
         assert(thing2.links == [])
+        with self.assertRaises(STACError):
+            thing2.save()
 
     def test_open(self):
         thing1 = self.get_thing()
@@ -47,3 +57,10 @@ class Test(unittest.TestCase):
     def test_getitem(self):
         thing = self.get_thing()
         assert(thing['some_property'] is None)
+    
+    def test_save(self):
+        thing = Thing.open(self.fname)
+        thing.save()
+        fout = os.path.join(self.path, 'test-save.json')
+        thing.save_as(fout)
+        assert(os.path.exists(fout))

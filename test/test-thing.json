@@ -1,6 +1,1 @@
-{
-    "id": "test-thing-id",
-    "links": [
-        { "rel": "self", "href": "./catalog.json"}
-    ]
-}
+{"id": "test-thing-id", "links": [{"rel": "self", "href": "./catalog.json"}]}

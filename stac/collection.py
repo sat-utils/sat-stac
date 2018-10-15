@@ -31,3 +31,6 @@ class Collection(Catalog):
             else:
                 return None
 
+    def properties(self):
+        """ Get properties """
+        return self.data['properties'].keys()
