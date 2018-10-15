@@ -162,7 +162,7 @@
             "href": "./item.json"
         },
         {
-            "rel": "parent",
+            "rel": "collection",
             "href": "./catalog.json"
         },
         {
