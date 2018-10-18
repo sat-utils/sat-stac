@@ -22,7 +22,7 @@ class Test(unittest.TestCase):
     @classmethod
     def get_catalog(cls):
         """ Open existing test catalog """
-        return Catalog.open(os.path.join(testpath, 'catalog'))
+        return Catalog.open(os.path.join(testpath, 'catalog/catalog.json'))
 
     @classmethod
     def create_catalog(cls, name):
