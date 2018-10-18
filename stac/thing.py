@@ -31,6 +31,10 @@ class Thing(object):
     def id(self):
         return self.data['id']
 
+    @property
+    def path(self):
+        return os.path.dirname(self.filename) if self.filename else None
+
     def keys(self):
         """ Get keys from catalog """
         return self.data.keys()
