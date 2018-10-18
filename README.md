@@ -33,7 +33,7 @@ import stac
 cat = stac.Catalog('catalog.json')
 
 print(cat.children)
-
+```
 
 
 
