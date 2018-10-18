@@ -11,7 +11,7 @@ testpath = os.path.dirname(__file__)
 class Test(unittest.TestCase):
 
     path = os.path.join(testpath, 'test-thing')
-    fname = os.path.join(testpath, 'thing.json')
+    fname = os.path.join(testpath, 'catalog/catalog.json')
 
     @classmethod
     def tearDownClass(cls):
@@ -27,8 +27,8 @@ class Test(unittest.TestCase):
 
     def test_init(self):
         thing1 = self.get_thing()
-        assert(thing1.id == 'test-thing-id')
-        assert(len(thing1.links()) == 1)
+        assert(thing1.id == 'stac')
+        assert(len(thing1.links()) == 3)
         assert(len(thing1.links('self')) == 1)
         data = thing1.data
         del data['links']
