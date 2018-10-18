@@ -1,11 +1,13 @@
 import json
 import logging
 import os
+import requests
+import traceback
 
 from string import Formatter, Template
 from datetime import datetime
 
-from stac import __version__, STACError, Thing, Collection, utils
+from stac import __version__, STACError, Thing, Collection, utils, config
 
 
 logger = logging.getLogger(__name__)
@@ -16,8 +18,15 @@ class Item(Thing):
     def __init__(self, *args, **kwargs):
         """ Initialize a scene object """
         super(Item, self).__init__(*args, **kwargs)
+        # dictionary of assets by eo:band common_name
         self._assets_by_common_name = None
+        # collection instance
         self._collection = None
+        # filename patterns
+        self._path = '${collection}/${date}'
+        self._filename = '${id}'
+        # local filenames
+        self.filenames = {}
 
     @property
     def collection(self):
@@ -96,31 +105,59 @@ class Item(Thing):
         logging.warning('No such asset (%s)' % key)
         return None
 
-    '''
-    def string_sub(self, string):
+    def substitute(self, string):
+        """ Substitude envvars in string with Item values """
         string = string.replace(':', '_colon_')
         subs = {}
         for key in [i[1] for i in Formatter().parse(string.rstrip('/')) if i[1] is not None]:
-            if key == 'date':
-                subs[key] = self.datetime
+            if key == 'id':
+                subs[key] = self.id
+            elif key == 'date':
+                subs[key] = self.date
             else:
                 subs[key] = self[key.replace('_colon_', ':')]
-        return Template(string).substitute(**subs)        
+        return Template(string).substitute(**subs)   
 
-    def get_path(self, no_create=False):
-        """ Get local path for this scene """
-        path = self.string_sub(config.DATADIR)
-        if not no_create and path != '':
-            self.mkdirp(path)       
-        return path
+    def download(self, key, overwrite=False):
+        """ Download this key (e.g., a band, or metadata file) from the scene """
+ 
+        asset = self.asset(key)
+        if asset is None:
+            return None
 
-    def get_filename(self, suffix=None):
-        """ Get local filename for this scene """
-        fname = self.string_sub(config.FILENAME)
-        if suffix is not None:
-            fname = fname + suffix
-        return fname
-    '''
+        path = self.substitute(self._path)
+        utils.mkdirp(path)
+        filename = None
+        try:
+            fname = self.substitute(self._filename)
+            ext = os.path.splitext(asset['href'])[1]
+            fout = os.path.join(path, fname + '_' + key + ext)
+            if not os.path.exists(fout) or overwrite:
+                filename = self.download_file(asset['href'], fout=fout)
+            else:
+                filename = fout
+        except Exception as e:
+            filename = None
+            logger.error('Unable to download %s: %s' % (asset['href'], str(e)))
+            logger.debug(traceback.format_exc())
+        return filename
+
+    @staticmethod
+    def download_file(url, fout=None):
+        """ Download a file """
+        fout = os.path.basename(url) if fout is None else fout
+        logger.info('Downloading %s as %s' % (url, fout))
+        # check if on s3
+        if 's3.amazonaws.com' in url:
+            url, headers = utils.get_s3_signed_url(url)
+        resp = requests.get(url, headers=headers, stream=True)
+        if resp.status_code != 200:
+            raise Exception("Unable to download file %s: %s" % (url, resp.text))
+        with open(fout, 'wb') as f:
+            for chunk in resp.iter_content(chunk_size=1024):
+                if chunk:  # filter out keep-alive new chunks
+                    f.write(chunk)
+        return fout
 
     '''
     @classmethod

@@ -1,8 +1,11 @@
 import datetime
 import json
+import mock
 import os
 import shutil
 import unittest
+
+from unittest.mock import patch
 
 from stac import Item
 
@@ -16,7 +19,7 @@ class Test(unittest.TestCase):
     filename = os.path.join(testpath, 'catalog/landsat-8-l1/item.json')
 
     @classmethod
-    def _tearDownClass(cls):
+    def tearDownClass(cls):
         """ Remove test files """
         if os.path.exists(cls.path):
             shutil.rmtree(cls.path)
@@ -75,29 +78,49 @@ class Test(unittest.TestCase):
         item = Item.open(self.filename)
         assert(item.asset('no-such-asset') == None)
 
-    def _test_download_thumbnail(self):
-        """ Get thumbnail for scene """
-        scene = self.get_test_scene()
-        fname = scene.download(key='thumbnail')
-        self.assertTrue(os.path.exists(fname))
-        os.remove(fname)
-        self.assertFalse(os.path.exists(fname))
-        #shutil.rmtree(os.path.join(testpath, self.item['properties']['collection']))
+    def test_substitute(self):
+        """ Test string substitution with item fields """
+        item = Item.open(self.filename)
+        st = item.substitute('${collection}/${date}')
+        assert(st == 'landsat-8-l1/2018-10-12')
+        st = item.substitute('nosub')
+        assert(st == 'nosub')
 
-    def _test_download(self):
-        """ Retrieve a data file """
-        scene = self.get_test_scene()
-        fname = scene.download(key='MTL')
-        self.assertTrue(os.path.exists(fname))
-        fname = scene.download(key='MTL')
+    def test_download_thumbnail(self):
+        """ Get thumbnail for item """
+        item = Item.open(self.filename)
+        item._path = os.path.join(self.path, item._path)
+        fname = item.download(key='thumbnail')
         assert(os.path.exists(fname))
-        os.remove(fname)
-        self.assertFalse(os.path.exists(fname))
-        #shutil.rmtree(os.path.join(testpath, self.item['properties']['collection']))
+
+    def test_download(self):
+        """ Retrieve a data file """
+        item = Item.open(self.filename)
+        item._path = os.path.join(self.path, item._path)
+        fname = item.download(key='MTL')
+        assert(os.path.exists(fname))
+        fname = item.download(key='MTL')
+        assert(os.path.exists(fname))
+
+    @patch('requests.get')
+    def test_download_bad_server(self, mock_get):
+        """ Retrieve non existent file """
+        item = Item.open(self.filename)
+        item._path = os.path.join(self.path, item._path)
+        mock_get.return_value.status_code == 404
+        fname = item.download(key='thumbnail')
+        assert(fname is None)
+
+    def test_download_nonexist(self):
+        """ Test downloading of non-existent file """
+        item = Item.open(self.filename)
+        item._path = os.path.join(self.path, item._path)
+        fname = item.download(key='fake_asset')
+        assert(fname is None)
 
     def _test_download_paths(self):
         """ Testing of download paths and filenames """
-        scene = self.get_test_scene()
+        item = Item.open(self.filename)
         datadir = config.DATADIR
         filename = config.FILENAME
         config.DATADIR = os.path.join(testpath, '${date}')
@@ -110,21 +133,6 @@ class Test(unittest.TestCase):
         config.FILENAME = filename
         shutil.rmtree(os.path.join(testpath, '2017-01-01'))
         assert(os.path.exists(fname) == False)
-
-    def _test_download_nonexist(self):
-        """ Test downloading of non-existent file """
-        scene = self.get_test_scene()
-        fname = scene.download(key='fake_asset')
-        assert(fname is None)
-
-    def _test_download_all(self):
-        """ Retrieve all data files from a source """
-        scene = self.get_test_scene()
-        fnames = [scene.download(a) for a in scene.assets if a != 'fake_asset']
-        for f in fnames:
-            self.assertTrue(os.path.exists(f))
-            os.remove(f)
-            self.assertFalse(os.path.exists(f))
 
     def _test_create_derived(self):
         """ Create single derived scene """
