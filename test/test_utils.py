@@ -1,7 +1,7 @@
 import os
 import unittest
-import satsearch.config as config
-from satsearch.scene import Scenes
+#import satsearch.config as config
+#from satsearch.scene import Scenes
 
 
 class Test(unittest.TestCase):
@@ -9,7 +9,7 @@ class Test(unittest.TestCase):
     path = os.path.dirname(__file__)
 
     @classmethod
-    def setUpClass(cls):
+    def _setUpClass(cls):
         """ Configure testing class """
         config.DATADIR = cls.path
 
