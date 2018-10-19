@@ -3,7 +3,7 @@ import os
 import unittest
 import shutil
 
-from stac import __version__, Catalog
+from stac import __version__, Catalog, STACError, Item
 
 
 testpath = os.path.dirname(__file__)
@@ -49,7 +49,7 @@ class Test(unittest.TestCase):
 
     def test_create(self):
         """ Create new catalog file """
-        cat = self.create_catalog('create')
+        cat = Catalog.create()
         assert(cat.id == 'stac-catalog')
 
     def test_create_with_keywords(self):
@@ -64,8 +64,36 @@ class Test(unittest.TestCase):
         assert(child.parent().id == root.id)
 
     def test_add_catalog(self):
-        """ Add a collection to a catalog """
-        cat = self.create_catalog('add_collection')
+        cat = Catalog.create().save_as(os.path.join(self.path, 'catalog.json'), root=True)
         col = Catalog.open(os.path.join(testpath, 'catalog/landsat-8-l1/catalog.json'))
         cat.add_catalog(col)
         assert(cat.children()[0].id == col.id)
+
+    def test_add_catalog_without_saving(self):
+        cat = Catalog.create()
+        with self.assertRaises(STACError):
+           cat.add_catalog({})
+
+    def test_add_item(self):
+        cat = Catalog.create().save_as(os.path.join(self.path, 'catalog.json'), root=True)
+        col = Catalog.open(os.path.join(testpath, 'catalog/landsat-8-l1/catalog.json'))
+        cat.add_catalog(col)
+        item = Item.open(os.path.join(testpath, 'catalog/landsat-8-l1/item.json'))
+        col.add_item(item)
+        assert(item.parent().id == 'landsat-8-l1')
+
+    def test_add_item_without_saving(self):
+        cat = Catalog.create()
+        item = Item.open(os.path.join(testpath, 'catalog/landsat-8-l1/item.json'))
+        with self.assertRaises(STACError):
+            cat.add_item(item)
+
+    def test_add_item_with_subcatalogs(self):
+        cat = Catalog.create().save_as(os.path.join(self.path, 'test_subcatalogs.json'), root=True)
+        item = Item.open(os.path.join(testpath, 'catalog/landsat-8-l1/item.json'))
+        item._path = '${landsat:path}/${landsat:row}/${date}'
+        cat.add_item(item)
+        assert(item.root().id == cat.id)
+        # test code using existing catalogs
+        cat.add_item(item)
+        assert(item.root().id == cat.id)

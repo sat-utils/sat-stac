@@ -59,6 +59,19 @@ class Test(unittest.TestCase):
         assert('links' not in thing.keys())
         assert(thing.links() == [])
 
+    def test_add_link(self):
+        thing = self.get_thing()
+        thing.add_link('testlink', 'bobloblaw', type='text/plain', title='BobLoblaw')
+        assert(len(thing.links()) == 4)
+        assert(thing.links('testlink')[0] == 'bobloblaw')
+
+    def test_clean_hierarchy(self):
+        thing = self.get_thing()
+        thing.add_link('testlink', 'bobloblaw')
+        assert(len(thing.links()) == 4)
+        thing.clean_hierarchy()
+        assert(len(thing.links()) == 1)
+
     def test_getitem(self):
         thing = self.get_thing()
         assert(thing['some_property'] is None)

@@ -23,7 +23,8 @@ class Item(Thing):
         # collection instance
         self._collection = None
         # filename patterns
-        self._path = '${collection}/${date}'
+        self._path = '${date}'
+        #self._path = '${landsat:path}/${landsat:row}/${date}'
         self._filename = '${id}'
         # local filenames
         self.filenames = {}
@@ -105,6 +106,13 @@ class Item(Thing):
         logging.warning('No such asset (%s)' % key)
         return None
 
+    def get_filename(self):
+        """ Get complete path with filename to this item """
+        return os.path.join(
+            self.substitute(self._path),
+            self.substitute(self._filename) + '.json'
+        )
+
     def substitute(self, string):
         """ Substitude envvars in string with Item values """
         string = string.replace(':', '_colon_')
@@ -120,7 +128,6 @@ class Item(Thing):
 
     def download(self, key, overwrite=False):
         """ Download this key (e.g., a band, or metadata file) from the scene """
- 
         asset = self.asset(key)
         if asset is None:
             return None

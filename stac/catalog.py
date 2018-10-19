@@ -1,8 +1,7 @@
 import json
 import os
 
-import stac
-from stac import __version__, utils, Thing
+from stac import __version__, utils, Thing, STACError
 
 
 class Catalog(Thing):
@@ -14,39 +13,24 @@ class Catalog(Thing):
 
     @property
     def stac_version(self):
+        """ Get the STAC version of this catalog """
         return self.data['stac_version']
 
     @property
     def description(self):
+        """ Get catalog description """
         return self.data.get('description', '')
 
     @classmethod
-    def open(cls, filename):
-        filename = os.path.join(filename.replace('catalog.json', ''), 'catalog.json')
-        return super(Catalog, cls).open(filename)
-
-    @classmethod
-    def create(cls, path, catid='stac-catalog', description='A STAC Catalog', **kwargs):
+    def create(cls, id='stac-catalog', description='A STAC Catalog', **kwargs):
         """ Create new catalog """
-        utils.mkdirp(path)
         kwargs.update({
-            'id': catid,
-            'stac_version': stac.__version__,
+            'id': id,
+            'stac_version': __version__,
             'description': description,
-            'links': [
-                { 'rel': 'self', 'href': './catalog.json'}
-            ]
+            'links': []
         })
-        filename = os.path.join(path, 'catalog.json')
-        with open(filename, 'w') as f:
-            f.write(json.dumps(kwargs))
-        return cls.open(filename)
-
-    def parent(self):
-        """ Get parent link """
-        links = self.links('parent')
-        if len(links) == 1:
-            return Catalog.open(links[0])
+        return Catalog(kwargs)
 
     def children(self):
         """ Get child links """
@@ -54,13 +38,58 @@ class Catalog(Thing):
 
     def add_catalog(self, catalog):
         """ Add a catalog to this catalog """
-        # add to links
-        link = '%s/catalog.json' % catalog.id
-        self.data['links'].append({
-            'rel': 'child',
-            'href': link
-        })
+        if self.filename is None:
+            raise STACError('Save catalog before adding sub-catalogs')
+        # add new catalog child link
+        child_link = '%s/catalog.json' % catalog.id
+        child_fname = os.path.join(self.path, child_link)
+        child_path = os.path.dirname(child_fname)
+        self.add_link('child', child_link)
         self.save()
-        # create catalog
-        fname = os.path.abspath(os.path.join(os.path.dirname(self.filename), link))
-        catalog.save_as(fname)
+        # strip self, parent, child links from catalog and add new links
+        catalog.clean_hierarchy()
+        catalog.add_link('root', os.path.relpath(self.links('root')[0], child_path))
+        catalog.add_link('parent', os.path.relpath(self.filename, child_path))
+        # create catalog file
+        catalog.save_as(child_fname)
+        return self
+
+    def add_item(self, item):
+        """ Add an item to this catalog """
+        if self.filename is None:
+            raise STACError('Save catalog before adding items')
+        item_link = item.get_filename()
+        item_fname = os.path.join(self.path, item_link)
+        item_path = os.path.dirname(item_fname)
+
+        cat = self
+        dirs = utils.splitall(item_link)
+        for d in dirs[:-2]:
+            fname = os.path.join(os.path.join(cat.path, d), 'catalog.json')
+            # open existing sub-catalog or create new one
+            if os.path.exists(fname):
+                subcat = Catalog.open(fname)
+            else:
+                # create a new sub-catalog
+                subcat = self.create(id=d).save_as(fname)
+                # add the sub-catalog to this catalog
+                cat.add_catalog(subcat)
+            cat = subcat
+            
+        # create link to item
+        cat.add_link('item', os.path.relpath(item_fname, cat.path))
+        cat.save()
+    
+        # TODO - check if item already exists?
+        # create links from item
+        item.clean_hierarchy()
+        item.add_link('root', os.path.relpath(self.links('root')[0], item_path))
+        item.add_link('parent', os.path.relpath(cat.filename, item_path))
+        # this assumes the item has been added to a Collection, not a Catalog
+        item.add_link('collection', os.path.relpath(self.filename, item_path))
+
+        # save item
+        item.save_as(item_fname)
+        return self
+
+

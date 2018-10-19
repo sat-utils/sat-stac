@@ -29,10 +29,12 @@ class Thing(object):
 
     @property
     def id(self):
+        """ Return id of this entity """
         return self.data['id']
 
     @property
     def path(self):
+        """ Return path to this catalog file (None if no filename set) """
         return os.path.dirname(self.filename) if self.filename else None
 
     def keys(self):
@@ -54,6 +56,34 @@ class Thing(object):
             links = _links
         return links
 
+    def root(self):
+        """ Get root link """
+        links = self.links('root')
+        return self.open(links[0]) if len(links) == 1 else []
+
+    def parent(self):
+        """ Get parent link """
+        links = self.links('parent')
+        return self.open(links[0]) if len(links) == 1 else []
+
+    def add_link(self, rel, link, type=None, title=None):
+        """ Add a new link """
+        l = {'rel': rel, 'href': link}
+        if type is not None:
+            l['type'] = type
+        if title is not None:
+            l['title'] = title
+        self.data['links'].append(l)
+
+    def clean_hierarchy(self):
+        """ Clean links of self, parent, and child links (for moving and publishing) """
+        rels = ['self', 'root', 'parent', 'child', 'collection']
+        links = []
+        for l in self.data['links']:
+            if l['rel'] not in rels:
+                links.append(l)
+        self.data['links'] = links
+
     def __getitem__(self, key):
         """ Get key from properties """
         props = self.data.get('properties', {})
@@ -66,8 +96,12 @@ class Thing(object):
         utils.mkdirp(os.path.dirname(self.filename))
         with open(self.filename, 'w') as f:
             f.write(json.dumps(self.data))
+        return self
 
-    def save_as(self, filename):
+    def save_as(self, filename, root=False):
         """ Write a catalog file to a new file """
         self.filename = filename
+        if root:
+            self.add_link('root', './%s' % os.path.basename(filename))
         self.save()
+        return self
