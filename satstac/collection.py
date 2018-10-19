@@ -1,4 +1,4 @@
-from stac.catalog import Catalog
+from .catalog import Catalog
 
 
 class Collection(Catalog):

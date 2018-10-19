@@ -7,7 +7,7 @@ import traceback
 from string import Formatter, Template
 from datetime import datetime
 
-from stac import __version__, STACError, Thing, Collection, utils, config
+from satstac import __version__, STACError, Thing, Collection, utils
 
 
 logger = logging.getLogger(__name__)

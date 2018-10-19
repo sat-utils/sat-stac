@@ -7,7 +7,7 @@ import unittest
 
 from unittest.mock import patch
 
-from stac import Item
+from satstac import Item
 
 
 testpath = os.path.dirname(__file__)

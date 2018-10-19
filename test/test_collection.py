@@ -3,7 +3,7 @@ import os
 import unittest
 import shutil
 
-from stac import __version__, Collection
+from satstac import __version__, Collection
 
 
 testpath = os.path.dirname(__file__)

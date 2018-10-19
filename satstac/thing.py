@@ -1,6 +1,8 @@
 import json
 import os
-from stac import __version__, utils
+
+from .version import __version__
+from .utils import mkdirp
 
 
 class STACError(Exception):
@@ -93,7 +95,7 @@ class Thing(object):
         """ Write a catalog file """
         if self.filename is None:
             raise STACError('No filename, use save_as()')
-        utils.mkdirp(os.path.dirname(self.filename))
+        mkdirp(os.path.dirname(self.filename))
         with open(self.filename, 'w') as f:
             f.write(json.dumps(self.data))
         return self

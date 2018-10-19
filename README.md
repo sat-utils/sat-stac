@@ -19,7 +19,7 @@ sat-stac is a library for the programmatic creation of STAC catalogs.
 sat-stac is pip installable, and has minimal dependencies (the Python requests library only)
 
 ```
-$ pip install stac
+$ pip install satstac
 ```
 
 

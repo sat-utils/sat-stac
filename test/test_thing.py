@@ -2,7 +2,7 @@ import json
 import os
 import shutil
 import unittest
-from stac.thing import Thing, STACError
+from satstac import Thing, STACError
 
 
 testpath = os.path.dirname(__file__)

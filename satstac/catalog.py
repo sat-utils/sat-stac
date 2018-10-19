@@ -1,7 +1,7 @@
 import json
 import os
 
-from stac import __version__, utils, Thing, STACError
+from satstac import __version__, utils, Thing, STACError
 
 
 class Catalog(Thing):

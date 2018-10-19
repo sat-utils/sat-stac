@@ -4,7 +4,7 @@ from imp import load_source
 from os import path
 import io
 
-__version__ = load_source('stac.version', 'stac/version.py').__version__
+__version__ = load_source('satstac.version', 'satstac/version.py').__version__
 
 here = path.abspath(path.dirname(__file__))
 
@@ -16,11 +16,11 @@ install_requires = [x.strip() for x in all_reqs if 'git+' not in x]
 dependency_links = [x.strip().replace('git+', '') for x in all_reqs if 'git+' not in x]
 
 setup(
-    name='stac',
-    author='',
-    author_email='',
+    name='satstac',
+    author='Matthew Hanson (matthewhanson)',
+    author_email='matt.a.hanson@gmail.com',
     version=__version__,
-    description='python-seed',
+    description='A Python library for working with Spatio-Temporal Asset Catalogs (STAC)',
     url='https://github.com/',
     license='MIT',
     classifiers=[
@@ -32,7 +32,7 @@ setup(
     ],
     keywords='',
     entry_points={
-        'console_scripts': ['stac=stac.main:cli'],
+        'console_scripts': ['satstac=satstac.main:cli'],
     },
     packages=find_packages(exclude=['docs', 'tests*']),
     include_package_data=True,
