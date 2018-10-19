@@ -13,7 +13,6 @@ references:
   container_python36: &container_python36
     docker:
       - image: circleci/python:3.6.2
-      - image: circleci/python:2.7.13
     working_dir: ~/project
 
   restore_repo: &restore_repo
@@ -49,7 +48,8 @@ jobs:
             pwd
             pip install -r requirements.txt
             pip install -r requirements-dev.txt
-            pytest --cov stac test/
+            pip install .
+            pytest --cov satstac --cov-report term-missing test/
       - save_cache:
           key: v1-dependencies36-{{ checksum "requirements.txt"}}
           paths:
@@ -71,7 +71,7 @@ jobs:
             ssh-keyscan github.com >> ~/.ssh/known_hosts
             pip install twine
             python setup.py sdist
-            VERSION=`awk -F\' '{print $2,$4}' stac/version.py`
+            VERSION=`awk -F\' '{print $2,$4}' satstac/version.py`
             $git tag $VERSION
             $git push origin $VERSION
             $twine upload --username "${PYPI_USER}" --password "${PYPI_PASS}" dist/*
