@@ -36,6 +36,10 @@ class Catalog(Thing):
         """ Get child links """
         return [Catalog.open(l) for l in self.links('child')]
 
+    def items(self):
+        """ Get Items in this catalog """
+        return [Item.open(l) for l in self.links('item')]
+
     def add_catalog(self, catalog):
         """ Add a catalog to this catalog """
         if self.filename is None:
@@ -93,3 +97,6 @@ class Catalog(Thing):
         return self
 
 
+# import and end of module prevents problems with circular dependencies.
+# Catalogs use Items and Items use Collections (which are Catalogs)
+from .item import Item

@@ -7,7 +7,7 @@ import traceback
 from string import Formatter, Template
 from datetime import datetime
 
-from satstac import __version__, STACError, Thing, Collection, utils
+from satstac import __version__, STACError, Thing, utils
 
 
 logger = logging.getLogger(__name__)
@@ -195,3 +195,7 @@ class Item(Thing):
         }
         return Item(item)        
     '''
+
+# import and end of module prevents problems with circular dependencies.
+# Catalogs use Items and Items use Collections (which are Catalogs)
+from .collection import Collection

@@ -235,7 +235,7 @@
             "href": "../catalog.json"
         },
         {
-            "rel": "child",
+            "rel": "item",
             "href": "./item.json"
         }
     ]

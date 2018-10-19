@@ -63,6 +63,10 @@ class Test(unittest.TestCase):
         child = root.children()[0]
         assert(child.parent().id == root.id)
 
+    def test_get_items(self):
+        items = self.get_catalog().children()[0].items()
+        assert(len(items) == 1)
+
     def test_add_catalog(self):
         cat = Catalog.create().save_as(os.path.join(self.path, 'catalog.json'), root=True)
         col = Catalog.open(os.path.join(testpath, 'catalog/landsat-8-l1/catalog.json'))
