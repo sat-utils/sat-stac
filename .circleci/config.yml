@@ -49,7 +49,8 @@ jobs:
             pip install -r requirements.txt
             pip install -r requirements-dev.txt
             pip install .
-            pytest --cov satstac --cov-report term-missing test/
+            cd test
+            pytest -v --cov satstac --cov-report term-missing
       - save_cache:
           key: v1-dependencies36-{{ checksum "requirements.txt"}}
           paths:
