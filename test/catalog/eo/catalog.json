@@ -1,5 +1,5 @@
 {
-    "id": "stac",
+    "id": "stac-eo",
     "description": "A STAC of EO Data",
     "stac_version": "0.6.0",
     "links": [
@@ -9,6 +9,10 @@
         },
         {
             "rel": "root",
+            "href": "../catalog.json"
+        },
+        {
+            "rel": "parent",
             "href": "../catalog.json"
         },
         {

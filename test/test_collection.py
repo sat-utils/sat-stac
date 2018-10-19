@@ -20,7 +20,7 @@ class Test(unittest.TestCase):
             shutil.rmtree(cls.path)
 
     def open_collection(self):
-        filename = os.path.join(testpath, 'catalog/landsat-8-l1/catalog.json')
+        filename = os.path.join(testpath, 'catalog/eo/landsat-8-l1/catalog.json')
         return Collection.open(filename)
 
     def test_open(self):

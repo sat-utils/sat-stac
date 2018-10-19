@@ -63,13 +63,23 @@ class Test(unittest.TestCase):
         child = root.children()[0]
         assert(child.parent().id == root.id)
 
+    def test_get_catalogs(self):
+        catalogs = [i for i in self.get_catalog().catalogs()]
+        assert(len(catalogs) == 4)
+
+    def test_get_collections(self):
+        collections = [i for i in self.get_catalog().collections()]
+        assert(len(collections) == 2)
+        assert(collections[0].id in ['landsat-8-l1', 'sentinel-2-l1c'])
+        assert(collections[1].id in ['landsat-8-l1', 'sentinel-2-l1c'])
+
     def test_get_items(self):
-        items = self.get_catalog().children()[0].items()
-        assert(len(items) == 1)
+        items = [i for i in self.get_catalog().items()]
+        assert(len(items) == 2)
 
     def test_add_catalog(self):
         cat = Catalog.create().save_as(os.path.join(self.path, 'catalog.json'), root=True)
-        col = Catalog.open(os.path.join(testpath, 'catalog/landsat-8-l1/catalog.json'))
+        col = Catalog.open(os.path.join(testpath, 'catalog/eo/landsat-8-l1/catalog.json'))
         cat.add_catalog(col)
         assert(cat.children()[0].id == col.id)
 
@@ -80,21 +90,21 @@ class Test(unittest.TestCase):
 
     def test_add_item(self):
         cat = Catalog.create().save_as(os.path.join(self.path, 'catalog.json'), root=True)
-        col = Catalog.open(os.path.join(testpath, 'catalog/landsat-8-l1/catalog.json'))
+        col = Catalog.open(os.path.join(testpath, 'catalog/eo/landsat-8-l1/catalog.json'))
         cat.add_catalog(col)
-        item = Item.open(os.path.join(testpath, 'catalog/landsat-8-l1/item.json'))
+        item = Item.open(os.path.join(testpath, 'catalog/eo/landsat-8-l1/item.json'))
         col.add_item(item)
         assert(item.parent().id == 'landsat-8-l1')
 
     def test_add_item_without_saving(self):
         cat = Catalog.create()
-        item = Item.open(os.path.join(testpath, 'catalog/landsat-8-l1/item.json'))
+        item = Item.open(os.path.join(testpath, 'catalog/eo/landsat-8-l1/item.json'))
         with self.assertRaises(STACError):
             cat.add_item(item)
 
     def test_add_item_with_subcatalogs(self):
         cat = Catalog.create().save_as(os.path.join(self.path, 'test_subcatalogs.json'), root=True)
-        item = Item.open(os.path.join(testpath, 'catalog/landsat-8-l1/item.json'))
+        item = Item.open(os.path.join(testpath, 'catalog/eo/landsat-8-l1/item.json'))
         item._path = '${landsat:path}/${landsat:row}/${date}'
         cat.add_item(item)
         assert(item.root().id == cat.id)

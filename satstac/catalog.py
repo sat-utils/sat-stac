@@ -9,7 +9,6 @@ class Catalog(Thing):
     def __init__(self, data, **kwargs):
         """ Initialize a catalog with a catalog file """
         super(Catalog, self).__init__(data, **kwargs)
-        self.collections = {}
 
     @property
     def stac_version(self):
@@ -36,9 +35,29 @@ class Catalog(Thing):
         """ Get child links """
         return [Catalog.open(l) for l in self.links('child')]
 
+    def catalogs(self):
+        """ Recursive get all catalogs within this Catalog """
+        for cat in self.children():
+            for subcat in cat.children():
+                yield subcat
+                yield from subcat.catalogs()
+            yield cat
+
+    def collections(self):
+        """ Recursively get all collections within this Catalog """
+        for cat in self.children():
+            if 'extent' in cat.data.keys():
+                yield Collection.open(cat.filename)
+                # TODO - keep going? if other Collections can appear below a Collection
+            else:
+                yield from cat.collections()
+
     def items(self):
-        """ Get Items in this catalog """
-        return [Item.open(l) for l in self.links('item')]
+        """ Recursively get all items within this Catalog """
+        for item in self.links('item'):
+            yield Item.open(item)
+        for child in self.children():
+            yield from child.items()
 
     def add_catalog(self, catalog):
         """ Add a catalog to this catalog """
@@ -100,3 +119,4 @@ class Catalog(Thing):
 # import and end of module prevents problems with circular dependencies.
 # Catalogs use Items and Items use Collections (which are Catalogs)
 from .item import Item
+from .collection import Collection

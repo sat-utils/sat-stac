@@ -166,6 +166,10 @@
             "href": "../../catalog.json"
         },
         {
+            "rel": "parent",
+            "href": "../catalog.json"
+        },
+        {
             "rel": "collection",
             "href": "catalog.json"
         }

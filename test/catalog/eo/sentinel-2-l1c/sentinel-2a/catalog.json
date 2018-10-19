@@ -18,7 +18,6 @@
         {
             "rel": "item",
             "href": "item.json"
-        },
-
+        }
     ]
 }
