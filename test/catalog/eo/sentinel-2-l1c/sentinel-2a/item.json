@@ -164,14 +164,18 @@
     "links": [
         {
             "rel": "self",
-            "href": "./item.json"
-        },
-        {
-            "rel": "collection",
-            "href": "./catalog.json"
+            "href": "item.json"
         },
         {
             "rel": "root",
+            "href": "../../../catalog.json"
+        },
+        {
+            "rel": "parent",
+            "href": "catalog.json"
+        },
+        {
+            "rel": "collection",
             "href": "../catalog.json"
         }
     ],

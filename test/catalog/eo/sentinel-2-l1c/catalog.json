@@ -225,23 +225,23 @@
     "links": [
         {
             "rel": "self",
-            "href": "./catalog.json"
+            "href": "catalog.json"
         },
         {
-            "rel": "license",
-            "href": "https://sentinel.esa.int/documents/247904/690755/Sentinel_Data_Legal_Notice"
+            "rel": "root",
+            "href": "../../catalog.json"
         },
         {
             "rel": "parent",
             "href": "../catalog.json"
         },
         {
-            "rel": "root",
-            "href": "../catalog.json"
+            "rel": "child",
+            "href": "sentinel-2a/catalog.json"
         },
         {
-            "rel": "item",
-            "href": "./item.json"
+            "rel": "license",
+            "href": "https://sentinel.esa.int/documents/247904/690755/Sentinel_Data_Legal_Notice"
         }
     ]
 }
