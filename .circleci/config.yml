@@ -72,9 +72,9 @@ jobs:
             pip install twine
             python setup.py sdist
             VERSION=`awk -F\' '{print $2,$4}' stac/version.py`
-            git tag $VERSION
-            git push origin $VERSION
-            twine upload --username "${PYPI_USER}" --password "${PYPI_PASS}" dist/*
+            $git tag $VERSION
+            $git push origin $VERSION
+            $twine upload --username "${PYPI_USER}" --password "${PYPI_PASS}" dist/*
 
 
 workflows:
