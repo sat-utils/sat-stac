@@ -22,11 +22,11 @@ references:
         - v1-repo-{{ .Branch }}
         - v1-repo
   
-    restore_dependencies: &restore_dependencies
-      - restore_cache:
-          keys: 
-            - v1-dependencies36-{{ checksum "requirements.txt"}}
-            - v1-dependencies36        
+  restore_dependencies: &restore_dependencies
+    restore_cache:
+      keys: 
+        - v1-dependencies36-{{ checksum "requirements.txt"}}
+        - v1-dependencies36        
 
 jobs:
 
