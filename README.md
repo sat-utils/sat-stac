@@ -1,61 +1,39 @@
 # STAC
 
-This is a Python library for the creation and manipulation of Spatio-Temporal Asset Catalogs (STAC).
+This is a Python library for working with [Spatio-Temporal Asset Catalogs (STAC)](https://github.com/radiantearth/stac-spec). It can be used to
 
-## Overview
-
-sat-stac is a library for the programmatic creation of STAC catalogs.
-
-- Open an existing catalog
-- Create a new empty catalog
+- Open and update existing catalogs
+- Traverse through catalogs
+- Create a new catalogs
 - Add or remove a STAC Collection from a catalog
-- Add or remove STAC Items from a Collection
-
-
-- Create static STAC files in hierarchy from unlinked STAC Items.
+- Add or remove STAC Items from a catalog
+- Create a hierarchical STAC catalog from STAC Items.
 
 ## Installation
 
-sat-stac is pip installable, and has minimal dependencies (the Python requests library only)
+sat-stac cam be installed from this repository, or from PyPi using pip. It has minimal dependencies (the Python requests library only)
 
+```bash
+$ git clone https://github.com/sat-utils/sat-stac.git
+$ cd sat-stac
+$ pip install .
 ```
+
+From pip
+```bash
 $ pip install satstac
 ```
 
+#### Versions
+sat-stac versions are synced with the STAC spec starting with 0.6.0, which was the initial release of sat-stac. To install other versions of sat-stac, install the matching version of sat-stac. 
 
-## Use
-
-The main STAC classes: Catalog, Collection, and Item, can be be opened directly from JSON files or they can created from JSON-serializable dictionaries. Opening from a file has the advantage of automatically being able to link to other STAC files, such as a collection or a parent catalog.
-
-Open a catalog and retrieve collections
-
-```
-import stac
-
-cat = stac.Catalog('catalog.json')
-
-print(cat.children)
+```bash
+pip install satstac==0.6.0
 ```
 
+## Tutorials
 
-### Creating a new STAC catalog from STAC Items
-
-
-
-
-
-### Python Classes
-
-The Python classes correspond to the different STAC constructs, with some additional classes due to implementation.
-
-- **Thing**: A Thing is not a STAC object, it is a low-level parent class that is used by Catalog, Collection, and Item and includes the attributes they all have in common (read and save JSON, get links).
-- **Catalog**: A catalog is the simplest STAC object, containing an id, a description, the STAC version, and a list of links.
-- **Collection**: A Collection is a STAC catalog with some additional fields that describe a group of data, such as the provider, license, along with temporal and spatial extent.
-- **Item**: The Item class implements the STAC Item, and has several convenience functions such as retrieving the collection, getting assets by common band name (if using the EO Extension)
-- **Items**: The Items class does not correspond to a STAC object. It is a FeatureCollection of `Item`s, possibly from multiple collections. It is used to save and load sets of `Item`s as a FeatureCollection file, along with convenicen functions for extracting info across the set.
-
-
-
+See the [Jupyter notebook tutorial](tutorial.ipynb) for detailed examples on how to use sat-stac to open and update existing catalogs, create new ones, and extract data from the catalogs.
 
 ## About
 [sat-stac](https://github.com/sat-utils/sat-stac) was created by [Development Seed](<http://developmentseed.org>) and is part of a collection of tools called [sat-utils](https://github.com/sat-utils).
