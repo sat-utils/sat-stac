@@ -43,7 +43,7 @@ class Collection(Catalog):
         """ Get dictionary of properties """
         return self.data.get('properties', {})
 
-    def add_item(self, item):
+    def add_item(self, item, path='', filename='{$id}'):
         """ Add an item to this catalog """
         if self.filename is None:
             raise STACError('Save catalog before adding items')

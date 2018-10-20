@@ -14,7 +14,7 @@ class Test(unittest.TestCase):
     path = os.path.join(testpath, 'test-collection')
 
     @classmethod
-    def _tearDownClass(cls):
+    def tearDownClass(cls):
         """ Remove test files """
         if os.path.exists(cls.path):
             shutil.rmtree(cls.path)

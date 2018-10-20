@@ -88,33 +88,29 @@ class Test(unittest.TestCase):
     def test_download_thumbnail(self):
         """ Get thumbnail for item """
         item = Item.open(self.filename)
-        item._path = os.path.join(self.path, item._path)
-        fname = item.download(key='thumbnail')
+        fname = item.download(key='thumbnail', path=self.path)
         assert(os.path.exists(fname))
 
     def test_download(self):
         """ Retrieve a data file """
         item = Item.open(self.filename)
-        item._path = os.path.join(self.path, item._path)
-        fname = item.download(key='MTL')
+        fname = item.download(key='MTL', path=self.path)
         assert(os.path.exists(fname))
-        fname = item.download(key='MTL')
+        fname = item.download(key='MTL', path=self.path)
         assert(os.path.exists(fname))
 
     @patch('requests.get')
     def test_download_bad_server(self, mock_get):
         """ Retrieve non existent file """
         item = Item.open(self.filename)
-        item._path = os.path.join(self.path, item._path)
         mock_get.return_value.status_code == 404
-        fname = item.download(key='thumbnail')
+        fname = item.download(key='thumbnail', path=self.path)
         assert(fname is None)
 
     def test_download_nonexist(self):
         """ Test downloading of non-existent file """
         item = Item.open(self.filename)
-        item._path = os.path.join(self.path, item._path)
-        fname = item.download(key='fake_asset')
+        fname = item.download(key='fake_asset', path=self.path)
         assert(fname is None)
 
     def _test_download_paths(self):

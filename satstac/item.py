@@ -22,12 +22,7 @@ class Item(Thing):
         self._assets_by_common_name = None
         # collection instance
         self._collection = None
-        # filename patterns
-        self._path = '${date}'
-        #self._path = '${landsat:path}/${landsat:row}/${date}'
-        self._filename = '${id}'
-        # local filenames
-        self.filenames = {}
+        # TODO = allow passing in of collection (needed for FC catalogs)
 
     def collection(self):
         """ Get Collection info for this item """
@@ -105,11 +100,11 @@ class Item(Thing):
         logging.warning('No such asset (%s)' % key)
         return None
 
-    def get_filename(self):
+    def get_filename(self, path='', filename='${id}'):
         """ Get complete path with filename to this item """
         return os.path.join(
-            self.substitute(self._path),
-            self.substitute(self._filename) + '.json'
+            self.substitute(path),
+            self.substitute(filename) + '.json'
         )
 
     def substitute(self, string):
@@ -125,28 +120,28 @@ class Item(Thing):
                 subs[key] = self[key.replace('_colon_', ':')]
         return Template(string).substitute(**subs)   
 
-    def download(self, key, overwrite=False):
+    def download(self, key, overwrite=False, path='', filename='${id}'):
         """ Download this key (e.g., a band, or metadata file) from the scene """
         asset = self.asset(key)
         if asset is None:
             return None
 
-        path = self.substitute(self._path)
-        utils.mkdirp(path)
-        filename = None
+        _path = self.substitute(path)
+        utils.mkdirp(_path)
+        _filename = None
         try:
-            fname = self.substitute(self._filename)
+            fname = self.substitute(filename)
             ext = os.path.splitext(asset['href'])[1]
-            fout = os.path.join(path, fname + '_' + key + ext)
+            fout = os.path.join(_path, fname + '_' + key + ext)
             if not os.path.exists(fout) or overwrite:
-                filename = self.download_file(asset['href'], fout=fout)
+                _filename = self.download_file(asset['href'], fout=fout)
             else:
-                filename = fout
+                _filename = fout
         except Exception as e:
-            filename = None
+            _filename = None
             logger.error('Unable to download %s: %s' % (asset['href'], str(e)))
             logger.debug(traceback.format_exc())
-        return filename
+        return _filename
 
     @staticmethod
     def download_file(url, fout=None):
