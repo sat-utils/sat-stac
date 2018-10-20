@@ -43,11 +43,11 @@ class Collection(Catalog):
         """ Get dictionary of properties """
         return self.data.get('properties', {})
 
-    def add_item(self, item, path='', filename='{$id}'):
+    def add_item(self, item, path='', filename='${id}'):
         """ Add an item to this catalog """
         if self.filename is None:
             raise STACError('Save catalog before adding items')
-        item_link = item.get_filename()
+        item_link = item.get_filename(path, filename)
         item_fname = os.path.join(self.path, item_link)
         item_path = os.path.dirname(item_fname)
 

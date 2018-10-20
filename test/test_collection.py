@@ -62,10 +62,9 @@ class Test(unittest.TestCase):
         col = Collection.open(os.path.join(testpath, 'catalog/eo/landsat-8-l1/catalog.json'))
         cat.add_catalog(col)
         item = Item.open(os.path.join(testpath, 'catalog/eo/landsat-8-l1/item.json'))
-        item._path = '${landsat:path}/${landsat:row}/${date}'
-        col.add_item(item)
+        col.add_item(item, path='${landsat:path}/${landsat:row}/${date}')
         assert(item.root().id == cat.id)
         assert(item.collection().id == col.id)
         # test code using existing catalogs
-        col.add_item(item)
+        col.add_item(item, '${landsat:path}/${landsat:row}/${date}')
         assert(item.root().id == cat.id)
