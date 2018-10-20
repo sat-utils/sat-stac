@@ -29,7 +29,6 @@ class Item(Thing):
         # local filenames
         self.filenames = {}
 
-    @property
     def collection(self):
         """ Get Collection info for this item """
         if self._collection is None:
@@ -46,8 +45,8 @@ class Item(Thing):
         """ Get eo:bands from Item or from Collection """
         if 'eo:bands' in self.properties:
             return self.properties['eo:bands']
-        elif self.collection is not None and 'eo:bands' in self.collection.properties:
-                return self.collection['eo:bands']
+        elif self.collection() is not None and 'eo:bands' in self.collection().properties:
+                return self.collection()['eo:bands']
         return []
 
     @property
@@ -59,7 +58,7 @@ class Item(Thing):
         """ Get key from properties """
         val = super(Item, self).__getitem__(key)
         if val is None:
-            if self.collection is not None:
+            if self.collection() is not None:
                 # load properties from Collection
                 val = self._collection[key]
         return val

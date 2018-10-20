@@ -29,10 +29,11 @@ class Catalog(Thing):
             'description': description,
             'links': []
         })
-        return Catalog(kwargs)
+        return cls(kwargs)
 
     def children(self):
         """ Get child links """
+        # TODO = should this be tested if Collection and return mix of Catalogs and Collections?
         return [Catalog.open(l) for l in self.links('child')]
 
     def catalogs(self):
@@ -75,44 +76,6 @@ class Catalog(Thing):
         catalog.add_link('parent', os.path.relpath(self.filename, child_path))
         # create catalog file
         catalog.save_as(child_fname)
-        return self
-
-    def add_item(self, item):
-        """ Add an item to this catalog """
-        if self.filename is None:
-            raise STACError('Save catalog before adding items')
-        item_link = item.get_filename()
-        item_fname = os.path.join(self.path, item_link)
-        item_path = os.path.dirname(item_fname)
-
-        cat = self
-        dirs = utils.splitall(item_link)
-        for d in dirs[:-2]:
-            fname = os.path.join(os.path.join(cat.path, d), 'catalog.json')
-            # open existing sub-catalog or create new one
-            if os.path.exists(fname):
-                subcat = Catalog.open(fname)
-            else:
-                # create a new sub-catalog
-                subcat = self.create(id=d).save_as(fname)
-                # add the sub-catalog to this catalog
-                cat.add_catalog(subcat)
-            cat = subcat
-            
-        # create link to item
-        cat.add_link('item', os.path.relpath(item_fname, cat.path))
-        cat.save()
-    
-        # TODO - check if item already exists?
-        # create links from item
-        item.clean_hierarchy()
-        item.add_link('root', os.path.relpath(self.links('root')[0], item_path))
-        item.add_link('parent', os.path.relpath(cat.filename, item_path))
-        # this assumes the item has been added to a Collection, not a Catalog
-        item.add_link('collection', os.path.relpath(self.filename, item_path))
-
-        # save item
-        item.save_as(item_fname)
         return self
 
 

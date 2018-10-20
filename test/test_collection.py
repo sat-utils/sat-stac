@@ -3,7 +3,7 @@ import os
 import unittest
 import shutil
 
-from satstac import __version__, Collection
+from satstac import __version__, STACError, Catalog, Collection, Item
 
 
 testpath = os.path.dirname(__file__)
@@ -42,3 +42,30 @@ class Test(unittest.TestCase):
         assert('spatial' in ext)
         assert('temporal' in ext)
         assert(len(cat.properties))
+
+    def test_add_item(self):
+        cat = Catalog.create().save_as(os.path.join(self.path, 'catalog.json'), root=True)
+        col = Collection.open(os.path.join(testpath, 'catalog/eo/landsat-8-l1/catalog.json'))
+        cat.add_catalog(col)
+        item = Item.open(os.path.join(testpath, 'catalog/eo/landsat-8-l1/item.json'))
+        col.add_item(item)
+        assert(item.parent().id == 'landsat-8-l1')
+
+    def test_add_item_without_saving(self):
+        col = Collection.create()
+        item = Item.open(os.path.join(testpath, 'catalog/eo/landsat-8-l1/item.json'))
+        with self.assertRaises(STACError):
+            col.add_item(item)
+
+    def test_add_item_with_subcatalogs(self):
+        cat = Catalog.create().save_as(os.path.join(self.path, 'test_subcatalogs.json'), root=True)
+        col = Collection.open(os.path.join(testpath, 'catalog/eo/landsat-8-l1/catalog.json'))
+        cat.add_catalog(col)
+        item = Item.open(os.path.join(testpath, 'catalog/eo/landsat-8-l1/item.json'))
+        item._path = '${landsat:path}/${landsat:row}/${date}'
+        col.add_item(item)
+        assert(item.root().id == cat.id)
+        assert(item.collection().id == col.id)
+        # test code using existing catalogs
+        col.add_item(item)
+        assert(item.root().id == cat.id)

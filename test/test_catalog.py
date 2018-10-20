@@ -87,27 +87,3 @@ class Test(unittest.TestCase):
         cat = Catalog.create()
         with self.assertRaises(STACError):
            cat.add_catalog({})
-
-    def test_add_item(self):
-        cat = Catalog.create().save_as(os.path.join(self.path, 'catalog.json'), root=True)
-        col = Catalog.open(os.path.join(testpath, 'catalog/eo/landsat-8-l1/catalog.json'))
-        cat.add_catalog(col)
-        item = Item.open(os.path.join(testpath, 'catalog/eo/landsat-8-l1/item.json'))
-        col.add_item(item)
-        assert(item.parent().id == 'landsat-8-l1')
-
-    def test_add_item_without_saving(self):
-        cat = Catalog.create()
-        item = Item.open(os.path.join(testpath, 'catalog/eo/landsat-8-l1/item.json'))
-        with self.assertRaises(STACError):
-            cat.add_item(item)
-
-    def test_add_item_with_subcatalogs(self):
-        cat = Catalog.create().save_as(os.path.join(self.path, 'test_subcatalogs.json'), root=True)
-        item = Item.open(os.path.join(testpath, 'catalog/eo/landsat-8-l1/item.json'))
-        item._path = '${landsat:path}/${landsat:row}/${date}'
-        cat.add_item(item)
-        assert(item.root().id == cat.id)
-        # test code using existing catalogs
-        cat.add_item(item)
-        assert(item.root().id == cat.id)

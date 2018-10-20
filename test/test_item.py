@@ -35,7 +35,7 @@ class Test(unittest.TestCase):
             coldata = json.loads(f.read())
         item = Item(data)
         assert(item.id == data['id'])
-        assert(item.collection is None)
+        assert(item.collection() is None)
         assert(item.eobands == [])
         # now put collection properties here
         data['properties'].update(coldata['properties'])
@@ -55,7 +55,7 @@ class Test(unittest.TestCase):
 
     def test_open_with_collection(self):
         item = Item.open(self.filename)
-        assert(item.collection.id == 'landsat-8-l1')
+        assert(item.collection().id == 'landsat-8-l1')
         assert(len(item['eo:bands']) == 11)
         assert(item['eo:off_nadir'] == 0)
 
