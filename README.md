@@ -33,7 +33,7 @@ pip install satstac==0.6.0
 
 ## Tutorials
 
-See the [Jupyter notebook tutorial](tutorial.ipynb) for detailed examples on how to use sat-stac to open and update existing catalogs, create new ones, and extract data from the catalogs.
+See the [Jupyter notebook tutorial](tutorial-1.ipynb) for detailed examples on how to use sat-stac to open and update existing catalogs, and create new ones.
 
 ## About
 [sat-stac](https://github.com/sat-utils/sat-stac) was created by [Development Seed](<http://developmentseed.org>) and is part of a collection of tools called [sat-utils](https://github.com/sat-utils).
