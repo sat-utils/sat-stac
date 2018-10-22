@@ -78,6 +78,21 @@ class Catalog(Thing):
         catalog.save_as(child_fname)
         return self
 
+    def publish(self, endpoint):
+        """ Update all self links throughout catalog to use new endpoint """
+        # we don't use the catalgos and items functions as we'd have to go 
+        # through the tree twice, once for catalogs and once for items
+        # update myself
+        super(Catalog, self).publish(endpoint)
+        # update direct items
+        for link in self.links('item'):
+            item = Item.open(link)
+            item.publish(endpoint)
+        # follow children
+        for cat in self.children():
+            cat.publish(endpoint)
+
+
 
 # import and end of module prevents problems with circular dependencies.
 # Catalogs use Items and Items use Collections (which are Catalogs)

@@ -52,9 +52,12 @@ class Thing(object):
         if self.filename is not None:
             _links = []
             for l in links:
-                if not os.path.isabs(l):
+                if not os.path.isabs(l) and l[0:5] != 'https':
+                    ## link is relative to the location of this Thing
                     fname = os.path.join(os.path.dirname(self.filename), l)
                     _links.append(os.path.abspath(fname))
+                else:
+                    _links.append(l)
             links = _links
         return links
 
@@ -107,3 +110,15 @@ class Thing(object):
             self.add_link('root', './%s' % os.path.basename(filename))
         self.save()
         return self
+
+    def publish(self, endpoint):
+        """ Update self link with endpoint """
+        if self.filename is None:
+            raise STACError('No filename, use save_as() before publishing')
+        links = [l for l in self.data['links'] if l['rel'] != 'self']
+        
+        relpath = os.path.relpath(self.filename, os.path.dirname(self.links('root')[0]))
+        slink = os.path.join(endpoint, relpath)
+        links.insert(0, {'rel': 'self', 'href': slink})
+        self.data['links'] = links
+        self.save()

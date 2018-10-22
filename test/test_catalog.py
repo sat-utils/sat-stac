@@ -87,3 +87,11 @@ class Test(unittest.TestCase):
         cat = Catalog.create()
         with self.assertRaises(STACError):
            cat.add_catalog({})
+
+    def test_publish(self):
+        path = os.path.join(self.path, 'test_publish')
+        shutil.copytree('catalog', path)
+        cat = Catalog.open(os.path.join(path, 'catalog.json'))
+        cat.publish('https://my.cat')
+        item = Item.open(os.path.join(path, 'eo/landsat-8-l1/item.json'))
+        assert(item.links('self')[0] == 'https://my.cat/eo/landsat-8-l1/item.json')
