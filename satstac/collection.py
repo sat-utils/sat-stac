@@ -80,3 +80,20 @@ class Collection(Catalog):
         # save item
         item.save_as(item_fname)
         return self
+
+    def add_items(records, transform, start_date=None, end_date=None):
+        """ Stream records to a collection with a transform function """
+        for i, record in enumerate(records):
+            dt = record['datetime'].date()
+            if (i % 10000) == 0:
+                print('%s records scanned' % i)
+            if start_date is not None and dt < start_date:
+                # skip to next if before start_date
+                continue
+            if end_date is not None and dt > end_date:
+                # stop if after end_date
+                continue
+            item = transform(record)
+            print(record['id'], dt, start_date, end_date)
+            #import pdb; pdb.set_trace()
+            #collection.add_item(item)
