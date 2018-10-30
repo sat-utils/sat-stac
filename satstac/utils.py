@@ -3,11 +3,30 @@ import calendar
 import collections
 import logging
 import os
+import requests
 import sys
 import time
 
 
 logger = logging.getLogger(__name__)
+
+
+def download_file(url, filename=None):
+    """ Download a file """
+    filename = os.path.basename(url) if filename is None else filename
+    logger.info('Downloading %s as %s' % (url, filename))
+    headers = {}
+    # check if on s3, if so try to sign it
+    if 's3.amazonaws.com' in url:
+        url, headers = get_s3_signed_url(url)
+    resp = requests.get(url, headers=headers, stream=True)
+    if resp.status_code != 200:
+        raise Exception("Unable to download file %s: %s" % (url, resp.text))
+    with open(filename, 'wb') as f:
+        for chunk in resp.iter_content(chunk_size=1024):
+            if chunk:  # filter out keep-alive new chunks
+                f.write(chunk)
+    return filename
 
 
 def mkdirp(path):

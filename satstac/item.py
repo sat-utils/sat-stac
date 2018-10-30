@@ -60,9 +60,12 @@ class Item(Thing):
 
     @property
     def date(self):
-        dt = self['datetime'].replace('/', '-')
-        pattern = "%Y-%m-%dT%H:%M:%S.%fZ"
-        return datetime.strptime(dt, pattern).date()
+        return self.datetime.date()
+
+    @property
+    def datetime(self):
+        pattern = "%Y-%m-%dT%H:%M:%S.%f"
+        return datetime.strptime(self['datetime'], pattern)
 
     @property
     def geometry(self):
@@ -134,7 +137,7 @@ class Item(Thing):
             ext = os.path.splitext(asset['href'])[1]
             fout = os.path.join(_path, fname + '_' + key + ext)
             if not os.path.exists(fout) or overwrite:
-                _filename = self.download_file(asset['href'], fout=fout)
+                _filename = utils.download_file(asset['href'], fout=fout)
             else:
                 _filename = fout
         except Exception as e:
@@ -142,23 +145,6 @@ class Item(Thing):
             logger.error('Unable to download %s: %s' % (asset['href'], str(e)))
             logger.debug(traceback.format_exc())
         return _filename
-
-    @staticmethod
-    def download_file(url, fout=None):
-        """ Download a file """
-        fout = os.path.basename(url) if fout is None else fout
-        logger.info('Downloading %s as %s' % (url, fout))
-        # check if on s3
-        if 's3.amazonaws.com' in url:
-            url, headers = utils.get_s3_signed_url(url)
-        resp = requests.get(url, headers=headers, stream=True)
-        if resp.status_code != 200:
-            raise Exception("Unable to download file %s: %s" % (url, resp.text))
-        with open(fout, 'wb') as f:
-            for chunk in resp.iter_content(chunk_size=1024):
-                if chunk:  # filter out keep-alive new chunks
-                    f.write(chunk)
-        return fout
 
     '''
     @classmethod
