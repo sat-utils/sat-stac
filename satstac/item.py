@@ -6,6 +6,7 @@ import traceback
 
 from string import Formatter, Template
 from datetime import datetime
+from dateutil.parser import parse as dateparse
 
 from satstac import __version__, STACError, Thing, utils
 
@@ -64,8 +65,7 @@ class Item(Thing):
 
     @property
     def datetime(self):
-        pattern = "%Y-%m-%dT%H:%M:%S.%f"
-        return datetime.strptime(self['datetime'], pattern)
+        return dateparse(self['datetime'])
 
     @property
     def geometry(self):
@@ -137,7 +137,7 @@ class Item(Thing):
             ext = os.path.splitext(asset['href'])[1]
             fout = os.path.join(_path, fname + '_' + key + ext)
             if not os.path.exists(fout) or overwrite:
-                _filename = utils.download_file(asset['href'], fout=fout)
+                _filename = utils.download_file(asset['href'], filename=fout)
             else:
                 _filename = fout
         except Exception as e:
