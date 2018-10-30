@@ -31,7 +31,7 @@ def download_file(url, filename=None):
 
 def mkdirp(path):
     """ Recursively make directory """
-    if not os.path.isdir(path):
+    if not os.path.isdir(path) and path != '':
         os.makedirs(path)
     return path
 

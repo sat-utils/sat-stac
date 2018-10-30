@@ -1,6 +1,8 @@
 import sys
 import argparse
 import logging
+
+from .catalog import Catalog
 from .version import __version__
 
 
@@ -21,11 +23,15 @@ def parse_args(args):
     subparsers = parser0.add_subparsers(dest='command')
 
     # command 1
-    parser = subparsers.add_parser('cmd1', parents=[pparser], help='Command 1', formatter_class=dhf)
+    parser = subparsers.add_parser('create', parents=[pparser], help='Create a root catalog', formatter_class=dhf)
+    parser.add_argument('--root', help='Filename to root catalog', default=None)
+    parser.add_argument('id', help='ID of the new catalog')
+    parser.add_argument('description', help='Description of new catalog')
+    parser.add_argument('--filename', help='Filename of catalog', default='catalog.json')
     # parser.add_argument()
 
     # command 2
-    parser = subparsers.add_parser('cmd2', parents=[pparser], help='Command 2', formatter_class=dhf)
+    #parser = subparsers.add_parser('add', parents=[pparser], help='Command 2', formatter_class=dhf)
     # parser.add_argument()
 
     # turn Namespace into dictinary
@@ -39,10 +45,17 @@ def cli():
     logger.setLevel(args.pop('log') * 10)
     cmd = args.pop('command')
 
-    if cmd == 'cmd1':
-        print(cmd)
-    elif cmd == 'cmd2':
-        print(cmd)
+    if cmd == 'create':
+        if args['root'] is not None:
+            root = Catalog.open(args['root'])
+            cat = Catalog.create(id=args['id'], description=args['description'])
+            root.add_catalog(cat)
+        else:
+            cat = Catalog.create(id=args['id'], description=args['description'])
+            cat.save_as(args['filename'], root=True)
+    #elif cmd == 'add':
+    #    cat = Catalog.open(args['catalog'])
+
 
 if __name__ == "__main__":
     cli()
