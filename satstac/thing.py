@@ -107,10 +107,12 @@ class Thing(object):
             f.write(json.dumps(self.data))
         return self
 
-    def save_as(self, filename, root=False):
+    def save_as(self, filename, root=None):
         """ Write a catalog file to a new file """
         self.filename = filename
-        if root:
+        # TODO - is this the best place for root?
+        if root is not None:
+            self.add_link('self', os.path.join(root, os.path.basename(filename)))
             self.add_link('root', './%s' % os.path.basename(filename))
         self.save()
         return self
