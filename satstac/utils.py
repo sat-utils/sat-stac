@@ -18,8 +18,12 @@ def download_file(url, filename=None):
     headers = {}
     # check if on s3, if so try to sign it
     if 's3.amazonaws.com' in url:
-        url, headers = get_s3_signed_url(url)
-    resp = requests.get(url, headers=headers, stream=True)
+        signed_url, signed_headers = get_s3_signed_url(url)
+        resp = requests.get(signed_url, headers=signed_headers, stream=True)
+        if resp.status_code != 200:
+            resp = requests.get(url, headers=headers, stream=True)
+    else:
+        resp = requests.get(url, headers=headers, stream=True)
     if resp.status_code != 200:
         raise Exception("Unable to download file %s: %s" % (url, resp.text))
     with open(filename, 'wb') as f:
