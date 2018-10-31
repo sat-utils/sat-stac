@@ -56,8 +56,8 @@ def cli():
             cat = Catalog.create(id=args['id'], description=args['description'])
             root.add_catalog(cat)
         else:
-            cat = Catalog.create(id=args['id'], description=args['description'])
-            cat.save_as(args['filename'], root=args['endpoint'])
+            cat = Catalog.create(id=args['id'], description=args['description'], root=args['endpoint'])
+            cat.save_as(args['filename'])
     elif cmd == 'publish':
         cat = Catalog.open(args['root'])
         cat.publish(args['endpoint'])
