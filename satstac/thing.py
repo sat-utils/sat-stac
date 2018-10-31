@@ -73,6 +73,10 @@ class Thing(object):
 
     def add_link(self, rel, link, type=None, title=None):
         """ Add a new link """
+        # if this link already exists do not add it
+        for l in self.data['links']:
+            if l['rel'] == rel and l['href'] == link:
+                return
         l = {'rel': rel, 'href': link}
         if type is not None:
             l['type'] = type
