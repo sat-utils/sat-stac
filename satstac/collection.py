@@ -44,12 +44,14 @@ class Collection(Catalog):
         return self.data.get('properties', {})
 
     def add_item(self, item, path='', filename='${id}'):
-        """ Add an item to this catalog """
+        """ Add an item to this collection """
         if self.filename is None:
             raise STACError('Save catalog before adding items')
         item_link = item.get_filename(path, filename)
         item_fname = os.path.join(self.path, item_link)
         item_path = os.path.dirname(item_fname)
+        root_link = self.links('root')[0]
+        root_path = os.path.dirname(root_link)
 
         cat = self
         dirs = utils.splitall(item_link)
@@ -68,11 +70,11 @@ class Collection(Catalog):
         # create link to item
         cat.add_link('item', os.path.relpath(item_fname, cat.path))
         cat.save()
-    
-        # TODO - check if item already exists?
+
         # create links from item
         item.clean_hierarchy()
-        item.add_link('root', os.path.relpath(self.links('root')[0], item_path))
+        item.add_link('self', os.path.join(self.endpoint(), os.path.relpath(item_fname, root_path)))
+        item.add_link('root', os.path.relpath(root_link, item_path))
         item.add_link('parent', os.path.relpath(cat.filename, item_path))
         # this assumes the item has been added to a Collection, not a Catalog
         item.add_link('collection', os.path.relpath(self.filename, item_path))

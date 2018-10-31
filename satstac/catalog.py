@@ -68,19 +68,26 @@ class Catalog(Thing):
         child_link = '%s/catalog.json' % catalog.id
         child_fname = os.path.join(self.path, child_link)
         child_path = os.path.dirname(child_fname)
+        root_link = self.links('root')[0]
+        root_path = os.path.dirname(root_link)
         self.add_link('child', child_link)
         self.save()
         # strip self, parent, child links from catalog and add new links
         catalog.clean_hierarchy()
-        catalog.add_link('root', os.path.relpath(self.links('root')[0], child_path))
+        catalog.add_link('self', os.path.join(self.endpoint(), os.path.relpath(child_fname, root_path)))
+        catalog.add_link('root', os.path.relpath(root_link, child_path))
         catalog.add_link('parent', os.path.relpath(self.filename, child_path))
         # create catalog file
         catalog.save_as(child_fname)
         return self
 
+    def endpoint(self):
+        """ Get endpoint URL to the root catalog """
+        return os.path.dirname(self.root().links('self')[0])
+
     def publish(self, endpoint):
         """ Update all self links throughout catalog to use new endpoint """
-        # we don't use the catalgos and items functions as we'd have to go 
+        # we don't use the catalogs and items functions as we'd have to go 
         # through the tree twice, once for catalogs and once for items
         # update myself
         super(Catalog, self).publish(endpoint)
