@@ -6,9 +6,10 @@ from satstac import __version__, utils, Thing, STACError
 
 class Catalog(Thing):
 
-    def __init__(self, data, **kwargs):
+    def __init__(self, data, root=None, **kwargs):
         """ Initialize a catalog with a catalog file """
         super(Catalog, self).__init__(data, **kwargs)
+        self._root = root
 
     @property
     def stac_version(self):
@@ -21,7 +22,7 @@ class Catalog(Thing):
         return self.data.get('description', '')
 
     @classmethod
-    def create(cls, id='stac-catalog', description='A STAC Catalog', **kwargs):
+    def create(cls, id='stac-catalog', description='A STAC Catalog', root=None, **kwargs):
         """ Create new catalog """
         kwargs.update({
             'id': id,
@@ -29,7 +30,7 @@ class Catalog(Thing):
             'description': description,
             'links': []
         })
-        return cls(kwargs)
+        return cls(kwargs, root=root)
 
     def children(self):
         """ Get child links """
