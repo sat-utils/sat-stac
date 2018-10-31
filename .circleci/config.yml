@@ -13,20 +13,19 @@ references:
   container_python36: &container_python36
     docker:
       - image: circleci/python:3.6.2
-    working_dir: ~/project
 
   restore_repo: &restore_repo
     restore_cache:
       keys:
-        - v1-repo-{{ .Branch }}-{{ .Revision }}
-        - v1-repo-{{ .Branch }}
-        - v1-repo
+        - v0-repo-{{ .Branch }}-{{ .Revision }}
+        - v0-repo-{{ .Branch }}
+        - v0-repo
   
   restore_dependencies: &restore_dependencies
     restore_cache:
       keys: 
-        - v1-dependencies36-{{ checksum "requirements.txt"}}
-        - v1-dependencies36        
+        - v0-dependencies36-{{ checksum "requirements.txt"}}
+        - v0-dependencies36        
 
 jobs:
 
@@ -36,7 +35,7 @@ jobs:
       - *restore_repo
       - checkout
       - save_cache:
-          key: v1-repo-{{ .Branch }}-{{ .Revision }}
+          key: v0-repo-{{ .Branch }}-{{ .Revision }}
           paths:
             - ~/project
 
@@ -48,14 +47,13 @@ jobs:
       - run: |
             python3 -m venv ~/venv
             . ~/venv/bin/activate
-            pwd
             pip install -r requirements.txt
             pip install -r requirements-dev.txt
             pip install .
             cd test
             pytest -v --cov satstac --cov-report term-missing
       - save_cache:
-          key: v1-dependencies36-{{ checksum "requirements.txt"}}
+          key: v0-dependencies36-{{ checksum "requirements.txt"}}
           paths:
             - ~/venv
 
