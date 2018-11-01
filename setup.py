@@ -21,7 +21,7 @@ setup(
     author_email='matt.a.hanson@gmail.com',
     version=__version__,
     description='A Python library for working with Spatio-Temporal Asset Catalogs (STAC)',
-    url='https://github.com/',
+    url='https://github.com/sat-utils/sat-stac.git',
     license='MIT',
     classifiers=[
         'Intended Audience :: Developers',
