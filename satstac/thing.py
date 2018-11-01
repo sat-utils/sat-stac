@@ -87,7 +87,7 @@ class Thing(object):
 
     def clean_hierarchy(self):
         """ Clean links of self, parent, and child links (for moving and publishing) """
-        rels = ['self', 'root', 'parent', 'child', 'collection']
+        rels = ['self', 'root', 'parent', 'child', 'collection', 'item']
         links = []
         for l in self.data['links']:
             if l['rel'] not in rels:
