@@ -25,11 +25,17 @@ $ pip install satstac
 ```
 
 #### Versions
-sat-stac versions are synced with the STAC spec starting with 0.6.0, which was the initial release of sat-stac. To install other versions of sat-stac, install the matching version of sat-stac. 
+The initial sat-stac version is 0.1.0, which uses the STAC spec v0.6.0. To install other versions of sat-stac, install the matching version of sat-stac. 
 
 ```bash
-pip install satstac==0.6.0
+pip install satstac==0.1.0
 ```
+
+The table below shows the corresponding versions between sat-stac and STAC:
+
+| sat-stac | STAC  |
+| -------- | ----  |
+| 0.1.0    | 0.6.0 |
 
 ## Tutorials
 
