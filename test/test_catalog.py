@@ -44,7 +44,7 @@ class Test(unittest.TestCase):
 
     def test_properties(self):
         cat = self.get_catalog()
-        assert(cat.stac_version == __version__)
+        assert(cat.stac_version == '0.6.0')
         assert(cat.description == 'A STAC of public datasets')
 
     def test_create(self):
