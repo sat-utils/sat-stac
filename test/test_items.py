@@ -1,72 +1,72 @@
+import os
 import unittest
+
+from satstac import Items, Item
+
+testpath = os.path.dirname(__file__)
 
 
 class _Test(unittest.TestCase):
 
-    @classmethod
-    def setUpClass(cls):
-        """ Configure testing class """
-        config.DATADIR = testpath
-'''
-    def load_scenes(self):
-        return Items.load(os.path.join(testpath, 'scenes.geojson'))
+    def load_items(self):
+        return Items.load(os.path.join(testpath, 'items.json'))
 
     def test_load(self):
         """ Initialize Scenes with list of Scene objects """
-        scenes = self.load_scenes()
-        self.assertEqual(len(scenes), 2)
-        self.assertTrue(isinstance(scenes.scenes[0], Item))
+        items = self.load_items()
+        assert(len(items.collections()) == 1)
+        assert(len(items) == 1)
+        assert(isinstance(items[0], Item))
 
     def test_save(self):
-        """ Save scenes list """
-        scenes = self.load_scenes()
+        """ Save items list """
+        items = self.load_items()
         fname = os.path.join(testpath, 'save-test.json')
-        scenes.save(fname)
-        self.assertTrue(os.path.exists(fname))
+        items.save(fname)
+        assert(os.path.exists(fname))
         os.remove(fname)
-        self.assertFalse(os.path.exists(fname))
+        assert(not os.path.exists(fname))
 
-    def test_print_scenes(self):
-        """ Print summary of scenes """
-        scenes = self.load_scenes()
-        scenes.print_scenes()
+    def test_print_items(self):
+        """ Print summary of items """
+        items = self.load_items()
+        items.print()
 
     def test_dates(self):
-        """ Get dates of all scenes """
-        scenes = self.load_scenes()
-        dates = scenes.dates()
-        self.assertEqual(len(dates), 1)
+        """ Get dates of all items """
+        items = self.load_items()
+        dates = items.dates()
+        assert(len(dates) == 1)
 
     def test_text_calendar(self):
         """ Get calendar """
-        scenes = self.load_scenes()
-        cal = scenes.text_calendar()
-        self.assertTrue(len(cal) > 250)
+        items = self.load_items()
+        cal = items.text_calendar()
+        assert(len(cal) > 250)
 
     def test_download_thumbnails(self):
         """ Download all thumbnails """
-        scenes = self.load_scenes()
-        fnames = scenes.download(key='thumbnail')
+        items = self.load_items()
+        fnames = items.download(key='thumbnail')
         for f in fnames:
-            self.assertTrue(os.path.exists(f))
+            assert(os.path.exists(f))
             os.remove(f)
-            self.assertFalse(os.path.exists(f))
+            assert(not os.path.exists(f))
         #shutil.rmtree(os.path.join(testpath, 'landsat-8-l1'))
 
     def test_filter(self):
-        scenes = self.load_scenes()
-        scenes.filter('eo:platform', ['landsat-8'])
-        assert(len(scenes) == 1)
+        items = self.load_items()
+        items.filter('collection', ['landsat-8-l1'])
+        assert(len(items) == 1)
 
     def test_download(self):
-        """ Download a data file from all scenes """
-        scenes = self.load_scenes()
+        """ Download a data file from all items """
+        items = self.load_items()
         
-        fnames = scenes.download(key='MTL')
+        fnames = items.download(key='MTL')
         assert(len(fnames) == 1)
         for f in fnames:
-            self.assertTrue(os.path.exists(f))
+            assert(os.path.exists(f))
             os.remove(f)
-            self.assertFalse(os.path.exists(f))
+            assert(not os.path.exists(f))
         #shutil.rmtree(os.path.join(testpath, 'landsat-8-l1'))
-'''
