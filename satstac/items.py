@@ -1,51 +1,57 @@
+import json
 
+from .collection import Collection
+from .item import Item
+from .utils import get_text_calendar
 
 
 class Items(object):
-    """ A collection of Scene objects """
+    """ A GeoJSON FeatureCollection of STAC Items with associated Collections """
 
-    def __init__(self, scenes, properties={}):
-        """ Initialize with a list of Scene objects """
-        self.scenes = sorted(scenes, key=lambda s: s.date)
-        self.properties = properties
-        for p in properties:
-            if isinstance(properties[p], str):
-                try:
-                    _p = json.loads(properties[p])
-                    self.properties[p] = _p
-                except:
-                    self.properties[p] = properties[p]
-            # check if FeatureCollection and get just first Feature
-            if p == 'intersects':
-                if self.properties[p]['type'] == 'FeatureCollection':
-                    self.properties[p] = self.properties[p]['features'][0]
-        self.collections
+    def __init__(self, items, collections=[], search=None):
+        """ Initialize with a list of Item objects """
+        self._collections = collections
+        self._items = items
+        self._search = search
+        # link Items to their Collections
+        cols = {c.id: c for c in self._collections}
+        for i in self._items:
+            i._collection = cols[i['collection']]
+
+    @classmethod
+    def load(cls, filename):
+        """ Load an Items class from a GeoJSON FeatureCollection """
+        with open(filename) as f:
+            geoj = json.loads(f.read())
+        collections = [Collection(col) for col in geoj['collections']]
+        items = [Item(feature) for feature in geoj['features']]
+        return cls(items, collections, search=geoj.get('search'))
 
     def __len__(self):
         """ Number of scenes """
-        return len(self.scenes)
+        return len(self._items)
 
     def __getitem__(self, index):
-        return self.scenes[index]
-
-    def __setitem__(self, index, value):
-        self.scenes[index] = value
-
-    def __delitem__(self, index):
-        self.scenes.delete(index)
+        return self._items[index]
 
     def dates(self):
         """ Get sorted list of dates for all scenes """
-        return sorted(list(set([s.date for s in self.scenes])))
+        return sorted(list(set([s.date for s in self._items])))
 
-    def collections(self):
+    def collection(self, id):
         """ Get collection records for this list of scenes """
-        return self.collections
+        cols = [c for c in self._collections if c.id == id]
+        if len(cols) == 1:
+            return cols[0]
+        else:
+            return None
 
     def bbox(self):
         """ Get bounding box of search """
-        if 'intersects' in self.properties:
-            coords = self.properties['intersects']['geometry']['coordinates']
+        if self._search is None:
+            return None
+        if 'intersects' in self._search:
+            coords = self._search['intersects']['geometry']['coordinates']
             lats = [c[1] for c in coords[0]]
             lons = [c[0] for c in coords[0]]
             return [min(lons), min(lats), max(lons), max(lats)]
@@ -53,8 +59,10 @@ class Items(object):
             return []
 
     def center(self):
-        if 'intersects' in self.properties:
-            coords = self.properties['intersects']['geometry']['coordinates']
+        if self._search is None:
+            return None
+        if 'intersects' in self._search:
+            coords = self._search['intersects']['geometry']['coordinates']
             lats = [c[1] for c in coords[0]]
             lons = [c[0] for c in coords[0]]
             return [(min(lats) + max(lats))/2.0, (min(lons) + max(lons))/2.0]
@@ -64,17 +72,17 @@ class Items(object):
     def platforms(self, date=None):
         """ List of all available sensors across scenes """
         if date is None:
-            return list(set([s['eo:platform'] for s in self.scenes]))
+            return list(set([i['eo:platform'] for i in self._items]))
         else:
-            return list(set([s['eo:platform'] for s in self.scenes if s.date == date]))
+            return list(set([i['eo:platform'] for i in self._items if i.date == date]))
 
-    def print_scenes(self, params=[]):
+    def print(self, params=[]):
         """ Print summary of all scenes """
         if len(params) == 0:
             params = ['date', 'id']
-        txt = 'Scenes (%s):\n' % len(self.scenes)
+        txt = 'Items (%s):\n' % len(self._items)
         txt += ''.join(['{:<20}'.format(p) for p in params]) + '\n'
-        for s in self.scenes:
+        for s in self._items:
             # NOTE - the string conversion is because .date returns a datetime obj
             txt += ''.join(['{:<20}'.format(str(s[p])) for p in params]) + '\n'
         print(txt)
@@ -91,7 +99,7 @@ class Items(object):
                 date_labels[d] = 'Multiple'
             else:
                 date_labels[d] = sensors[0]
-        return utils.get_text_calendar(date_labels)
+        return get_text_calendar(date_labels)
 
     def save(self, filename):
         """ Save scene metadata """
@@ -99,33 +107,28 @@ class Items(object):
             f.write(json.dumps(self.geojson()))
 
     def geojson(self):
-        """ Get all metadata as GeoJSON """
-        features = [s.feature for s in self.scenes]
-        return {
+        """ Get Items as GeoJSON FeatureCollection """
+        features = [s.data for s in self._items]
+        geoj = {
             'type': 'FeatureCollection',
             'features': features,
-            'properties': self.properties
+            'collections': [c.data for c in self._collections],
         }
-
-    @classmethod
-    def load(cls, filename):
-        """ Load a collections class from a GeoJSON file of metadata """
-        with open(filename) as f:
-            geoj = json.loads(f.read())
-        scenes = [Scene(feature) for feature in geoj['features']]
-        return Scenes(scenes, properties=geoj.get('properties', {}))
+        if self._search is not None:
+            geoj['search'] = self._search
+        return geoj
 
     def filter(self, key, values):
         """ Filter scenes on key matching value """
-        scenes = []
+        items = []
         for val in values:
-            scenes += list(filter(lambda x: x[key] == val, self.scenes))
-        self.scenes = scenes
+            items += list(filter(lambda x: x[key] == val, self._items))
+        self._items = items
 
     def download(self, **kwargs):
         dls = []
-        for s in self.scenes:
-            fname = s.download(**kwargs)
+        for i in self._items:
+            fname = i.download(**kwargs)
             if fname is not None:
                 dls.append(fname)
         return dls

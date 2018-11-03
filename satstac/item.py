@@ -16,13 +16,13 @@ logger = logging.getLogger(__name__)
 
 class Item(Thing):
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args, collection=None, **kwargs):
         """ Initialize a scene object """
         super(Item, self).__init__(*args, **kwargs)
         # dictionary of assets by eo:band common_name
         self._assets_by_common_name = None
         # collection instance
-        self._collection = None
+        self._collection = collection
         # TODO = allow passing in of collection (needed for FC catalogs)
 
     def collection(self):
