@@ -1,8 +1,11 @@
 import json
 import os
 
-from .version import __version__, __stac_version__
+from .version import __version__
 from .thing import Thing, STACError
+
+
+STAC_VERSION='0.6.0'
 
 
 class Catalog(Thing):
@@ -27,7 +30,7 @@ class Catalog(Thing):
         """ Create new catalog """
         kwargs.update({
             'id': id,
-            'stac_version': __stac_version__,
+            'stac_version': STAC_VERSION,
             'description': description,
             'links': []
         })
