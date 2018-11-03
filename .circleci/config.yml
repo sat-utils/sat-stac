@@ -52,6 +52,7 @@ jobs:
             pip install .
             cd test
             pytest -v --cov satstac --cov-report term-missing
+            codecov
       - save_cache:
           key: v0-dependencies36-{{ checksum "requirements.txt"}}
           paths:
