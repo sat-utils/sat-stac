@@ -1,5 +1,6 @@
 import json
 
+from .collection import Collection
 from .item import Item
 from .utils import get_text_calendar
 
@@ -7,19 +8,24 @@ from .utils import get_text_calendar
 class Items(object):
     """ A GeoJSON FeatureCollection of STAC Items with associated Collections """
 
-    def __init__(self, items, collections={}, search=None):
+    def __init__(self, items, collections=[], search=None):
         """ Initialize with a list of Item objects """
-        self._items = items
         self._collections = collections
+        self._items = items
         self._search = search
+        # link Items to their Collections
+        cols = {c.id: c for c in self._collections}
+        for i in self._items:
+            i._collection = cols[i['collection']]
 
     @classmethod
     def load(cls, filename):
         """ Load an Items class from a GeoJSON FeatureCollection """
         with open(filename) as f:
             geoj = json.loads(f.read())
+        collections = [Collection(col) for col in geoj['collections']]
         items = [Item(feature) for feature in geoj['features']]
-        return cls(items, collections=geoj['collections'], search=geoj.get('search'))
+        return cls(items, collections, search=geoj.get('search'))
 
     def __len__(self):
         """ Number of scenes """
@@ -32,9 +38,13 @@ class Items(object):
         """ Get sorted list of dates for all scenes """
         return sorted(list(set([s.date for s in self._items])))
 
-    def collections(self):
+    def collection(self, id):
         """ Get collection records for this list of scenes """
-        return self._collections
+        cols = [c for c in self._collections if c.id == id]
+        if len(cols) == 1:
+            return cols[0]
+        else:
+            return None
 
     def bbox(self):
         """ Get bounding box of search """
@@ -102,7 +112,7 @@ class Items(object):
         geoj = {
             'type': 'FeatureCollection',
             'features': features,
-            'collections': self._collections,
+            'collections': [c.data for c in self._collections],
         }
         if self._search is not None:
             geoj['search'] = self._search

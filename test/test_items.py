@@ -6,7 +6,7 @@ from satstac import Items, Item
 testpath = os.path.dirname(__file__)
 
 
-class _Test(unittest.TestCase):
+class Test(unittest.TestCase):
 
     def load_items(self):
         return Items.load(os.path.join(testpath, 'items.json'))
@@ -14,7 +14,7 @@ class _Test(unittest.TestCase):
     def test_load(self):
         """ Initialize Scenes with list of Scene objects """
         items = self.load_items()
-        assert(len(items.collections()) == 1)
+        assert(len(items._collections) == 1)
         assert(len(items) == 1)
         assert(isinstance(items[0], Item))
 
@@ -26,6 +26,25 @@ class _Test(unittest.TestCase):
         assert(os.path.exists(fname))
         os.remove(fname)
         assert(not os.path.exists(fname))
+
+    def test_collection(self):
+        """ Get a collection """
+        items = self.load_items()
+        col = items.collection('landsat-8-l1')
+        assert(col.id == 'landsat-8-l1')
+
+    def test_no_collection(self):
+        """ Attempt to get non-existent collection """
+        items = self.load_items()
+        col = items.collection('nosuchcollection')
+        assert(col is None)
+
+    def test_get_platforms(self):
+        """ Get set of platforms """
+        items = self.load_items()
+        p = items.platforms()
+        assert(len(p) == 1)
+        assert(p[0] == 'landsat-8')
 
     def test_print_items(self):
         """ Print summary of items """
