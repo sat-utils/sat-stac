@@ -90,7 +90,7 @@ class Test(unittest.TestCase):
 
     def test_publish(self):
         path = os.path.join(self.path, 'test_publish')
-        shutil.copytree('catalog', path)
+        shutil.copytree(os.path.join(testpath, 'catalog'), path)
         cat = Catalog.open(os.path.join(path, 'catalog.json'))
         cat.publish('https://my.cat')
         item = Item.open(os.path.join(path, 'eo/landsat-8-l1/item.json'))
