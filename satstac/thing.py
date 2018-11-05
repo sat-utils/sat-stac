@@ -1,8 +1,9 @@
 import json
 import os
+import requests
 
 from .version import __version__
-from .utils import mkdirp
+from .utils import mkdirp, get_s3_signed_url
 
 
 class STACError(Exception):
@@ -26,8 +27,15 @@ class Thing(object):
     def open(cls, filename):
         """ Open an existing JSON data file """
         # TODO - open remote URLs
-        with open(filename) as f:
-            dat = json.loads(f.read())
+        if filename[0:5] == 'https':
+            resp = requests.get(filename)
+            if resp.status_code == 200:
+                dat = resp.text
+            else:
+                raise STACError('Unable to open file %s' % filename)
+        else:
+            dat = open(filename).read()
+        dat = json.loads(dat)
         return cls(dat, filename=filename)
 
     @property
@@ -103,9 +111,18 @@ class Thing(object):
         """ Write a catalog file """
         if self.filename is None:
             raise STACError('No filename, use save_as()')
-        mkdirp(os.path.dirname(self.filename))
-        with open(self.filename, 'w') as f:
-            f.write(json.dumps(self.data))
+        fname = self.filename
+        if self.filename[0:5] == 'https':
+            # use signed URL
+            signed_url, signed_headers = get_s3_signed_url(self.filename, rtype='PUT')
+            resp = requests.put(signed_url, data=json.dumps(self.data), headers=signed_headers)
+            if resp.status_code != 200:
+                raise STACError('Unable to save file to %s' % self.filename)
+        else:
+            # local file save
+            mkdirp(os.path.dirname(fname))
+            with open(fname, 'w') as f:
+                f.write(json.dumps(self.data))
         return self
 
     def save_as(self, filename):

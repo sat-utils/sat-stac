@@ -1,7 +1,6 @@
 import json
 import logging
 import os
-import requests
 import traceback
 
 from string import Formatter, Template
