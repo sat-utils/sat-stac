@@ -1,12 +1,14 @@
 import base64
 import calendar
 import collections
+import datetime
+import hashlib
+import hmac
 import logging
 import os
 import requests
 import sys
 import time
-
 
 logger = logging.getLogger(__name__)
 
@@ -96,11 +98,10 @@ def splitall(path):
     return allparts
 
 
-def get_s3_signed_url(url, region='eu-central-1'):
-    import sys, os, base64, datetime, hashlib, hmac
-
+def get_s3_signed_url(url, rtype='GET', requestor_pays=False):
     access_key = os.environ.get('AWS_ACCESS_KEY_ID')
     secret_key = os.environ.get('AWS_SECRET_ACCESS_KEY')
+    region = os.environ.get('AWS_REGION', 'eu-central-1')
     if access_key is None or secret_key is None:
         # if credentials not provided, just try to download without signed URL
         return url, None
@@ -110,7 +111,7 @@ def get_s3_signed_url(url, region='eu-central-1'):
     key = '/'.join(parts[1:])
 
     service = 's3'
-    host = '%s.s3-%s.amazonaws.com' % (bucket, region) #parts[0] #'s3-%s.amazonaws.com' % region
+    #host = '%s.s3-%s.amazonaws.com' % (bucket, region) #parts[0] #'s3-%s.amazonaws.com' % region
     host = '%s.s3.amazonaws.com' % (bucket)
     request_parameters = ''
 
@@ -134,20 +135,29 @@ def get_s3_signed_url(url, region='eu-central-1'):
     # create signed request and headers
     canonical_uri = '/' + key
     canonical_querystring = request_parameters
+
     payload_hash = 'UNSIGNED-PAYLOAD'
-    canonical_headers = 'host:%s\nx-amz-content-sha256:%s\nx-amz-date:%s\nx-amz-request-payer:requester\n' % (host, payload_hash, amzdate)
-    signed_headers = 'host;x-amz-content-sha256;x-amz-date;x-amz-request-payer'
-    canonical_request = 'GET\n' + canonical_uri + '\n' + canonical_querystring + '\n' + canonical_headers + '\n' + signed_headers + '\n' + payload_hash
+    canonical_headers = 'host:%s\nx-amz-content-sha256:%s\nx-amz-date:%s\n' % (host, payload_hash, amzdate)
+    signed_headers = 'host;x-amz-content-sha256;x-amz-date'
+    if requestor_pays:
+        canonical_headers += 'x-amz-request-payer:requester\n'
+        signed_headers += ';x-amz-request-payer'
+    canonical_request = '%s\n%s\n%s\n%s\n%s\n%s' % (
+        rtype, canonical_uri, canonical_querystring, canonical_headers, signed_headers, payload_hash
+    )
     algorithm = 'AWS4-HMAC-SHA256'
     credential_scope = datestamp + '/' + region + '/' + service + '/' + 'aws4_request'
     string_to_sign = algorithm + '\n' +  amzdate + '\n' +  credential_scope + '\n' +  hashlib.sha256(canonical_request.encode('utf-8')).hexdigest()
     signing_key = getSignatureKey(secret_key, datestamp, region, service)
     signature = hmac.new(signing_key, string_to_sign.encode('utf-8'), hashlib.sha256).hexdigest()
-    authorization_header = algorithm + ' ' + 'Credential=' + access_key + '/' + credential_scope + ', ' +  'SignedHeaders=' + signed_headers + ', ' + 'Signature=' + signature
-    headers = {'x-amz-date':amzdate, 'x-amz-content-sha256': payload_hash, 'Authorization':authorization_header, 'x-amz-request-payer': 'requester'}
+    authorization_header = algorithm + ' ' + 'Credential=' + access_key + '/' + credential_scope + ', ' \
+        + 'SignedHeaders=' + signed_headers + ', ' + 'Signature=' + signature
+    
     request_url = 'https://%s%s' % (host, canonical_uri)
-
     logger.debug('Request URL = ' + request_url)
+    headers = {'x-amz-date':amzdate, 'x-amz-content-sha256': payload_hash, 'Authorization':authorization_header}
+    if requestor_pays:
+        headers['x-amz-request-payer'] = 'requestor'
     #r = requests.get(request_url, headers=headers)
     #print('Response code: %d\n' % r.status_code)
     #print(r.text)
