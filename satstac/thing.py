@@ -139,11 +139,12 @@ class Thing(object):
         """ Update self link with endpoint """
         if self.filename is None:
             raise STACError('No filename, use save_as() before publishing')
+        print(root, endpoint)
         # keep everything except self and root
         links = [l for l in self.data['links'] if l['rel'] not in ['self', 'root']]
-        self_link = os.path.abspath(os.path.join(os.path.dirname(root), self.filename))
-        root_link = os.path.relpath(root, os.path.dirname(self.filename))
-        links.insert(0, {'rel': 'root', 'href': root_link})
-        links.insert(0, {'rel': 'self', 'href': self_link})
+        to_item = os.path.join(os.path.dirname(root), self.filename)
+        to_root = os.path.relpath(root, os.path.dirname(self.filename))
+        links.insert(0, {'rel': 'root', 'href': to_root})
+        links.insert(0, {'rel': 'self', 'href': os.path.join(endpoint, to_item)})
         self.data['links'] = links
         self.save()
