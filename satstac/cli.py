@@ -1,3 +1,4 @@
+import os
 import sys
 import argparse
 import logging
@@ -60,7 +61,7 @@ def cli():
             cat.save_as(args['filename'])
     elif cmd == 'publish':
         cat = Catalog.open(args['root'])
-        cat.publish(args['endpoint'])
+        cat.publish(os.path.abspath(args['root']), args['endpoint'])
 
 
 if __name__ == "__main__":
