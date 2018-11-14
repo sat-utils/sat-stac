@@ -98,7 +98,7 @@ def splitall(path):
     return allparts
 
 
-def get_s3_signed_url(url, rtype='GET', requestor_pays=False):
+def get_s3_signed_url(url, rtype='GET', public=False, requestor_pays=False, content_type=None):
     access_key = os.environ.get('AWS_ACCESS_KEY_ID')
     secret_key = os.environ.get('AWS_SECRET_ACCESS_KEY')
     region = os.environ.get('AWS_REGION', 'eu-central-1')
@@ -111,7 +111,6 @@ def get_s3_signed_url(url, rtype='GET', requestor_pays=False):
     key = '/'.join(parts[1:])
 
     service = 's3'
-    #host = '%s.s3-%s.amazonaws.com' % (bucket, region) #parts[0] #'s3-%s.amazonaws.com' % region
     host = '%s.s3.amazonaws.com' % (bucket)
     request_parameters = ''
 
@@ -137,11 +136,18 @@ def get_s3_signed_url(url, rtype='GET', requestor_pays=False):
     canonical_querystring = request_parameters
 
     payload_hash = 'UNSIGNED-PAYLOAD'
-    canonical_headers = 'host:%s\nx-amz-content-sha256:%s\nx-amz-date:%s\n' % (host, payload_hash, amzdate)
-    signed_headers = 'host;x-amz-content-sha256;x-amz-date'
+    headers = {
+        'host': host,
+        'x-amz-content-sha256': payload_hash,
+        'x-amz-date': amzdate
+    }
     if requestor_pays:
-        canonical_headers += 'x-amz-request-payer:requester\n'
-        signed_headers += ';x-amz-request-payer'
+        headers['x-amz-request-payer'] = 'requestor'
+    if public:
+        headers['x-amz-acl'] = 'public-read'
+    canonical_headers = '\n'.join('%s:%s' % (key, headers[key]) for key in sorted(headers)) + '\n'
+    signed_headers = ';'.join(sorted(headers.keys()))
+
     canonical_request = '%s\n%s\n%s\n%s\n%s\n%s' % (
         rtype, canonical_uri, canonical_querystring, canonical_headers, signed_headers, payload_hash
     )
@@ -154,13 +160,9 @@ def get_s3_signed_url(url, rtype='GET', requestor_pays=False):
         + 'SignedHeaders=' + signed_headers + ', ' + 'Signature=' + signature
     
     request_url = 'https://%s%s' % (host, canonical_uri)
-    logger.debug('Request URL = ' + request_url)
-    headers = {'x-amz-date':amzdate, 'x-amz-content-sha256': payload_hash, 'Authorization':authorization_header}
-    if requestor_pays:
-        headers['x-amz-request-payer'] = 'requestor'
-    #r = requests.get(request_url, headers=headers)
-    #print('Response code: %d\n' % r.status_code)
-    #print(r.text)
+    headers['Authorization'] = authorization_header
+    if content_type is not None:
+        headers['content-type'] = content_type
     return request_url, headers
 
 

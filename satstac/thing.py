@@ -114,10 +114,11 @@ class Thing(object):
         fname = self.filename
         if self.filename[0:5] == 'https':
             # use signed URL
-            signed_url, signed_headers = get_s3_signed_url(self.filename, rtype='PUT')
+            signed_url, signed_headers = get_s3_signed_url(self.filename, rtype='PUT',
+                                                           public=True, content_type='application/json')
             resp = requests.put(signed_url, data=json.dumps(self.data), headers=signed_headers)
             if resp.status_code != 200:
-                raise STACError('Unable to save file to %s' % self.filename)
+                raise STACError('Unable to save file to %s: %s' % (self.filename, resp.text))
         else:
             # local file save
             mkdirp(os.path.dirname(fname))
