@@ -32,7 +32,13 @@ class Thing(object):
             if resp.status_code == 200:
                 dat = resp.text
             else:
-                raise STACError('Unable to open file %s' % filename)
+                # try signed URL
+                url, headers = get_s3_signed_url(filename)
+                resp = requests.get(url, headers=headers)
+                if resp.status_code == 200:
+                    dat = resp.text
+                else:
+                    raise STACError('Unable to open file %s' % filename)
         else:
             dat = open(filename).read()
         dat = json.loads(dat)
