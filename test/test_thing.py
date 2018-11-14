@@ -87,10 +87,10 @@ class Test(unittest.TestCase):
         thing = self.get_thing()
         fout = os.path.join(self.path, 'test-save.json')
         thing.save_as(fout)
-        thing.publish('https://my.cat')
+        thing.publish('https://my.cat', root=fout)
         assert(thing.links('self')[0] == 'https://my.cat/test-save.json')
 
     def test_publish_without_saving(self):
         thing = self.get_thing()
         with self.assertRaises(STACError):
-            thing.publish('https://my.cat')
+            thing.publish('https://my.cat', root=None)

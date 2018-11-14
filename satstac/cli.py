@@ -61,7 +61,7 @@ def cli():
             cat.save_as(args['filename'])
     elif cmd == 'publish':
         cat = Catalog.open(args['root'])
-        cat.publish(os.path.abspath(args['root']), args['endpoint'])
+        cat.publish(args['endpoint'])
 
 
 if __name__ == "__main__":

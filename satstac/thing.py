@@ -135,7 +135,7 @@ class Thing(object):
         self.save()
         return self
 
-    def publish(self, root, endpoint):
+    def publish(self, endpoint, root):
         """ Update self link with endpoint """
         if self.filename is None:
             raise STACError('No filename, use save_as() before publishing')
