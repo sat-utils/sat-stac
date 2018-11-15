@@ -1,7 +1,10 @@
+import logging
 import os
 
 from .catalog import Catalog
 from satstac import STACError, utils
+
+logger = logging.getLogger(__name__)
 
 
 class Collection(Catalog):
@@ -83,4 +86,5 @@ class Collection(Catalog):
 
         # save item
         item.save_as(item_fname)
+        logger.info('Added %s as %s' % (item.id, item.filename))
         return self
