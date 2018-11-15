@@ -74,8 +74,7 @@ class Thing(object):
             for l in links:
                 if not os.path.isabs(l) and l[0:5] != 'https':
                     ## link is relative to the location of this Thing
-                    fname = os.path.join(os.path.dirname(self.filename), l)
-                    _links.append(os.path.abspath(fname))
+                    _links.append(os.path.join(os.path.dirname(self.filename), l))
                 else:
                     _links.append(l)
             links = _links
