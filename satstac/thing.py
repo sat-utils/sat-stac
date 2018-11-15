@@ -2,6 +2,7 @@ import json
 import os
 import requests
 
+from urllib.parse import urljoin
 from .version import __version__
 from .utils import mkdirp, get_s3_signed_url
 
@@ -72,11 +73,16 @@ class Thing(object):
         if self.filename is not None:
             _links = []
             for l in links:
-                if not os.path.isabs(l) and l[0:5] != 'https':
-                    ## link is relative to the location of this Thing
-                    _links.append(os.path.join(os.path.dirname(self.filename), l))
+                if os.path.isabs(l) or l[0:4] == 'http':
+                    # if absolute or https 
+                    link = l 
                 else:
-                    _links.append(l)
+                    # relative path
+                    if self.filename[0:4] == 'http':
+                        link = urljoin(os.path.dirname(self.filename), l)
+                    else: 
+                        link = os.path.abspath(os.path.join(os.path.dirname(self.filename), l))
+                _links.append(link)
             links = _links
         return links
 
