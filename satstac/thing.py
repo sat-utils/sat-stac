@@ -24,24 +24,29 @@ class Thing(object):
         return self.id
 
     @classmethod
+    def open_remote(self, url, headers={}):
+        """ Open remote file """
+        resp = requests.get(url)
+        if resp.status_code == 200:
+            dat = resp.text
+        else:
+            raise STACError('Unable to open %s' % url)
+        return json.loads(dat)
+
+    @classmethod
     def open(cls, filename):
         """ Open an existing JSON data file """
         # TODO - open remote URLs
         if filename[0:5] == 'https':
-            resp = requests.get(filename)
-            if resp.status_code == 200:
-                dat = resp.text
-            else:
+            try:
+                dat = cls.open_remote(filename)
+            except STACError as err:
                 # try signed URL
                 url, headers = get_s3_signed_url(filename)
-                resp = requests.get(url, headers=headers)
-                if resp.status_code == 200:
-                    dat = resp.text
-                else:
-                    raise STACError('Unable to open file %s' % filename)
+                dat = cls.open_remote(url, headers)
         else:
             dat = open(filename).read()
-        dat = json.loads(dat)
+            dat = json.loads(dat)
         return cls(dat, filename=filename)
 
     @property

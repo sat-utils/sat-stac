@@ -47,6 +47,15 @@ class Test(unittest.TestCase):
             == os.path.basename(thing2.links()[0])
         )
 
+    def test_open_remote(self):
+        thing = Thing.open('https://landsat-stac.s3.amazonaws.com/catalog.json')
+        assert(thing.id == 'landsat')
+        assert(len(thing.data['links']) == 3)
+
+    def test_open_missing_remote(self):
+        with self.assertRaises(STACError):
+            thing = Thing.open('https://landsat-stac.s3.amazonaws.com/nosuchcatalog.json')
+
     def test_keys(self):
         thing = self.get_thing()
         assert('id' in thing.keys())
