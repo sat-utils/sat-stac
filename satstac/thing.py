@@ -2,6 +2,7 @@ import json
 import os
 import requests
 
+from urllib.parse import urljoin
 from .version import __version__
 from .utils import mkdirp, get_s3_signed_url
 
@@ -24,18 +25,29 @@ class Thing(object):
         return self.id
 
     @classmethod
+    def open_remote(self, url, headers={}):
+        """ Open remote file """
+        resp = requests.get(url)
+        if resp.status_code == 200:
+            dat = resp.text
+        else:
+            raise STACError('Unable to open %s' % url)
+        return json.loads(dat)
+
+    @classmethod
     def open(cls, filename):
         """ Open an existing JSON data file """
         # TODO - open remote URLs
         if filename[0:5] == 'https':
-            resp = requests.get(filename)
-            if resp.status_code == 200:
-                dat = resp.text
-            else:
-                raise STACError('Unable to open file %s' % filename)
+            try:
+                dat = cls.open_remote(filename)
+            except STACError as err:
+                # try signed URL
+                url, headers = get_s3_signed_url(filename)
+                dat = cls.open_remote(url, headers)
         else:
             dat = open(filename).read()
-        dat = json.loads(dat)
+            dat = json.loads(dat)
         return cls(dat, filename=filename)
 
     @property
@@ -61,12 +73,16 @@ class Thing(object):
         if self.filename is not None:
             _links = []
             for l in links:
-                if not os.path.isabs(l) and l[0:5] != 'https':
-                    ## link is relative to the location of this Thing
-                    fname = os.path.join(os.path.dirname(self.filename), l)
-                    _links.append(os.path.abspath(fname))
+                if os.path.isabs(l) or l[0:4] == 'http':
+                    # if absolute or https 
+                    link = l 
                 else:
-                    _links.append(l)
+                    # relative path
+                    if self.filename[0:4] == 'http':
+                        link = urljoin(os.path.dirname(self.filename), l)
+                    else: 
+                        link = os.path.abspath(os.path.join(os.path.dirname(self.filename), l))
+                _links.append(link)
             links = _links
         return links
 
@@ -114,10 +130,11 @@ class Thing(object):
         fname = self.filename
         if self.filename[0:5] == 'https':
             # use signed URL
-            signed_url, signed_headers = get_s3_signed_url(self.filename, rtype='PUT')
+            signed_url, signed_headers = get_s3_signed_url(self.filename, rtype='PUT',
+                                                           public=True, content_type='application/json')
             resp = requests.put(signed_url, data=json.dumps(self.data), headers=signed_headers)
             if resp.status_code != 200:
-                raise STACError('Unable to save file to %s' % self.filename)
+                raise STACError('Unable to save file to %s: %s' % (self.filename, resp.text))
         else:
             # local file save
             mkdirp(os.path.dirname(fname))
@@ -135,14 +152,15 @@ class Thing(object):
         self.save()
         return self
 
-    def publish(self, endpoint):
+    def publish(self, endpoint, root):
         """ Update self link with endpoint """
         if self.filename is None:
             raise STACError('No filename, use save_as() before publishing')
-        links = [l for l in self.data['links'] if l['rel'] != 'self']
-        
-        relpath = os.path.relpath(self.filename, os.path.dirname(self.links('root')[0]))
-        slink = os.path.join(endpoint, relpath)
-        links.insert(0, {'rel': 'self', 'href': slink})
+        # keep everything except self and root
+        links = [l for l in self.data['links'] if l['rel'] not in ['self', 'root']]
+        to_item = os.path.relpath(self.filename, os.path.dirname(root))
+        to_root = os.path.relpath(root, os.path.dirname(self.filename))
+        links.insert(0, {'rel': 'root', 'href': to_root})
+        links.insert(0, {'rel': 'self', 'href': os.path.join(endpoint, to_item)})
         self.data['links'] = links
         self.save()

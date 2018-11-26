@@ -90,19 +90,21 @@ class Catalog(Thing):
         """ Get endpoint URL to the root catalog """
         return os.path.dirname(self.root().links('self')[0])
 
-    def publish(self, endpoint):
+    def publish(self, endpoint, root=None):
         """ Update all self links throughout catalog to use new endpoint """
         # we don't use the catalogs and items functions as we'd have to go 
         # through the tree twice, once for catalogs and once for items
         # update myself
-        super(Catalog, self).publish(endpoint)
+        if root is None:
+            root = self.filename
+        super(Catalog, self).publish(endpoint, root=root)
         # update direct items
         for link in self.links('item'):
             item = Item.open(link)
-            item.publish(endpoint)
+            item.publish(endpoint, root=root)
         # follow children
         for cat in self.children():
-            cat.publish(endpoint)
+            cat.publish(endpoint, root=root)
 
 
 

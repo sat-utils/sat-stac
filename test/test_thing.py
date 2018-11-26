@@ -47,6 +47,15 @@ class Test(unittest.TestCase):
             == os.path.basename(thing2.links()[0])
         )
 
+    def test_open_remote(self):
+        thing = Thing.open('https://landsat-stac.s3.amazonaws.com/catalog.json')
+        assert(thing.id == 'landsat')
+        assert(len(thing.data['links']) == 3)
+
+    def test_open_missing_remote(self):
+        with self.assertRaises(STACError):
+            thing = Thing.open('https://landsat-stac.s3.amazonaws.com/nosuchcatalog.json')
+
     def test_keys(self):
         thing = self.get_thing()
         assert('id' in thing.keys())
@@ -87,10 +96,10 @@ class Test(unittest.TestCase):
         thing = self.get_thing()
         fout = os.path.join(self.path, 'test-save.json')
         thing.save_as(fout)
-        thing.publish('https://my.cat')
+        thing.publish('https://my.cat', root=fout)
         assert(thing.links('self')[0] == 'https://my.cat/test-save.json')
 
     def test_publish_without_saving(self):
         thing = self.get_thing()
         with self.assertRaises(STACError):
-            thing.publish('https://my.cat')
+            thing.publish('https://my.cat', root=None)

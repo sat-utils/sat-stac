@@ -1,7 +1,10 @@
+import logging
 import os
 
 from .catalog import Catalog
 from satstac import STACError, utils
+
+logger = logging.getLogger(__name__)
 
 
 class Collection(Catalog):
@@ -65,8 +68,8 @@ class Collection(Catalog):
                 # create a new sub-catalog
                 subcat = self.create(id=d, description='%s catalog' % var_names[i])
                 subcat.save_as(fname)
-                # add the sub-catalog to this catalog
-                cat.add_catalog(subcat)
+            # add the sub-catalog to this catalog
+            cat.add_catalog(subcat)
             cat = subcat
             
         # create link to item
@@ -83,4 +86,5 @@ class Collection(Catalog):
 
         # save item
         item.save_as(item_fname)
+        logger.info('Added %s as %s' % (item.id, item.filename))
         return self

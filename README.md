@@ -23,7 +23,7 @@ $ pip install .
 
 From pip
 ```bash
-$ pip install satstac
+$ pip install sat-stac
 ```
 
 #### Versions
