@@ -46,8 +46,11 @@ class Thing(object):
                 url, headers = get_s3_signed_url(filename)
                 dat = cls.open_remote(url, headers)
         else:
-            dat = open(filename).read()
-            dat = json.loads(dat)
+            if os.path.exists(filename):
+                dat = open(filename).read()
+                dat = json.loads(dat)
+            else:
+                raise STACError('%s does not exist locally' % filename)
         return cls(dat, filename=filename)
 
     @property
