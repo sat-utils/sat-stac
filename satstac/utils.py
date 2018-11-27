@@ -101,7 +101,7 @@ def splitall(path):
 def get_s3_signed_url(url, rtype='GET', public=False, requestor_pays=False, content_type=None):
     access_key = os.environ.get('AWS_ACCESS_KEY_ID')
     secret_key = os.environ.get('AWS_SECRET_ACCESS_KEY')
-    region = os.environ.get('AWS_REGION', 'eu-central-1')
+    region = os.environ.get('AWS_BUCKET_REGION', os.environ.get('AWS_REGION', 'eu-central-1'))
     if access_key is None or secret_key is None:
         # if credentials not provided, just try to download without signed URL
         return url, None
