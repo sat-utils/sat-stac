@@ -62,16 +62,16 @@ class Collection(Catalog):
         for i, d in enumerate(dirs[:-2]):
             fname = os.path.join(os.path.join(cat.path, d), 'catalog.json')
             # open existing sub-catalog or create new one
-            if os.path.exists(fname):
+            try:
                 subcat = Catalog.open(fname)
-            else:
+            except STACError as err:
                 # create a new sub-catalog
                 subcat = self.create(id=d, description='%s catalog' % var_names[i])
                 subcat.save_as(fname)
-            # add the sub-catalog to this catalog
-            cat.add_catalog(subcat)
+                # add the sub-catalog to this catalog
+                cat.add_catalog(subcat)
             cat = subcat
-            
+        
         # create link to item
         cat.add_link('item', os.path.relpath(item_fname, cat.path))
         cat.save()
