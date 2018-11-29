@@ -81,9 +81,8 @@ class Thing(object):
                     link = l 
                 else:
                     # relative path
-                    
                     if self.filename[0:4] == 'http':
-                        link = urljoin(os.path.dirname(self.filename), l)
+                        link = urljoin(os.path.dirname(self.filename) + '/', l)
                     else: 
                         link = os.path.abspath(os.path.join(os.path.dirname(self.filename), l))
                 _links.append(link)
