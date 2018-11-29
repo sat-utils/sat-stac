@@ -68,6 +68,11 @@ class Test(unittest.TestCase):
         assert('links' not in thing.keys())
         assert(thing.links() == [])
 
+    def test_get_links(self):
+        thing = Thing.open('https://landsat-stac.s3.amazonaws.com/catalog.json')
+        things = [Thing.open(t) for t in thing.links('child')]
+        assert('landsat-8-l1' in [t.id for t in things])
+
     def test_add_link(self):
         thing = self.get_thing()
         thing.add_link('testlink', 'bobloblaw', type='text/plain', title='BobLoblaw')
@@ -91,6 +96,19 @@ class Test(unittest.TestCase):
         fout = os.path.join(self.path, 'test-save.json')
         thing.save_as(fout)
         assert(os.path.exists(fout))
+
+    def test_save_remote_with_signed_url(self):
+        thing = Thing.open(self.fname)
+        thing.save_as('https://landsat-stac.s3.amazonaws.com/test/thing.json')
+
+    def test_save_remote_with_bad_signed_url(self):
+        envs = dict(os.environ)
+        thing = Thing.open(self.fname)
+        os.environ['AWS_BUCKET_REGION'] = 'us-east-1'
+        with self.assertRaises(STACError):
+            thing.save_as('https://landsat-stac.s3.amazonaws.com/test/thing.json')
+        os.environ.clear()
+        os.environ.update(envs)
 
     def test_publish(self):
         thing = self.get_thing()

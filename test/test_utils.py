@@ -2,19 +2,32 @@ import os
 import unittest
 #import satsearch.config as config
 #from satsearch.scene import Scenes
+from satstac import utils
 
 
 class Test(unittest.TestCase):
 
     path = os.path.dirname(__file__)
 
-    @classmethod
-    def _setUpClass(cls):
-        """ Configure testing class """
-        config.DATADIR = cls.path
+    remote_url = 'https://landsat-stac.s3.amazonaws.com/catalog.json'
 
-    def load_scenes(self):
-        return Scenes.load(os.path.join(self.path, 'scenes.geojson'))
+    def test_download_nosuchfile(self):
+        with self.assertRaises(Exception):
+            utils.download_file('http://nosuchfile')
+
+    def test_get_s3_signed_url(self):
+        url = utils.get_s3_signed_url(self.remote_url)
+        assert(len(url) == 2)
+
+    def test_get_s3_signed_url(self):
+        envs = dict(os.environ)
+        del os.environ['AWS_ACCESS_KEY_ID']
+        url = utils.get_s3_signed_url(self.remote_url)
+        assert(len(url) == 2)
+        assert(url[0] == self.remote_url)
+        assert(url[1] is None)
+        os.environ.clear()
+        os.environ.update(envs)
 
     def _test_text_calendar(self):
         """ Get calendar """

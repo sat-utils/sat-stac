@@ -50,7 +50,7 @@ def dict_merge(dct, merge_dct, add_keys=True):
             dct[k] = merge_dct[k]
 
     return dct
-
+    
 
 def download_file(url, filename=None):
     """ Download a file """
@@ -99,8 +99,8 @@ def splitall(path):
 
 
 def get_s3_signed_url(url, rtype='GET', public=False, requestor_pays=False, content_type=None):
-    access_key = os.environ.get('AWS_ACCESS_KEY_ID')
-    secret_key = os.environ.get('AWS_SECRET_ACCESS_KEY')
+    access_key = os.environ.get('AWS_BUCKET_ACCESS_KEY_ID', os.environ.get('AWS_ACCESS_KEY_ID'))
+    secret_key = os.environ.get('AWS_BUCKET_SECRET_ACCESS_KEY', os.environ.get('AWS_SECRET_ACCESS_KEY'))
     region = os.environ.get('AWS_BUCKET_REGION', os.environ.get('AWS_REGION', 'eu-central-1'))
     if access_key is None or secret_key is None:
         # if credentials not provided, just try to download without signed URL
