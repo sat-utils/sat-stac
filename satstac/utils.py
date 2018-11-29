@@ -99,8 +99,8 @@ def splitall(path):
 
 
 def get_s3_signed_url(url, rtype='GET', public=False, requestor_pays=False, content_type=None):
-    access_key = os.environ.get('AWS_ACCESS_KEY_ID')
-    secret_key = os.environ.get('AWS_SECRET_ACCESS_KEY')
+    access_key = os.environ.get('AWS_BUCKET_ACCESS_KEY_ID', os.environ.get('AWS_ACCESS_KEY_ID'))
+    secret_key = os.environ.get('AWS_BUCKET_SECRET_ACCESS_KEY', os.environ.get('AWS_SECRET_ACCESS_KEY'))
     region = os.environ.get('AWS_BUCKET_REGION', os.environ.get('AWS_REGION', 'eu-central-1'))
     if access_key is None or secret_key is None:
         # if credentials not provided, just try to download without signed URL
@@ -145,6 +145,8 @@ def get_s3_signed_url(url, rtype='GET', public=False, requestor_pays=False, cont
         headers['x-amz-request-payer'] = 'requestor'
     if public:
         headers['x-amz-acl'] = 'public-read'
+    if os.environ.get('AWS_SESSION_TOKEN'):
+        headers['x-amz-security-token'] = os.environ.get('AWS_SESSION_TOKEN')
     canonical_headers = '\n'.join('%s:%s' % (key, headers[key]) for key in sorted(headers)) + '\n'
     signed_headers = ';'.join(sorted(headers.keys()))
 
