@@ -50,7 +50,7 @@ def dict_merge(dct, merge_dct, add_keys=True):
             dct[k] = merge_dct[k]
 
     return dct
-    
+
 
 def download_file(url, filename=None):
     """ Download a file """
@@ -145,6 +145,8 @@ def get_s3_signed_url(url, rtype='GET', public=False, requestor_pays=False, cont
         headers['x-amz-request-payer'] = 'requestor'
     if public:
         headers['x-amz-acl'] = 'public-read'
+    if os.environ.get('AWS_SESSION_TOKEN'):
+        headers['x-amz-security-token'] = os.environ.get('AWS_SESSION_TOKEN')
     canonical_headers = '\n'.join('%s:%s' % (key, headers[key]) for key in sorted(headers)) + '\n'
     signed_headers = ';'.join(sorted(headers.keys()))
 
