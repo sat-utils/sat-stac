@@ -8,7 +8,7 @@ from .utils import get_text_calendar
 class Items(object):
     """ A GeoJSON FeatureCollection of STAC Items with associated Collections """
 
-    def __init__(self, items, collections=[], search=None):
+    def __init__(self, items, collections=[], search={}):
         """ Initialize with a list of Item objects """
         self._collections = collections
         self._items = items
@@ -48,8 +48,6 @@ class Items(object):
 
     def bbox(self):
         """ Get bounding box of search """
-        if self._search is None:
-            return None
         if 'intersects' in self._search:
             coords = self._search['intersects']['geometry']['coordinates']
             lats = [c[1] for c in coords[0]]
@@ -59,8 +57,6 @@ class Items(object):
             return []
 
     def center(self):
-        if self._search is None:
-            return None
         if 'intersects' in self._search:
             coords = self._search['intersects']['geometry']['coordinates']
             lats = [c[1] for c in coords[0]]
