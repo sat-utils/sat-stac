@@ -39,6 +39,16 @@ class Test(unittest.TestCase):
         col = items.collection('nosuchcollection')
         assert(col is None)
 
+    def test_bbox(self):
+        items = self.load_items()
+        bbox = items.bbox()
+        assert(len(bbox) == 0)
+
+    def test_center(self):
+        items = self.load_items()
+        center = items.center()
+        assert(center == (0,0))
+
     def test_get_platforms(self):
         """ Get set of platforms """
         items = self.load_items()
