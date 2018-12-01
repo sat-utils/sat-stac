@@ -145,7 +145,7 @@ def get_s3_signed_url(url, rtype='GET', public=False, requestor_pays=False, cont
         headers['x-amz-request-payer'] = 'requestor'
     if public:
         headers['x-amz-acl'] = 'public-read'
-    if os.environ.get('AWS_SESSION_TOKEN'):
+    if os.environ.get('AWS_SESSION_TOKEN') and 'AWS_BUCKET_ACCESS_KEY_ID' not in os.environ:
         headers['x-amz-security-token'] = os.environ.get('AWS_SESSION_TOKEN')
     canonical_headers = '\n'.join('%s:%s' % (key, headers[key]) for key in sorted(headers)) + '\n'
     signed_headers = ';'.join(sorted(headers.keys()))
