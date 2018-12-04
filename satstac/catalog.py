@@ -39,7 +39,8 @@ class Catalog(Thing):
     def children(self):
         """ Get child links """
         # TODO = should this be tested if Collection and return mix of Catalogs and Collections?
-        return [Catalog.open(l) for l in self.links('child')]
+        for l in self.links('child'):
+            yield Catalog.open(l)
 
     def catalogs(self):
         """ Recursive get all catalogs within this Catalog """
