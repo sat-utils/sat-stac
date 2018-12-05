@@ -60,7 +60,7 @@ class Test(unittest.TestCase):
 
     def test_links(self):
         root = self.get_catalog()
-        child = root.children()[0]
+        child = [c for c in root.children()][0]
         assert(child.parent().id == root.id)
 
     def test_get_catalogs(self):
@@ -81,7 +81,8 @@ class Test(unittest.TestCase):
         cat = Catalog.create(root='http://my.cat').save_as(os.path.join(self.path, 'catalog.json'))
         col = Catalog.open(os.path.join(testpath, 'catalog/eo/landsat-8-l1/catalog.json'))
         cat.add_catalog(col)
-        assert(cat.children()[0].id == col.id)
+        child = [c for c in cat.children()][0]
+        assert(child.id == col.id)
 
     def test_add_catalog_without_saving(self):
         cat = Catalog.create()
