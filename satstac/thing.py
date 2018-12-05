@@ -27,7 +27,7 @@ class Thing(object):
     @classmethod
     def open_remote(self, url, headers={}):
         """ Open remote file """
-        resp = requests.get(url)
+        resp = requests.get(url, headers=headers)
         if resp.status_code == 200:
             dat = resp.text
         else:
