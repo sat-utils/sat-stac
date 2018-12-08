@@ -13,13 +13,13 @@ references:
   restore_repo: &restore_repo
     restore_cache:
       keys:
-        - v0-repo-{{ .Branch }}-{{ .Revision }}
-        - v0-repo-{{ .Branch }}
-        - v0-repo
+        - v1-repo-{{ .Branch }}-{{ .Revision }}
+        - v1-repo-{{ .Branch }}
+        - v1-repo
 
   save_repo: &save_repo
     save_cache:
-      key: v0-repo-{{ .Branch }}-{{ .Revision }}
+      key: v1-repo-{{ .Branch }}-{{ .Revision }}
       paths:
         - ~/project     
 
@@ -34,8 +34,8 @@ jobs:
       - *save_repo
       - restore_cache:
           keys: 
-            - v0-dependencies27-{{ checksum "requirements.txt"}}
-            - v0-dependencies27        
+            - v1-dependencies27-{{ checksum "requirements.txt"}}
+            - v1-dependencies27        
       - run: |
             pip install virtualenv
             virtualenv ~/venv27
@@ -46,7 +46,7 @@ jobs:
             cd test
             pytest -v --cov satstac --cov-report term-missing
       - save_cache:
-          key: v0-dependencies27-{{ checksum "requirements.txt"}}
+          key: v1-dependencies27-{{ checksum "requirements.txt"}}
           paths:
             - ~/venv27
 
@@ -59,8 +59,8 @@ jobs:
       - *save_repo
       - restore_cache:
           keys: 
-            - v0-dependencies35-{{ checksum "requirements.txt"}}
-            - v0-dependencies35        
+            - v1-dependencies35-{{ checksum "requirements.txt"}}
+            - v1-dependencies35        
       - run: |
             pip install virtualenv
             virtualenv ~/venv35
@@ -71,7 +71,7 @@ jobs:
             cd test
             pytest -v --cov satstac --cov-report term-missing
       - save_cache:
-          key: v0-dependencies35-{{ checksum "requirements.txt"}}
+          key: v1-dependencies35-{{ checksum "requirements.txt"}}
           paths:
             - ~/venv35
 
@@ -84,8 +84,8 @@ jobs:
       - *save_repo
       - restore_cache:
           keys: 
-            - v0-dependencies36-{{ checksum "requirements.txt"}}
-            - v0-dependencies36        
+            - v1-dependencies36-{{ checksum "requirements.txt"}}
+            - v1-dependencies36        
       - run: |
             python3 -m venv ~/venv36
             . ~/venv36/bin/activate
@@ -95,7 +95,7 @@ jobs:
             cd test
             pytest -v --cov satstac --cov-report term-missing
       - save_cache:
-          key: v0-dependencies36-{{ checksum "requirements.txt"}}
+          key: v1-dependencies36-{{ checksum "requirements.txt"}}
           paths:
             - ~/venv36
 
@@ -108,8 +108,8 @@ jobs:
       - *save_repo
       - restore_cache:
           keys: 
-            - v0-dependencies37-{{ checksum "requirements.txt"}}
-            - v0-dependencies37        
+            - v1-dependencies37-{{ checksum "requirements.txt"}}
+            - v1-dependencies37        
       - run: |
             pip install virtualenv
             virtualenv ~/venv37
@@ -120,19 +120,19 @@ jobs:
             cd test
             pytest -v --cov satstac --cov-report term-missing
       - save_cache:
-          key: v0-dependencies37-{{ checksum "requirements.txt"}}
+          key: v1-dependencies37-{{ checksum "requirements.txt"}}
           paths:
             - ~/venv37
 
   deploy:
     docker:
-      - image: circleci/python:3.6.2
+      - image: circleci/python:3.6
     steps:
       - *restore_repo
       - restore_cache:
           keys: 
-            - v0-dependencies36-{{ checksum "requirements.txt"}}
-            - v0-dependencies36
+            - v1-dependencies36-{{ checksum "requirements.txt"}}
+            - v1-dependencies36
       - run:
           name: Deploy
           command: |
