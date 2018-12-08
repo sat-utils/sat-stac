@@ -2,11 +2,12 @@ import json
 import os
 import requests
 
-# Python 2 compatibility
-from future.standard_library import install_aliases
-install_aliases()
-
-from urllib.parse import urljoin
+try:
+    # Python 3
+    from urllib.parse import urljoin
+except ImportError:
+    # Python 2
+    from urlparse import urljoin
 from .version import __version__
 from .utils import mkdirp, get_s3_signed_url
 
