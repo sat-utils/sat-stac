@@ -4,8 +4,6 @@ import os
 import shutil
 import unittest
 
-from unittest.mock import patch
-
 from satstac import Item
 
 
@@ -98,14 +96,6 @@ class Test(unittest.TestCase):
         assert(os.path.exists(fname))
         fname = item.download(key='MTL', path=self.path)
         assert(os.path.exists(fname))
-
-    @patch('requests.get')
-    def test_download_bad_server(self, mock_get):
-        """ Retrieve non existent file """
-        item = Item.open(self.filename)
-        mock_get.return_value.status_code == 404
-        fname = item.download(key='thumbnail', path=self.path)
-        assert(fname is None)
 
     def test_download_nonexist(self):
         """ Test downloading of non-existent file """

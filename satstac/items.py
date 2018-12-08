@@ -72,7 +72,7 @@ class Items(object):
         else:
             return list(set([i['eo:platform'] for i in self._items if i.date == date]))
 
-    def print(self, params=[]):
+    def print_summary(self, params=[]):
         """ Print summary of all scenes """
         if len(params) == 0:
             params = ['date', 'id']

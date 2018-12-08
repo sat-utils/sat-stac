@@ -2,7 +2,12 @@ import json
 import os
 import requests
 
-from urllib.parse import urljoin
+try:
+    # Python 3
+    from urllib.parse import urljoin
+except ImportError:
+    # Python 2
+    from urlparse import urljoin
 from .version import __version__
 from .utils import mkdirp, get_s3_signed_url
 
@@ -27,7 +32,7 @@ class Thing(object):
     @classmethod
     def open_remote(self, url, headers={}):
         """ Open remote file """
-        resp = requests.get(url)
+        resp = requests.get(url, headers=headers)
         if resp.status_code == 200:
             dat = resp.text
         else:

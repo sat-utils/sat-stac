@@ -59,7 +59,7 @@ class Test(unittest.TestCase):
     def test_print_items(self):
         """ Print summary of items """
         items = self.load_items()
-        items.print()
+        items.print_summary()
 
     def test_dates(self):
         """ Get dates of all items """
