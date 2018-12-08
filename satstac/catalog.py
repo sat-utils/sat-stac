@@ -47,7 +47,11 @@ class Catalog(Thing):
         for cat in self.children():
             for subcat in cat.children():
                 yield subcat
-                yield from subcat.catalogs()
+                # Python 2
+                for x in subcat.catalogs():
+                    yield x
+                # Python 3.3+
+                # yield from subcat.catalogs()
             yield cat
 
     def collections(self):
@@ -57,14 +61,22 @@ class Catalog(Thing):
                 yield Collection.open(cat.filename)
                 # TODO - keep going? if other Collections can appear below a Collection
             else:
-                yield from cat.collections()
+                # Python 2
+                for x in cat.collections():
+                    yield x
+                # Python 3.3+
+                # yield from cat.collections()
 
     def items(self):
         """ Recursively get all items within this Catalog """
         for item in self.links('item'):
             yield Item.open(item)
         for child in self.children():
-            yield from child.items()
+            # Python 2
+            for x in child.items():
+                yield x
+            # Python 3.3+
+            # yield from child.items()
 
     def add_catalog(self, catalog):
         """ Add a catalog to this catalog """
