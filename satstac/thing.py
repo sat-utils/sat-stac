@@ -2,6 +2,10 @@ import json
 import os
 import requests
 
+# Python 2 compatibility
+from future.standard_library import install_aliases
+install_aliases()
+
 from urllib.parse import urljoin
 from .version import __version__
 from .utils import mkdirp, get_s3_signed_url
