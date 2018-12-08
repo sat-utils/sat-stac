@@ -10,15 +10,6 @@ version: 2
 
 references:
 
-  container_python27: &container_python27
-    docker:
-      - image: circleci/python:2.7.13
-    working_dir: ~/project
-
-  container_python36: &container_python36
-    docker:
-      - image: circleci/python:3.6.2
-
   restore_repo: &restore_repo
     restore_cache:
       keys:
@@ -35,7 +26,8 @@ references:
 jobs:
 
   build_and_test_27:
-    <<: *container_python27
+    docker:
+      - image: circleci/python:2.7.13
     steps:  
       - *restore_repo
       - checkout
@@ -58,8 +50,34 @@ jobs:
           paths:
             - ~/venv27
 
+  build_and_test_35:
+    docker:
+      - image: circleci/python:3.5
+    steps:  
+      - *restore_repo
+      - checkout
+      - *save_repo
+      - restore_cache:
+          keys: 
+            - v0-dependencies35-{{ checksum "requirements.txt"}}
+            - v0-dependencies35        
+      - run: |
+            pip install virtualenv
+            virtualenv ~/venv35
+            . ~/venv35/bin/activate
+            pip install -r requirements.txt
+            pip install -r requirements-dev.txt
+            pip install .
+            cd test
+            pytest -v --cov satstac --cov-report term-missing
+      - save_cache:
+          key: v0-dependencies35-{{ checksum "requirements.txt"}}
+          paths:
+            - ~/venv35
+
   build_and_test_36:
-    <<: *container_python36
+    docker:
+      - image: circleci/python:3.6
     steps:  
       - *restore_repo
       - checkout
@@ -81,8 +99,34 @@ jobs:
           paths:
             - ~/venv36
 
+  build_and_test_37:
+    docker:
+      - image: circleci/python:3.7
+    steps:  
+      - *restore_repo
+      - checkout
+      - *save_repo
+      - restore_cache:
+          keys: 
+            - v0-dependencies37-{{ checksum "requirements.txt"}}
+            - v0-dependencies37        
+      - run: |
+            pip install virtualenv
+            virtualenv ~/venv37
+            . ~/venv37/bin/activate
+            pip install -r requirements.txt
+            pip install -r requirements-dev.txt
+            pip install .
+            cd test
+            pytest -v --cov satstac --cov-report term-missing
+      - save_cache:
+          key: v0-dependencies37-{{ checksum "requirements.txt"}}
+          paths:
+            - ~/venv37
+
   deploy:
-    <<: *container_python36
+    docker:
+      - image: circleci/python:3.6.2
     steps:
       - *restore_repo
       - run:
@@ -104,7 +148,10 @@ workflows:
   build_test_27:
     jobs:
       - build_and_test_27
-  build_test_deploy_36:
+  build_test_35:
+    jobs:
+      - build_and_test_35
+  build_test_36:
     jobs:
       - build_and_test_36
       - deploy:
@@ -113,3 +160,6 @@ workflows:
           filters:
             branches:
               only: master
+  build_test_37:
+    jobs:
+      - build_and_test_37
