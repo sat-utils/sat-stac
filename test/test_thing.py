@@ -49,7 +49,7 @@ class Test(unittest.TestCase):
 
     def test_open_remote(self):
         thing = Thing.open('https://landsat-stac.s3.amazonaws.com/catalog.json')
-        assert(thing.id == 'landsat')
+        assert(thing.id == 'landsat-stac')
         assert(len(thing.data['links']) == 3)
 
     def test_open_missing_remote(self):
