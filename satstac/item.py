@@ -63,18 +63,6 @@ class Item(Thing):
         return self.datetime.date()
 
     @property
-    def year(self):
-        return self.datetime.year()
-
-    @property
-    def month(self):
-        return self.datetime.month()
-
-    @property
-    def day(self):
-        return self.datetime.day()
-
-    @property
     def datetime(self):
         return dateparse(self['datetime'])
 
@@ -122,14 +110,15 @@ class Item(Thing):
         )
 
     def substitute(self, string):
-        """ Substitude envvars in string with Item values """
+        """ Substitute envvars in string with Item values """
         string = string.replace(':', '_colon_')
         subs = {}
         for key in [i[1] for i in Formatter().parse(string.rstrip('/')) if i[1] is not None]:
             if key == 'id':
                 subs[key] = self.id
-            elif key == 'date':
-                subs[key] = self.date
+            elif key in ['date', 'year', 'month', 'day']:
+                vals = {'date': self.date, 'year': self.date.year, 'month': self.date.month, 'day': self.date.day}
+                subs[key] = vals[key]
             else:
                 subs[key] = self[key.replace('_colon_', ':')]
         return Template(string).substitute(**subs)   
