@@ -63,6 +63,18 @@ class Item(Thing):
         return self.datetime.date()
 
     @property
+    def year(self):
+        return self.datetime.year()
+
+    @property
+    def month(self):
+        return self.datetime.month()
+
+    @property
+    def day(self):
+        return self.datetime.day()
+
+    @property
     def datetime(self):
         return dateparse(self['datetime'])
 
