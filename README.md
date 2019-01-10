@@ -13,7 +13,14 @@ This is a Python library for working with [Spatio-Temporal Asset Catalogs (STAC)
 
 ## Installation
 
-sat-stac cam be installed from this repository, or from PyPi using pip. It has minimal dependencies (the Python requests library only)
+sat-stac has minimal dependencies (`requests` and `python-dateutil`). To install sat-stac from PyPi:
+sat-stac cam be installed from this repository, or . 
+
+```bash
+$ pip install sat-stac
+```
+
+From source repository:
 
 ```bash
 $ git clone https://github.com/sat-utils/sat-stac.git
@@ -21,10 +28,6 @@ $ cd sat-stac
 $ pip install .
 ```
 
-From pip
-```bash
-$ pip install sat-stac
-```
 
 #### Versions
 The initial sat-stac version is 0.1.0, which uses the STAC spec v0.6.0. To install other versions of sat-stac, install the matching version of sat-stac. 
