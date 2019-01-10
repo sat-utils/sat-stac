@@ -38,7 +38,7 @@ class Test(unittest.TestCase):
     def test_open(self):
         """ Initialize Catalog with a file """
         cat = self.get_catalog()
-        assert(len(cat.keys()) == 4)
+        assert(len(cat.data.keys()) == 4)
         assert(cat.id == 'stac')
         assert(len(cat.links())==3)
 
