@@ -50,17 +50,17 @@ class Test(unittest.TestCase):
         center = items.center()
         assert(center == [45.24667129338411, 12.368545532226562])
 
-    def test_get_platforms(self):
-        """ Get set of platforms """
+    def test_get_properties(self):
+        """ Get set of properties """
         items = self.load_items()
-        p = items.platforms()
+        p = items.properties('eo:platform')
         assert(len(p) == 1)
         assert(p[0] == 'landsat-8')
 
     def test_print_items(self):
         """ Print summary of items """
         items = self.load_items()
-        items.print_summary()
+        print(items.summary())
 
     def test_dates(self):
         """ Get dates of all items """
@@ -71,7 +71,7 @@ class Test(unittest.TestCase):
     def test_text_calendar(self):
         """ Get calendar """
         items = self.load_items()
-        cal = items.text_calendar()
+        cal = items.calendar()
         assert(len(cal) > 250)
 
     def test_download_thumbnails(self):
