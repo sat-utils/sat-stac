@@ -2,7 +2,7 @@ import json
 
 from .collection import Collection
 from .item import Item
-from .utils import get_text_calendar
+from .utils import terminal_calendar
 
 
 class Items(object):
@@ -94,7 +94,7 @@ class Items(object):
                 date_labels[d] = 'Multiple'
             else:
                 date_labels[d] = sensors[0]
-        return get_text_calendar(date_labels)
+        return terminal_calendar(date_labels)
 
     def save(self, filename):
         """ Save scene metadata """
@@ -121,6 +121,7 @@ class Items(object):
         self._items = items
 
     def download(self, **kwargs):
+        """ Download all Items """
         dls = []
         for i in self._items:
             fname = i.download(**kwargs)

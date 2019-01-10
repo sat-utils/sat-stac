@@ -53,7 +53,7 @@ def dict_merge(dct, merge_dct, add_keys=True):
 
 
 def download_file(url, filename=None):
-    """ Download a file """
+    """ Download a file as filename """
     filename = os.path.basename(url) if filename is None else filename
     logger.info('Downloading %s as %s' % (url, filename))
     headers = {}
@@ -168,44 +168,32 @@ def get_s3_signed_url(url, rtype='GET', public=False, requestor_pays=False, cont
     return request_url, headers
 
 
-def get_text_calendar_dates(date1, date2, cols=3):
-    """ Get array of datetimes between two dates suitable for formatting """
-    """
-        The return value is a list of years.
-        Each year contains a list of month rows.
-        Each month row contains cols months (default 3).
-        Each month contains list of 6 weeks (the max possible).
-        Each week contains 1 to 7 days.
-        Days are datetime.date objects.
-    """
-    year1 = date1.year
-    year2 = date2.year
+def terminal_calendar(events, cols=3):
+    """ Get calendar covering all dates, with provided dates colored and labeled """
+    # events is {'date': 'label'}
+    _dates = sorted(events.keys())
+    _labels = set(events.values())
+    labels = dict(zip(_labels, [str(41 + i) for i in range(0, len(_labels))]))
+
+    start_year = _dates[0].year
+    end_year = _dates[-1].year
 
     # start and end rows
-    row1 = int((date1.month - 1) / cols)
-    row2 = int((date2.month - 1) / cols) + 1
+    row1 = int((_dates[0].month - 1) / cols)
+    row2 = int((_dates[-1].month - 1) / cols) + 1
 
     # generate base calendar array
     Calendar = calendar.Calendar()
     cal = []
-    for yr in range(year1, year2+1):
+    for yr in range(start_year, end_year+1):
         ycal = Calendar.yeardatescalendar(yr, width=cols)
-        if yr == year1 and yr == year2:
+        if yr == start_year and yr == end_year:
             ycal = ycal[row1:row2]
-        elif yr == year1:
+        elif yr == start_year:
             ycal = ycal[row1:]
-        elif yr == year2:
+        elif yr == end_year:
             ycal = ycal[:row2]
         cal.append(ycal)
-    return cal
-
-
-def get_text_calendar(dates, cols=3):
-    """ Get calendar covering all dates, with provided dates colored and labeled """
-    _dates = sorted(dates.keys())
-    _labels = set(dates.values())
-    labels = dict(zip(_labels, [str(41 + i) for i in range(0, len(_labels))]))
-    cal = get_text_calendar_dates(_dates[0], _dates[-1])
 
     # month and day headers
     months = calendar.month_name
@@ -237,14 +225,14 @@ def get_text_calendar(dates, cols=3):
                         else:
                             string = str(d.day).rjust(2, ' ')
                             if d in _dates:
-                                string = '%s%sm%s%s' % (col0, labels[dates[d]], string, col_end)
+                                string = '%s%sm%s%s' % (col0, labels[events[d]], string, col_end)
                             wk.append(string)
                     out += rformat.format(*wk)
                 out += '\n'
             out += '\n'
     # print labels
     for lbl, col in labels.items():
-        vals = list(dates.values())
+        vals = list(_labels)
         out += '%s%sm%s (%s)%s\n' % (col0, col, lbl, vals.count(lbl), col_end)
     out += '%s total dates' % len(_dates)
     return out
