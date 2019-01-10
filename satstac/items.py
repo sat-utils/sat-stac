@@ -25,7 +25,7 @@ class Items(object):
             geoj = json.loads(f.read())
         collections = [Collection(col) for col in geoj['collections']]
         items = [Item(feature) for feature in geoj['features']]
-        return cls(items, collections, search=geoj.get('search'))
+        return cls(items, collections=collections, search=geoj.get('search'))
 
     def __len__(self):
         """ Number of scenes """
@@ -77,10 +77,9 @@ class Items(object):
         if len(params) == 0:
             params = ['date', 'id']
         txt = 'Items (%s):\n' % len(self._items)
-        txt += ''.join(['{:<20}'.format(p) for p in params]) + '\n'
+        txt += ''.join(['{:<25} '.format(p) for p in params]) + '\n'
         for s in self._items:
-            # NOTE - the string conversion is because .date returns a datetime obj
-            txt += ''.join(['{:<20}'.format(str(s[p])) for p in params]) + '\n'
+            txt += ''.join(['{:<25} '.format(s.substitute('${%s}' % p)) for p in params]) + '\n'
         print(txt)
 
     def text_calendar(self):
