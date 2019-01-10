@@ -170,6 +170,8 @@ def get_s3_signed_url(url, rtype='GET', public=False, requestor_pays=False, cont
 
 def terminal_calendar(events, cols=3):
     """ Get calendar covering all dates, with provided dates colored and labeled """
+    if len(events.keys()) == 0:
+        return ''
     # events is {'date': 'label'}
     _dates = sorted(events.keys())
     _labels = set(events.values())

@@ -68,10 +68,6 @@ class Thing(object):
         """ Return path to this catalog file (None if no filename set) """
         return os.path.dirname(self.filename) if self.filename else None
 
-    def keys(self):
-        """ Get keys from catalog """
-        return self.data.keys()
-
     def links(self, rel=None):
         """ Get links for specific rel type """
         links = self.data.get('links', [])

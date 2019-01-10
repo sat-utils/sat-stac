@@ -69,3 +69,7 @@ class Test(unittest.TestCase):
         self.assertTrue(' 2018 ' in cal)
         self.assertTrue(' January ' in cal)
         self.assertTrue(' March ' in cal)
+
+    def test_empty_terminal_calendar(self):
+        cal = utils.terminal_calendar({})
+        print(cal)

@@ -86,8 +86,6 @@ class Items(object):
         """ Get calendar for dates """
         date_labels = {}
         dates = self.dates()
-        if len(dates) == 0:
-            return ''
         for d in self.dates():
             sensors = self.platforms(d)
             if len(sensors) > 1:
