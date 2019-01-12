@@ -56,16 +56,12 @@ class Test(unittest.TestCase):
         with self.assertRaises(STACError):
             thing = Thing.open('https://landsat-stac.s3.amazonaws.com/nosuchcatalog.json')
 
-    def test_keys(self):
+    def test_thing(self):
         thing = self.get_thing()
-        assert('id' in thing.keys())
-        assert('links' in thing.keys())
-
-    def test_links(self):
-        thing = self.get_thing()
-        assert('links' in thing.keys())
+        assert('id' in thing.data.keys())
+        assert('links' in thing.data.keys())
         del thing.data['links']
-        assert('links' not in thing.keys())
+        assert('links' not in thing.data.keys())
         assert(thing.links() == [])
 
     def test_get_links(self):

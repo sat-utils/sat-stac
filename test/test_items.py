@@ -15,7 +15,7 @@ class Test(unittest.TestCase):
         """ Initialize Scenes with list of Scene objects """
         items = self.load_items()
         assert(len(items._collections) == 1)
-        assert(len(items) == 1)
+        assert(len(items) == 2)
         assert(isinstance(items[0], Item))
 
     def test_save(self):
@@ -42,24 +42,25 @@ class Test(unittest.TestCase):
     def test_bbox(self):
         items = self.load_items()
         bbox = items.bbox()
-        assert(len(bbox) == 0)
+        assert(len(bbox) == 4)
+        assert(bbox == [11.984710693359375, 44.815941348210835, 12.752380371093748, 45.67740123855739])
 
     def test_center(self):
         items = self.load_items()
         center = items.center()
-        assert(center == (0,0))
+        assert(center == [45.24667129338411, 12.368545532226562])
 
-    def test_get_platforms(self):
-        """ Get set of platforms """
+    def test_get_properties(self):
+        """ Get set of properties """
         items = self.load_items()
-        p = items.platforms()
+        p = items.properties('eo:platform')
         assert(len(p) == 1)
         assert(p[0] == 'landsat-8')
 
     def test_print_items(self):
         """ Print summary of items """
         items = self.load_items()
-        items.print_summary()
+        print(items.summary())
 
     def test_dates(self):
         """ Get dates of all items """
@@ -70,7 +71,7 @@ class Test(unittest.TestCase):
     def test_text_calendar(self):
         """ Get calendar """
         items = self.load_items()
-        cal = items.text_calendar()
+        cal = items.calendar()
         assert(len(cal) > 250)
 
     def test_download_thumbnails(self):
@@ -85,7 +86,7 @@ class Test(unittest.TestCase):
 
     def test_filter(self):
         items = self.load_items()
-        items.filter('collection', ['landsat-8-l1'])
+        items.filter('eo:cloud_cover', [100])
         assert(len(items) == 1)
 
     def test_download(self):
@@ -93,7 +94,7 @@ class Test(unittest.TestCase):
         items = self.load_items()
         
         fnames = items.download(key='MTL')
-        assert(len(fnames) == 1)
+        assert(len(fnames) == 2)
         for f in fnames:
             assert(os.path.exists(f))
             os.remove(f)
