@@ -1,6 +1,8 @@
 import logging
 import os
 
+from datetime import datetime
+
 from .catalog import Catalog
 from satstac import STACError, utils
 
@@ -48,6 +50,7 @@ class Collection(Catalog):
 
     def add_item(self, item, path='', filename='${id}'):
         """ Add an item to this collection """
+        start = datetime.now()
         if self.filename is None:
             raise STACError('Save catalog before adding items')
         item_link = item.get_filename(path, filename)
@@ -86,5 +89,5 @@ class Collection(Catalog):
 
         # save item
         item.save_as(item_fname)
-        logger.info('Added %s as %s' % (item.id, item.filename))
+        logger.debug('Added %s in %s seconds' % (item.filename, datetime.now()-start))
         return self
