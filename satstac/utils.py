@@ -104,6 +104,7 @@ def get_s3_signed_url(url, rtype='GET', public=False, requestor_pays=False, cont
     region = os.environ.get('AWS_BUCKET_REGION', os.environ.get('AWS_REGION', 'eu-central-1'))
     if access_key is None or secret_key is None:
         # if credentials not provided, just try to download without signed URL
+        logger.debug('Not using signed URL for %s' % url)
         return url, None
 
     parts = url.replace('https://', '').split('/')
@@ -142,7 +143,7 @@ def get_s3_signed_url(url, rtype='GET', public=False, requestor_pays=False, cont
         'x-amz-date': amzdate
     }
     if requestor_pays:
-        headers['x-amz-request-payer'] = 'requestor'
+        headers['x-amz-request-payer'] = 'requester'
     if public:
         headers['x-amz-acl'] = 'public-read'
     if os.environ.get('AWS_SESSION_TOKEN') and 'AWS_BUCKET_ACCESS_KEY_ID' not in os.environ:
