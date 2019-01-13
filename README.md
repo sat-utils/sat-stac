@@ -14,7 +14,7 @@ This is a Python library for working with [Spatio-Temporal Asset Catalogs (STAC)
 ## Installation
 
 sat-stac has minimal dependencies (`requests` and `python-dateutil`). To install sat-stac from PyPi:
-sat-stac cam be installed from this repository, or . 
+sat-stac can be installed from pip or the source repository. 
 
 ```bash
 $ pip install sat-stac
