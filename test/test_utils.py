@@ -1,7 +1,10 @@
 import os
 import unittest
+
 #import satsearch.config as config
+
 #from satsearch.scene import Scenes
+from datetime import datetime
 from satstac import utils
 
 
@@ -55,19 +58,18 @@ class Test(unittest.TestCase):
         os.environ.clear()
         os.environ.update(envs)
 
-    def _test_text_calendar(self):
+    def test_terminal_calendar(self):
         """ Get calendar """
-        scenes = self.load_scenes()
-        cal = scenes.text_calendar()
-        self.assertEqual(len(cal), 576)
+        events = {
+            datetime(2018,1,1).date(): "event1",
+            datetime(2018,4,25).date(): "event2"
+        }
+        cal = utils.terminal_calendar(events)
+        self.assertEqual(len(cal), 1136)
         self.assertTrue(' 2018 ' in cal)
         self.assertTrue(' January ' in cal)
         self.assertTrue(' March ' in cal)
 
-    def _test_text_calendar_multiyear(self):
-        scenes = self.load_scenes()
-        scenes[0].feature['properties']['datetime'] = '2010-02-01T00:00:00.000Z'
-        cal = scenes.text_calendar()
-        self.assertEqual(len(cal), 16654)
-        self.assertTrue(' 2016 ' in cal)
-        self.assertTrue(' 2017 ' in cal)
+    def test_empty_terminal_calendar(self):
+        cal = utils.terminal_calendar({})
+        print(cal)

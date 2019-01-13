@@ -2,7 +2,7 @@ import json
 
 from .collection import Collection
 from .item import Item
-from .utils import get_text_calendar
+from .utils import terminal_calendar
 
 
 class Items(object):
@@ -25,7 +25,7 @@ class Items(object):
             geoj = json.loads(f.read())
         collections = [Collection(col) for col in geoj['collections']]
         items = [Item(feature) for feature in geoj['features']]
-        return cls(items, collections, search=geoj.get('search'))
+        return cls(items, collections=collections, search=geoj.get('search'))
 
     def __len__(self):
         """ Number of scenes """
@@ -54,7 +54,7 @@ class Items(object):
             lons = [c[0] for c in coords[0]]
             return [min(lons), min(lats), max(lons), max(lats)]
         else:
-            return []
+            return None
 
     def center(self):
         if 'intersects' in self._search:
@@ -63,39 +63,36 @@ class Items(object):
             lons = [c[0] for c in coords[0]]
             return [(min(lats) + max(lats))/2.0, (min(lons) + max(lons))/2.0]
         else:
-            return 0, 0
+            return None
 
-    def platforms(self, date=None):
-        """ List of all available sensors across scenes """
+    def properties(self, key, date=None):
+        """ Set of values for 'key' property in Items, for specific date if provided """
         if date is None:
-            return list(set([i['eo:platform'] for i in self._items]))
+            return list(set([i[key] for i in self._items]))
         else:
-            return list(set([i['eo:platform'] for i in self._items if i.date == date]))
+            return list(set([i[key] for i in self._items if i.date == date]))    
 
-    def print_summary(self, params=[]):
+    def summary(self, params=[]):
         """ Print summary of all scenes """
         if len(params) == 0:
             params = ['date', 'id']
         txt = 'Items (%s):\n' % len(self._items)
-        txt += ''.join(['{:<20}'.format(p) for p in params]) + '\n'
+        txt += ''.join(['{:<25} '.format(p) for p in params]) + '\n'
         for s in self._items:
-            # NOTE - the string conversion is because .date returns a datetime obj
-            txt += ''.join(['{:<20}'.format(str(s[p])) for p in params]) + '\n'
-        print(txt)
+            txt += ''.join(['{:<25} '.format(s.substitute('${%s}' % p)) for p in params]) + '\n'
+        return txt
 
-    def text_calendar(self):
+    def calendar(self):
         """ Get calendar for dates """
         date_labels = {}
         dates = self.dates()
-        if len(dates) == 0:
-            return ''
         for d in self.dates():
-            sensors = self.platforms(d)
+            sensors = self.properties('eo:platform', d)
             if len(sensors) > 1:
                 date_labels[d] = 'Multiple'
             else:
                 date_labels[d] = sensors[0]
-        return get_text_calendar(date_labels)
+        return terminal_calendar(date_labels)
 
     def save(self, filename):
         """ Save scene metadata """
@@ -121,10 +118,11 @@ class Items(object):
             items += list(filter(lambda x: x[key] == val, self._items))
         self._items = items
 
-    def download(self, **kwargs):
+    def download(self, *args, **kwargs):
+        """ Download all Items """
         dls = []
         for i in self._items:
-            fname = i.download(**kwargs)
+            fname = i.download(*args, **kwargs)
             if fname is not None:
                 dls.append(fname)
         return dls
