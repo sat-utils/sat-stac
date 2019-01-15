@@ -25,31 +25,6 @@ references:
 
 jobs:
 
-  build_and_test_27:
-    docker:
-      - image: circleci/python:2.7.13
-    steps:  
-      - *restore_repo
-      - checkout
-      - *save_repo
-      - restore_cache:
-          keys: 
-            - v1-dependencies27-{{ checksum "requirements.txt"}}
-            - v1-dependencies27        
-      - run: |
-            pip install virtualenv
-            virtualenv ~/venv27
-            . ~/venv27/bin/activate
-            pip install -r requirements.txt
-            pip install -r requirements-dev.txt
-            pip install .
-            cd test
-            pytest -v --cov satstac --cov-report term-missing
-      - save_cache:
-          key: v1-dependencies27-{{ checksum "requirements.txt"}}
-          paths:
-            - ~/venv27
-
   build_and_test_35:
     docker:
       - image: circleci/python:3.5
@@ -149,9 +124,6 @@ jobs:
 
 workflows:
   version: 2
-  build_test_27:
-    jobs:
-      - build_and_test_27
   build_test_35:
     jobs:
       - build_and_test_35
