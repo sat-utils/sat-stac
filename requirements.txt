@@ -1,2 +1,2 @@
-requests~=2.19.1
+requests~=2.21.0
 python-dateutil~=2.7.5
