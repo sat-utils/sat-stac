@@ -80,7 +80,7 @@ class Collection(Catalog):
         root_link = self.links('root')[0]
         root_path = os.path.dirname(root_link)
 
-        parent = Catalog.open(self.parent_catalog(item.substitute(path)))Z
+        parent = Catalog.open(self.parent_catalog(item.substitute(path)))
         
         # create link to item
         parent.add_link('item', os.path.relpath(item_fname, parent.path))
