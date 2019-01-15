@@ -52,12 +52,10 @@ class Collection(Catalog):
     @functools.lru_cache()
     def parent_catalog(self, path):
         """ Given path to a new Item find parent catalog """
-        print(path)
         cat = self
         dirs = utils.splitall(path)
-        print(dirs)
         var_names = [v.strip('$').strip('{}') for v in dirs]
-        for i, d in enumerate(dirs[:-1]):
+        for i, d in enumerate(dirs):
             fname = os.path.join(os.path.join(cat.path, d), 'catalog.json')
             # open existing sub-catalog or create new one
             try:
@@ -81,29 +79,11 @@ class Collection(Catalog):
         item_path = os.path.dirname(item_fname)
         root_link = self.links('root')[0]
         root_path = os.path.dirname(root_link)
-        parent = Catalog.open(self.parent_catalog(path))
 
-        '''
-        cat = self
-        dirs = utils.splitall(item_link)
-        var_names = [v.strip('$').strip('{}') for v in utils.splitall(path)]
-        for i, d in enumerate(dirs[:-2]):
-            fname = os.path.join(os.path.join(cat.path, d), 'catalog.json')
-            # open existing sub-catalog or create new one
-            try:
-                subcat = Catalog.open(fname)
-            except STACError as err:
-                # create a new sub-catalog
-                subcat = self.create(id=d, description='%s catalog' % var_names[i])
-                subcat.save_as(fname)
-                # add the sub-catalog to this catalog
-                cat.add_catalog(subcat)
-            cat = subcat
-        '''
+        parent = Catalog.open(self.parent_catalog(item.substitute(path)))Z
         
         # create link to item
         parent.add_link('item', os.path.relpath(item_fname, parent.path))
-        print('parent', parent.filename)
         parent.save()
 
         # create links from item
