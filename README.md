@@ -2,7 +2,7 @@
 
 [![CircleCI](https://circleci.com/gh/sat-utils/sat-stac.svg?style=svg&circle-token=ef97f3eea6cf901646fc2951e5a941686456b0da)](https://circleci.com/gh/sat-utils/sat-stac) [![PyPI version](https://badge.fury.io/py/sat-stac.svg)](https://badge.fury.io/py/sat-stac) [![codecov](https://codecov.io/gh/sat-utils/sat-stac/branch/master/graph/badge.svg)](https://codecov.io/gh/sat-utils/sat-stac)
 
-This is a Python library for working with [Spatio-Temporal Asset Catalogs (STAC)](https://github.com/radiantearth/stac-spec). It can be used to
+This is a Python 3 library for working with [Spatio-Temporal Asset Catalogs (STAC)](https://github.com/radiantearth/stac-spec). It can be used to
 
 - Open and update existing catalogs
 - Traverse through catalogs
@@ -14,7 +14,7 @@ This is a Python library for working with [Spatio-Temporal Asset Catalogs (STAC)
 ## Installation
 
 sat-stac has minimal dependencies (`requests` and `python-dateutil`). To install sat-stac from PyPi:
-sat-stac cam be installed from this repository, or . 
+sat-stac can be installed from pip or the source repository. 
 
 ```bash
 $ pip install sat-stac
@@ -30,7 +30,7 @@ $ pip install .
 
 
 #### Versions
-The initial sat-stac version is 0.1.0, which uses the STAC spec v0.6.0. To install other versions of sat-stac, install the matching version of sat-stac. 
+The latest version of sat-stac is 0.1.1, which uses the STAC spec v0.6.0. To install other versions of sat-stac, install the matching version of sat-stac. 
 
 ```bash
 pip install satstac==0.1.0
@@ -40,7 +40,7 @@ The table below shows the corresponding versions between sat-stac and STAC:
 
 | sat-stac | STAC  |
 | -------- | ----  |
-| 0.1.0    | 0.6.0 |
+| 0.1.x    | 0.6.0 |
 
 ## Tutorials
 
