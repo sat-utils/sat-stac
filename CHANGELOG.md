@@ -24,5 +24,5 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 Initial Release
 
 [Unreleased]: https://github.com/sat-utils/sat-stac/compare/master...develop
-[v0.1.1]: https://github.com/sat-utils/sat-api/compare/0.1.0...v0.1.1
+[v0.1.1]: https://github.com/sat-utils/sat-stac/compare/0.1.0...v0.1.1
 [v0.1.0]: https://github.com/sat-utils/sat-stac/tree/0.1.0
