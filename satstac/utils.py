@@ -52,14 +52,14 @@ def dict_merge(dct, merge_dct, add_keys=True):
     return dct
 
 
-def download_file(url, filename=None):
+def download_file(url, filename=None, requestor_pays=False):
     """ Download a file as filename """
     filename = os.path.basename(url) if filename is None else filename
     logger.info('Downloading %s as %s' % (url, filename))
     headers = {}
     # check if on s3, if so try to sign it
     if 's3.amazonaws.com' in url:
-        signed_url, signed_headers = get_s3_signed_url(url)
+        signed_url, signed_headers = get_s3_signed_url(url, requestor_pays=requestor_pays)
         resp = requests.get(signed_url, headers=signed_headers, stream=True)
         if resp.status_code != 200:
             resp = requests.get(url, headers=headers, stream=True)
