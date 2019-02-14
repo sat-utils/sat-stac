@@ -33,7 +33,7 @@ $ pip install .
 The latest version of sat-stac is 0.1.1, which uses the STAC spec v0.6.0. To install other versions of sat-stac, install the matching version of sat-stac. 
 
 ```bash
-pip install satstac==0.1.0
+pip install sat-stac==0.1.0
 ```
 
 The table below shows the corresponding versions between sat-stac and STAC:
