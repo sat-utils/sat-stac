@@ -2,11 +2,20 @@ import os
 import unittest
 
 from satstac import Items, Item
+from shutil import rmtree
 
 testpath = os.path.dirname(__file__)
 
 
 class Test(unittest.TestCase):
+
+    path = os.path.join(testpath, 'test-item')
+
+    @classmethod
+    def tearDownClass(cls):
+        """ Remove test files """
+        if os.path.exists(cls.path):
+            rmtree(cls.path)
 
     def load_items(self):
         return Items.load(os.path.join(testpath, 'items.json'))
@@ -89,14 +98,21 @@ class Test(unittest.TestCase):
         items.filter('eo:cloud_cover', [100])
         assert(len(items) == 1)
 
+    def test_download_assets(self):
+        """ Download multiple assets from all items """
+        items = self.load_items()
+        filenames = items.download_assets(keys=['MTL', 'ANG'], path=self.path)
+        assert(len(filenames) == 2)
+        for fnames in filenames:
+            assert(len(fnames) == 2)
+            for f in fnames:
+                assert(os.path.exists(f))
+
     def test_download(self):
         """ Download a data file from all items """
         items = self.load_items()
         
-        fnames = items.download(key='MTL')
+        fnames = items.download(key='MTL', path=self.path)
         assert(len(fnames) == 2)
         for f in fnames:
             assert(os.path.exists(f))
-            os.remove(f)
-            assert(not os.path.exists(f))
-        #shutil.rmtree(os.path.join(testpath, 'landsat-8-l1'))

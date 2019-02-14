@@ -118,6 +118,14 @@ class Items(object):
             items += list(filter(lambda x: x[key] == val, self._items))
         self._items = items
 
+    def download_assets(self, *args, **kwargs):
+        filenames = []
+        for i in self._items:
+            fnames = i.download_assets(*args, **kwargs)
+            if len(fnames) > 0:
+                filenames.append(fnames)
+        return filenames
+
     def download(self, *args, **kwargs):
         """ Download all Items """
         dls = []

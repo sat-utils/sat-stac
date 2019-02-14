@@ -97,6 +97,13 @@ class Test(unittest.TestCase):
         fname = item.download(key='MTL', path=self.path)
         assert(os.path.exists(fname))
 
+    def test_download_assets(self):
+        """ Retrieve multiple data files """
+        item = Item.open(self.filename)
+        fnames = item.download_assets(keys=['MTL', 'ANG'], path=self.path)
+        for f in fnames:
+            assert(os.path.exists(f))
+
     def test_download_nonexist(self):
         """ Test downloading of non-existent file """
         item = Item.open(self.filename)
