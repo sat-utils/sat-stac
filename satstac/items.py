@@ -65,6 +65,12 @@ class Items(object):
         else:
             return None
 
+    def search_geometry(self):
+        if 'intersects' in self._search:
+            return self._search['intersects']
+        else:
+            return None
+
     def properties(self, key, date=None):
         """ Set of values for 'key' property in Items, for specific date if provided """
         if date is None:
