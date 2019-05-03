@@ -16,7 +16,9 @@ class Items(object):
         # link Items to their Collections
         cols = {c.id: c for c in self._collections}
         for i in self._items:
-            i._collection = cols[i['collection']]
+            if 'collection' in i.properties:
+                if i['collection'] in cols:
+                    i._collection = cols[i['collection']]
 
     @classmethod
     def load(cls, filename):
