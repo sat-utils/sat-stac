@@ -8,6 +8,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ### Added
 - Items.search_geometry() function added to return search geometry
+- Extension of `Item` files can now be specified in `Item.get_filename()`. Defaults to `item.json`.
+- Specify STAC version by setting SATUTILS_STAC_VERSION environment variable. Currently defaults to '0.6.2'.
+
+### Changed
+- Items objects no longer require a Collection for every Item
 
 ## [v0.1.2] - 2019-02-14
 
