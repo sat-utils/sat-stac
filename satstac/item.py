@@ -102,11 +102,11 @@ class Item(Thing):
         logging.warning('No such asset (%s)' % key)
         return None
 
-    def get_filename(self, path='', filename='${id}'):
+    def get_filename(self, path='', filename='${id}', extension='.json'):
         """ Get complete path with filename to this item """
         return os.path.join(
             self.substitute(path),
-            self.substitute(filename) + '.json'
+            self.substitute(filename) + extension
         )
 
     def substitute(self, string):

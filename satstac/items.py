@@ -16,7 +16,9 @@ class Items(object):
         # link Items to their Collections
         cols = {c.id: c for c in self._collections}
         for i in self._items:
-            i._collection = cols[i['collection']]
+            if 'collection' in i.properties:
+                if i['collection'] in cols:
+                    i._collection = cols[i['collection']]
 
     @classmethod
     def load(cls, filename):
@@ -62,6 +64,12 @@ class Items(object):
             lats = [c[1] for c in coords[0]]
             lons = [c[0] for c in coords[0]]
             return [(min(lats) + max(lats))/2.0, (min(lons) + max(lons))/2.0]
+        else:
+            return None
+
+    def search_geometry(self):
+        if 'intersects' in self._search:
+            return self._search['intersects']
         else:
             return None
 

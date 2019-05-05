@@ -3,9 +3,7 @@ import os
 
 from .version import __version__
 from .thing import Thing, STACError
-
-
-STAC_VERSION='0.6.0'
+from .config import STAC_VERSION
 
 
 class Catalog(Thing):
