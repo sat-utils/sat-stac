@@ -120,7 +120,7 @@ class Thing(object):
     def add_self(self, endpoint, root):
         """ Update self link with endpoint """
         if self.filename is None:
-            raise STACError('No filename, use save_as() before publishing')
+            raise STACError('No filename, use save_as() first')
         # keep everything except self and root
         links = [l for l in self.data['links'] if l['rel'] not in ['self', 'root']]
         to_item = os.path.relpath(self.filename, os.path.dirname(root))
@@ -173,8 +173,3 @@ class Thing(object):
             self.add_link('root', './%s' % os.path.basename(filename))
         self.save()
         return self
-
-    def publish(self, *args, **kwargs):
-        """ DEPRECATED - use add_self() """
-        logger.warning('Thing.publish() is deprecated, use Thing.add_self() instead')
-        self.add_self(*args, **kwargs)
