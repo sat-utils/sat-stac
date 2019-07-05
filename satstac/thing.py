@@ -2,6 +2,7 @@ import json
 import os
 import requests
 
+from logging import getLogger
 try:
     # Python 3
     from urllib.parse import urljoin
@@ -10,6 +11,9 @@ except ImportError:
     from urlparse import urljoin
 from .version import __version__
 from .utils import mkdirp, get_s3_signed_url
+
+
+logger = getLogger(__name__)
 
 
 class STACError(Exception):
@@ -42,7 +46,7 @@ class Thing(object):
     @classmethod
     def open(cls, filename):
         """ Open an existing JSON data file """
-        # TODO - open remote URLs
+        logger.debug('Opening %s' % filename)
         if filename[0:5] == 'https':
             try:
                 dat = cls.open_remote(filename)
@@ -113,6 +117,19 @@ class Thing(object):
             l['title'] = title
         self.data['links'].append(l)
 
+    def add_self(self, endpoint, root):
+        """ Update self link with endpoint """
+        if self.filename is None:
+            raise STACError('No filename, use save_as() before publishing')
+        # keep everything except self and root
+        links = [l for l in self.data['links'] if l['rel'] not in ['self', 'root']]
+        to_item = os.path.relpath(self.filename, os.path.dirname(root))
+        to_root = os.path.relpath(root, os.path.dirname(self.filename))
+        links.insert(0, {'rel': 'root', 'href': to_root})
+        links.insert(0, {'rel': 'self', 'href': os.path.join(endpoint, to_item)})
+        self.data['links'] = links
+        self.save()
+
     def clean_hierarchy(self):
         """ Clean links of self, parent, and child links (for moving and publishing) """
         rels = ['self', 'root', 'parent', 'child', 'collection', 'item']
@@ -131,6 +148,7 @@ class Thing(object):
         """ Write a catalog file """
         if self.filename is None:
             raise STACError('No filename, use save_as()')
+        logger.debug('Saving %s as %s' % (self.id, self.filename))
         fname = self.filename
         if self.filename[0:5] == 'https':
             # use signed URL
@@ -156,15 +174,7 @@ class Thing(object):
         self.save()
         return self
 
-    def publish(self, endpoint, root):
-        """ Update self link with endpoint """
-        if self.filename is None:
-            raise STACError('No filename, use save_as() before publishing')
-        # keep everything except self and root
-        links = [l for l in self.data['links'] if l['rel'] not in ['self', 'root']]
-        to_item = os.path.relpath(self.filename, os.path.dirname(root))
-        to_root = os.path.relpath(root, os.path.dirname(self.filename))
-        links.insert(0, {'rel': 'root', 'href': to_root})
-        links.insert(0, {'rel': 'self', 'href': os.path.join(endpoint, to_item)})
-        self.data['links'] = links
-        self.save()
+    def publish(self, *args, **kwargs):
+        """ DEPRECATED - use add_self() """
+        logger.warning('Thing.publish() is deprecated, use Thing.add_self() instead')
+        self.add_self(*args, **kwargs)

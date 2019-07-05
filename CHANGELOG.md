@@ -6,6 +6,10 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+### Changed
+- Thing.publish() function now called Thing.add_self(), same arguments
+
+
 ## [v0.1.3] - 2019-05-04
 
 ### Added
