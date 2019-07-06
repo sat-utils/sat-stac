@@ -11,7 +11,6 @@ class Catalog(Thing):
     def __init__(self, data, root=None, **kwargs):
         """ Initialize a catalog with a catalog file """
         super(Catalog, self).__init__(data, **kwargs)
-        self._root = root
 
     @property
     def stac_version(self):

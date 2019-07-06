@@ -28,7 +28,6 @@ class Thing(object):
         self.data = data
         if 'links' not in self.data.keys():
             self.data['links'] = []
-        self._root = None
 
     def __repr__(self):
         return self.id
@@ -167,9 +166,5 @@ class Thing(object):
     def save_as(self, filename):
         """ Write a catalog file to a new file """
         self.filename = filename
-        # TODO - if this is a root then add root link and self links to itself
-        if self._root is not None:
-            self.add_link('self', os.path.join(self._root, os.path.basename(filename)))
-            self.add_link('root', './%s' % os.path.basename(filename))
         self.save()
         return self
