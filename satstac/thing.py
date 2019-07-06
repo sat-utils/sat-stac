@@ -143,10 +143,12 @@ class Thing(object):
         props = self.data.get('properties', {})
         return props.get(key, None)
 
-    def save(self):
+    def save(self, filename=None):
         """ Write a catalog file """
+        if filename is not None:
+            self.filename = filename
         if self.filename is None:
-            raise STACError('No filename, use save_as()')
+            raise STACError('No filename provided, specify with filename keyword')
         logger.debug('Saving %s as %s' % (self.id, self.filename))
         fname = self.filename
         if self.filename[0:5] == 'https':
@@ -161,10 +163,4 @@ class Thing(object):
             mkdirp(os.path.dirname(fname))
             with open(fname, 'w') as f:
                 f.write(json.dumps(self.data))
-        return self
-
-    def save_as(self, filename):
-        """ Write a catalog file to a new file """
-        self.filename = filename
-        self.save()
         return self
