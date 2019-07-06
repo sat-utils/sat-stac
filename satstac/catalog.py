@@ -24,11 +24,13 @@ class Catalog(Thing):
         return self.data.get('description', '')
 
     @classmethod
-    def create(cls, id='stac-catalog', description='A STAC Catalog', root=None, **kwargs):
+    def create(cls, id='stac-catalog', title='A STAC Catalog', 
+               description='A STAC Catalog', root=None, **kwargs):
         """ Create new catalog """
         kwargs.update({
             'id': id,
             'stac_version': STAC_VERSION,
+            'title': title,
             'description': description,
             'links': []
         })
@@ -45,11 +47,7 @@ class Catalog(Thing):
         for cat in self.children():
             for subcat in cat.children():
                 yield subcat
-                # Python 2
-                for x in subcat.catalogs():
-                    yield x
-                # Python 3.3+
-                # yield from subcat.catalogs()
+                yield from subcat.catalogs()
             yield cat
 
     def collections(self):
@@ -59,22 +57,14 @@ class Catalog(Thing):
                 yield Collection.open(cat.filename)
                 # TODO - keep going? if other Collections can appear below a Collection
             else:
-                # Python 2
-                for x in cat.collections():
-                    yield x
-                # Python 3.3+
-                # yield from cat.collections()
+                yield from cat.collections()
 
     def items(self):
         """ Recursively get all items within this Catalog """
         for item in self.links('item'):
             yield Item.open(item)
         for child in self.children():
-            # Python 2
-            for x in child.items():
-                yield x
-            # Python 3.3+
-            # yield from child.items()
+            yield from child.items()
 
     def add_catalog(self, catalog):
         """ Add a catalog to this catalog """
