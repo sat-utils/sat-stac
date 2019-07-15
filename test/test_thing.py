@@ -23,7 +23,13 @@ class Test(unittest.TestCase):
         """ Configure testing class """
         with open(self.fname) as f:
             data = json.loads(f.read())
-        return Thing(data)
+        thing = Thing(data)
+        thing.clean_hierarchy()
+        return thing
+
+    def test_init_error(self):
+        with self.assertRaises(STACError):
+            Thing({})
 
     def test_init(self):
         thing1 = self.get_thing()
@@ -36,7 +42,8 @@ class Test(unittest.TestCase):
         assert(thing2.links() == [])
         with self.assertRaises(STACError):
             thing2.save()
-        print(thing1)
+        assert(thing2.id == str(thing2))
+        #import pdb; pdb.set_trace()
 
     def test_open(self):
         thing1 = self.get_thing()
@@ -46,6 +53,11 @@ class Test(unittest.TestCase):
             os.path.basename(thing1.links()[0]) 
             == os.path.basename(thing2.links()[0])
         )
+        assert(thing2.path == os.path.dirname(self.fname))
+
+    def test_open_missing(self):
+        with self.assertRaises(STACError):
+            thing = Thing.open('nosuchfile.json')        
 
     def test_open_remote(self):
         thing = Thing.open('https://landsat-stac.s3.amazonaws.com/catalog.json')
@@ -72,8 +84,20 @@ class Test(unittest.TestCase):
     def test_add_link(self):
         thing = self.get_thing()
         thing.add_link('testlink', 'bobloblaw', type='text/plain', title='BobLoblaw')
+        # try adding it again, should not add it if rel and href the same
+        thing.add_link('testlink', 'bobloblaw', type='text/plain', title='BobLoblaw')
         assert(len(thing.links()) == 4)
+        assert(len(thing.links('testlink')) == 1)
         assert(thing.links('testlink')[0] == 'bobloblaw')
+
+    def test_get_root(self):
+        thing = self.get_thing()
+        assert(thing.root() == None)
+        thing.add_link('root', 'catalog.json', title='root1')
+        assert(thing.root()['title'] == 'root1')
+        thing.add_link('root', 'catalog;json', title='root2')
+        with self.assertRaises(STACError):
+            roots = thing.root()
 
     def test_clean_hierarchy(self):
         thing = self.get_thing()
@@ -90,30 +114,30 @@ class Test(unittest.TestCase):
         thing = Thing.open(self.fname)
         thing.save()
         fout = os.path.join(self.path, 'test-save.json')
-        thing.save_as(fout)
+        thing.save(fout)
         assert(os.path.exists(fout))
 
     def test_save_remote_with_signed_url(self):
         thing = Thing.open(self.fname)
-        thing.save_as('https://landsat-stac.s3.amazonaws.com/test/thing.json')
+        thing.save('https://landsat-stac.s3.amazonaws.com/test/thing.json')
 
     def test_save_remote_with_bad_signed_url(self):
         envs = dict(os.environ)
         thing = Thing.open(self.fname)
         os.environ['AWS_BUCKET_REGION'] = 'us-east-1'
         with self.assertRaises(STACError):
-            thing.save_as('https://landsat-stac.s3.amazonaws.com/test/thing.json')
+            thing.save('https://landsat-stac.s3.amazonaws.com/test/thing.json')
         os.environ.clear()
         os.environ.update(envs)
 
-    def test_publish(self):
+    def test_add_self(self):
         thing = self.get_thing()
         fout = os.path.join(self.path, 'test-save.json')
-        thing.save_as(fout)
-        thing.publish('https://my.cat', root=fout)
+        thing.save(fout)
+        thing.add_self('https://my.cat', root=fout)
         assert(thing.links('self')[0] == 'https://my.cat/test-save.json')
 
-    def test_publish_without_saving(self):
+    def test_add_self_without_saving(self):
         thing = self.get_thing()
         with self.assertRaises(STACError):
-            thing.publish('https://my.cat', root=None)
+            thing.add_self('https://my.cat', root=None)

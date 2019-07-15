@@ -78,7 +78,7 @@ class Test(unittest.TestCase):
         assert(len(items) == 2)
 
     def test_add_catalog(self):
-        cat = Catalog.create(root='http://my.cat').save_as(os.path.join(self.path, 'catalog.json'))
+        cat = Catalog.create(root='http://my.cat').save(os.path.join(self.path, 'catalog.json'))
         col = Catalog.open(os.path.join(testpath, 'catalog/eo/landsat-8-l1/catalog.json'))
         cat.add_catalog(col)
         child = [c for c in cat.children()][0]

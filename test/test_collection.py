@@ -44,7 +44,7 @@ class Test(unittest.TestCase):
         assert(len(cat.properties))
 
     def test_add_item(self):
-        cat = Catalog.create(root='http://my.cat').save_as(os.path.join(self.path, 'catalog.json'))
+        cat = Catalog.create(root='http://my.cat').save(os.path.join(self.path, 'catalog.json'))
         col = Collection.open(os.path.join(testpath, 'catalog/eo/landsat-8-l1/catalog.json'))
         cat.add_catalog(col)
         item = Item.open(os.path.join(testpath, 'catalog/eo/landsat-8-l1/item.json'))
@@ -58,7 +58,7 @@ class Test(unittest.TestCase):
             col.add_item(item)
 
     def test_add_item_with_subcatalogs(self):
-        cat = Catalog.create(root='http://my.cat').save_as(os.path.join(self.path, 'test_subcatalogs.json'))
+        cat = Catalog.create(root='http://my.cat').save(os.path.join(self.path, 'test_subcatalogs.json'))
         col = Collection.open(os.path.join(testpath, 'catalog/eo/landsat-8-l1/catalog.json'))
         cat.add_catalog(col)
         item = Item.open(os.path.join(testpath, 'catalog/eo/landsat-8-l1/item.json'))
