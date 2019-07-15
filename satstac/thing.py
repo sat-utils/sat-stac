@@ -3,12 +3,7 @@ import os
 import requests
 
 from logging import getLogger
-try:
-    # Python 3
-    from urllib.parse import urljoin
-except ImportError:
-    # Python 2
-    from urlparse import urljoin
+from urllib.parse import urljoin
 from .version import __version__
 from .utils import mkdirp, get_s3_signed_url
 
@@ -26,6 +21,8 @@ class Thing(object):
         """ Initialize a new class with a dictionary """
         self.filename = filename
         self.data = data
+        if 'id' not in data:
+            raise STACError('ID is required')
         if 'links' not in self.data.keys():
             self.data['links'] = []
 
@@ -96,12 +93,22 @@ class Thing(object):
     def root(self):
         """ Get root link """
         links = self.links('root')
-        return self.open(links[0]) if len(links) == 1 else []
+        if len(links) == 1:
+            return self.open(links[0])
+        elif len(links) == 0:
+            return None
+        else:
+            raise STACError('More than one root provided')
 
     def parent(self):
         """ Get parent link """
         links = self.links('parent')
-        return self.open(links[0]) if len(links) == 1 else []
+        if len(links) == 1:
+            return self.open(links[0])
+        elif len(links) == 0:
+            return None
+        else:
+            raise STACError('More than one parent provided')
 
     def add_link(self, rel, link, type=None, title=None):
         """ Add a new link """
