@@ -20,11 +20,11 @@ class Thing(object):
     def __init__(self, data, filename=None):
         """ Initialize a new class with a dictionary """
         self.filename = filename
-        self.data = data
+        self._data = data
         if 'id' not in data:
             raise STACError('ID is required')
-        if 'links' not in self.data.keys():
-            self.data['links'] = []
+        if 'links' not in self._data.keys():
+            self._data['links'] = []
 
     def __repr__(self):
         return self.id
@@ -58,10 +58,15 @@ class Thing(object):
                 raise STACError('%s does not exist locally' % filename)
         return cls(dat, filename=filename)
 
+    def __getitem__(self, key):
+        """ Get key from properties """
+        props = self._data.get('properties', {})
+        return props.get(key, None)
+
     @property
     def id(self):
         """ Return id of this entity """
-        return self.data['id']
+        return self._data['id']
 
     @property
     def path(self):
@@ -70,7 +75,7 @@ class Thing(object):
 
     def links(self, rel=None):
         """ Get links for specific rel type """
-        links = self.data.get('links', [])
+        links = self._data.get('links', [])
         if rel is not None:
             links = [l for l in links if l.get('rel') == rel]
         links = [l['href'] for l in links]
@@ -113,7 +118,7 @@ class Thing(object):
     def add_link(self, rel, link, type=None, title=None):
         """ Add a new link """
         # if this link already exists do not add it
-        for l in self.data['links']:
+        for l in self._data['links']:
             if l['rel'] == rel and l['href'] == link:
                 return
         l = {'rel': rel, 'href': link}
@@ -121,34 +126,29 @@ class Thing(object):
             l['type'] = type
         if title is not None:
             l['title'] = title
-        self.data['links'].append(l)
+        self._data['links'].append(l)
 
     def add_self(self, endpoint, root):
         """ Update self link with endpoint """
         if self.filename is None:
             raise STACError('No filename, use save_as() first')
         # keep everything except self and root
-        links = [l for l in self.data['links'] if l['rel'] not in ['self', 'root']]
+        links = [l for l in self._data['links'] if l['rel'] not in ['self', 'root']]
         to_item = os.path.relpath(self.filename, os.path.dirname(root))
         to_root = os.path.relpath(root, os.path.dirname(self.filename))
         links.insert(0, {'rel': 'root', 'href': to_root})
         links.insert(0, {'rel': 'self', 'href': os.path.join(endpoint, to_item)})
-        self.data['links'] = links
+        self._data['links'] = links
         self.save()
 
     def clean_hierarchy(self):
         """ Clean links of self, parent, and child links (for moving and publishing) """
         rels = ['self', 'root', 'parent', 'child', 'collection', 'item']
         links = []
-        for l in self.data['links']:
+        for l in self._data['links']:
             if l['rel'] not in rels:
                 links.append(l)
-        self.data['links'] = links
-
-    def __getitem__(self, key):
-        """ Get key from properties """
-        props = self.data.get('properties', {})
-        return props.get(key, None)
+        self._data['links'] = links
 
     def save(self, filename=None):
         """ Write a catalog file """
@@ -162,12 +162,12 @@ class Thing(object):
             # use signed URL
             signed_url, signed_headers = get_s3_signed_url(self.filename, rtype='PUT',
                                                            public=True, content_type='application/json')
-            resp = requests.put(signed_url, data=json.dumps(self.data), headers=signed_headers)
+            resp = requests.put(signed_url, data=json.dumps(self._data), headers=signed_headers)
             if resp.status_code != 200:
                 raise STACError('Unable to save file to %s: %s' % (self.filename, resp.text))
         else:
             # local file save
             mkdirp(os.path.dirname(fname))
             with open(fname, 'w') as f:
-                f.write(json.dumps(self.data))
+                f.write(json.dumps(self._data))
         return self

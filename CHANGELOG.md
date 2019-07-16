@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ### Changed
 - Thing.publish() function now called Thing.add_self(), same arguments
 - Thing.root() and Thing.parent() functions now return `None` if no root or parent (rather than an empty list). If more than one root or parent then an error will now be thrown.
+- Internal JSON data now stored in variable called `_data` rather than `data`
 
 ## [v0.1.3] - 2019-05-04
 

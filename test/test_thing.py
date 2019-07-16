@@ -21,11 +21,7 @@ class Test(unittest.TestCase):
 
     def get_thing(self):
         """ Configure testing class """
-        with open(self.fname) as f:
-            data = json.loads(f.read())
-        thing = Thing(data)
-        thing.clean_hierarchy()
-        return thing
+        return Thing.open(self.fname)
 
     def test_init_error(self):
         with self.assertRaises(STACError):
@@ -43,7 +39,6 @@ class Test(unittest.TestCase):
         with self.assertRaises(STACError):
             thing2.save()
         assert(thing2.id == str(thing2))
-        #import pdb; pdb.set_trace()
 
     def test_open(self):
         thing1 = self.get_thing()
@@ -83,21 +78,37 @@ class Test(unittest.TestCase):
 
     def test_add_link(self):
         thing = self.get_thing()
+        thing.clean_hierarchy()
+        thing.filename = None
         thing.add_link('testlink', 'bobloblaw', type='text/plain', title='BobLoblaw')
+        assert(len(thing.links()) == 1)
         # try adding it again, should not add it if rel and href the same
         thing.add_link('testlink', 'bobloblaw', type='text/plain', title='BobLoblaw')
-        assert(len(thing.links()) == 4)
+        assert(len(thing.links()) == 1)
         assert(len(thing.links('testlink')) == 1)
         assert(thing.links('testlink')[0] == 'bobloblaw')
 
     def test_get_root(self):
         thing = self.get_thing()
-        assert(thing.root() == None)
-        thing.add_link('root', 'catalog.json', title='root1')
-        assert(thing.root()['title'] == 'root1')
-        thing.add_link('root', 'catalog;json', title='root2')
+        root = thing.root()
+        assert(root.filename == os.path.join(testpath, 'catalog/catalog.json'))
+        thing.add_link('root', 'root', title='root2')
         with self.assertRaises(STACError):
-            roots = thing.root()
+            thing.root()
+        thing.clean_hierarchy()
+        root = thing.root()
+        assert(root is None)
+
+    def test_get_parent(self):
+        thing = Thing.open(os.path.join(testpath, 'catalog/eo/catalog.json'))
+        parent = thing.parent()
+        assert(parent.filename == os.path.join(testpath, 'catalog/catalog.json'))
+        thing.add_link('parent', 'catalog.json', title='parent2')
+        with self.assertRaises(STACError):
+            thing.parent()
+        thing.clean_hierarchy()
+        parent = thing.parent()
+        assert(parent is None)
 
     def test_clean_hierarchy(self):
         thing = self.get_thing()
@@ -139,5 +150,6 @@ class Test(unittest.TestCase):
 
     def test_add_self_without_saving(self):
         thing = self.get_thing()
+        thing.filename = None
         with self.assertRaises(STACError):
             thing.add_self('https://my.cat', root=None)
