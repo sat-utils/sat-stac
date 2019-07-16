@@ -47,7 +47,7 @@ class Item(Thing):
     @property
     def properties(self):
         """ Get dictionary of properties """
-        return self.data.get('properties', {})
+        return self._data.get('properties', {})
 
     def __getitem__(self, key):
         """ Get key from properties """
@@ -68,17 +68,17 @@ class Item(Thing):
 
     @property
     def geometry(self):
-        return self.data['geometry']
+        return self._data['geometry']
 
     @property
     def bbox(self):
         """ Get bounding box of scene """
-        return self.data['bbox']
+        return self._data['bbox']
 
     @property
     def assets(self):
         """ Return dictionary of assets """
-        return self.data.get('assets', {})
+        return self._data.get('assets', {})
 
     @property
     def assets_by_common_name(self):
@@ -126,7 +126,7 @@ class Item(Thing):
     def download_assets(self, keys=None, **kwargs):
         """ Download multiple assets """
         if keys is None:
-            keys = self.data['assets'].keys()
+            keys = self._data['assets'].keys()
         filenames = []
         for key in keys:
             filenames.append(self.download(key, **kwargs))

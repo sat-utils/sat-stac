@@ -1,5 +1,6 @@
 {
     "id": "L1C_T53MNQ_A017245_20181011T011722",
+    "collection": "sentinel-2-l1c",
     "bbox": [
         135.6392640640852,
         -5.5163474919383235,
@@ -38,7 +39,6 @@
         ]
     },
     "properties": {
-        "collection": "sentinel-2-l1c",
         "datetime": "2018-10-11T01:17:22.460Z",
         "eo:platform": "Sentinel-2A",
         "eo:cloud_cover": 21,

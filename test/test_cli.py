@@ -21,14 +21,13 @@ class Test(unittest.TestCase):
             parse_args(['-h'])
 
     def test_parse_args(self):
-        input = "create testid 'this is a description' --endpoint 'https://my.cat'"
+        input = "create testid 'this is a description'"
         args = parse_args(split(input))
-        assert(len(args) == 7)
-        assert(args['endpoint'] == 'https://my.cat')
+        assert(len(args) == 6)
         assert(args['id'] == 'testid')
 
     def test_cli_create(self):
-        input = "sat-stac create cat 'this is a description' --endpoint 'https://my.cat'"
+        input = "sat-stac create cat 'this is a description'"
         sys.argv = split(input)
         cli()
         assert(os.path.exists('catalog.json'))
@@ -37,13 +36,4 @@ class Test(unittest.TestCase):
         cli()
         assert(os.path.exists('subcat/catalog.json'))
         rmtree('subcat')
-        os.remove('catalog.json')
-
-    def test_cli_publish(self):
-        cat = Catalog.create(root='https://my.cat').save_as('catalog.json')
-        input = "sat-stac publish catalog.json https://my.kitten"
-        sys.argv = split(input)
-        cli()
-        cat = Catalog.open('catalog.json')
-        assert(cat.links('self')[0] == 'https://my.kitten/catalog.json')
         os.remove('catalog.json')

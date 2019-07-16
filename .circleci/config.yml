@@ -25,55 +25,6 @@ references:
 
 jobs:
 
-  build_and_test_35:
-    docker:
-      - image: circleci/python:3.5
-    steps:  
-      - *restore_repo
-      - checkout
-      - *save_repo
-      - restore_cache:
-          keys: 
-            - v1-dependencies35-{{ checksum "requirements.txt"}}
-            - v1-dependencies35        
-      - run: |
-            pip install virtualenv
-            virtualenv ~/venv35
-            . ~/venv35/bin/activate
-            pip install -r requirements.txt
-            pip install -r requirements-dev.txt
-            pip install .
-            cd test
-            pytest -v --cov satstac --cov-report term-missing
-      - save_cache:
-          key: v1-dependencies35-{{ checksum "requirements.txt"}}
-          paths:
-            - ~/venv35
-
-  build_and_test_36:
-    docker:
-      - image: circleci/python:3.6
-    steps:  
-      - *restore_repo
-      - checkout
-      - *save_repo
-      - restore_cache:
-          keys: 
-            - v1-dependencies36-{{ checksum "requirements.txt"}}
-            - v1-dependencies36        
-      - run: |
-            python3 -m venv ~/venv36
-            . ~/venv36/bin/activate
-            pip install -r requirements.txt
-            pip install -r requirements-dev.txt
-            pip install .
-            cd test
-            pytest -v --cov satstac --cov-report term-missing
-      - save_cache:
-          key: v1-dependencies36-{{ checksum "requirements.txt"}}
-          paths:
-            - ~/venv36
-
   build_and_test_37:
     docker:
       - image: circleci/python:3.7
@@ -101,17 +52,17 @@ jobs:
 
   deploy:
     docker:
-      - image: circleci/python:3.6
+      - image: circleci/python:3.7
     steps:
       - *restore_repo
       - restore_cache:
           keys: 
-            - v1-dependencies36-{{ checksum "requirements.txt"}}
-            - v1-dependencies36
+            - v1-dependencies37-{{ checksum "requirements.txt"}}
+            - v1-dependencies37
       - run:
           name: Deploy
           command: |
-            . ~/venv36/bin/activate
+            . ~/venv37/bin/activate
             mkdir -p ~/.ssh
             ssh-keyscan github.com >> ~/.ssh/known_hosts
             pip install twine
@@ -124,18 +75,12 @@ jobs:
 
 workflows:
   version: 2
-  build_test_35:
-    jobs:
-      - build_and_test_35
-  build_test_36:
-    jobs:
-      - build_and_test_36
-      - deploy:
-          requires:
-            - build_and_test_36
-          filters:
-            branches:
-              only: master
   build_test_37:
     jobs:
       - build_and_test_37
+      - deploy:
+          requires:
+            - build_and_test_37
+          filters:
+            branches:
+              only: master

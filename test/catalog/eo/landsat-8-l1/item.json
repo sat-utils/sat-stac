@@ -1,5 +1,6 @@
 {
     "id": "LC08_L1GT_120046_20181012_20181012_01_RT",
+    "collection": "landsat-8-l1",
     "bbox": [
         114.89853,
         19.54292,
@@ -34,7 +35,6 @@
         ]
     },
     "properties": {
-        "collection": "landsat-8-l1",
         "datetime": "2018-10-12T02:40:06.547Z",
         "eo:cloud_cover": 91,
         "eo:sun_azimuth": 141.68039757,

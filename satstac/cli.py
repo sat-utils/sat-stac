@@ -28,17 +28,7 @@ def parse_args(args):
     parser.add_argument('id', help='ID of the new catalog')
     parser.add_argument('description', help='Description of new catalog')
     parser.add_argument('--filename', help='Filename of catalog', default='catalog.json')
-    group = parser.add_argument_group('root catalog options (mutually exclusive)')
-    group = group.add_mutually_exclusive_group(required=True)
-    group.add_argument('--root', help='Filename to existing root catalog', default=None)
-    group.add_argument('--endpoint', help='Endpoint for this new root catalog', default=None)
-
-    # command 2
-    h = 'Update entire catalog with a new endpoint (update self links)'
-    parser = subparsers.add_parser('publish', parents=[pparser], help=h, formatter_class=dhf)
-    parser.add_argument('root', help='Filename to existing root catalog')
-    parser.add_argument('endpoint', help='New endpoint')
-    # parser.add_argument()
+    parser.add_argument('--root', help='Filename to existing root catalog', default=None)
 
     # turn Namespace into dictinary
     parsed_args = vars(parser0.parse_args(args))
@@ -57,11 +47,8 @@ def cli():
             cat = Catalog.create(id=args['id'], description=args['description'])
             root.add_catalog(cat)
         else:
-            cat = Catalog.create(id=args['id'], description=args['description'], root=args['endpoint'])
-            cat.save_as(args['filename'])
-    elif cmd == 'publish':
-        cat = Catalog.open(args['root'])
-        cat.publish(args['endpoint'])
+            cat = Catalog.create(id=args['id'], description=args['description'])
+            cat.save(filename=args['filename'])
 
 
 if __name__ == "__main__":

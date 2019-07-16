@@ -45,9 +45,9 @@ class Test(unittest.TestCase):
         item = Item.open(self.filename)
         dt, tm = item.properties['datetime'].split('T')
         assert(str(item.date) == dt)
-        assert(item.id == item.data['id'])
-        assert(item.geometry == item.data['geometry'])
-        assert(str(item) == item.data['id'])
+        assert(item.id == item._data['id'])
+        assert(item.geometry == item._data['geometry'])
+        assert(str(item) == item._data['id'])
         assert(len(item.bbox) == 4)
         #assert(list(item.keys()) == ['id', 'collection', 'datetime', 'eo:platform'])
 
@@ -60,13 +60,13 @@ class Test(unittest.TestCase):
     def test_class_properties(self):
         """ Test the property functions of the Item class """
         item = Item.open(self.filename)
-        l = os.path.join(os.path.dirname(item.filename), item.data['links'][0]['href'])
+        l = os.path.join(os.path.dirname(item.filename), item._data['links'][0]['href'])
         assert(os.path.abspath(item.links()[0]) == os.path.abspath(l))
 
     def test_assets(self):
         """ Get assets for download """
         item = Item.open(self.filename)
-        href = item.data['assets']['B1']['href']
+        href = item._data['assets']['B1']['href']
         assert(item.assets['B1']['href'] == href)
         assert(item.asset('B1')['href'] == href)
         assert(item.asset('coastal')['href'] == href)

@@ -38,7 +38,7 @@ class Test(unittest.TestCase):
     def test_open(self):
         """ Initialize Catalog with a file """
         cat = self.get_catalog()
-        assert(len(cat.data.keys()) == 4)
+        assert(len(cat._data.keys()) == 4)
         assert(cat.id == 'stac')
         assert(len(cat.links())==3)
 
@@ -78,7 +78,7 @@ class Test(unittest.TestCase):
         assert(len(items) == 2)
 
     def test_add_catalog(self):
-        cat = Catalog.create(root='http://my.cat').save_as(os.path.join(self.path, 'catalog.json'))
+        cat = Catalog.create(root='http://my.cat').save(os.path.join(self.path, 'catalog.json'))
         col = Catalog.open(os.path.join(testpath, 'catalog/eo/landsat-8-l1/catalog.json'))
         cat.add_catalog(col)
         child = [c for c in cat.children()][0]
@@ -88,11 +88,3 @@ class Test(unittest.TestCase):
         cat = Catalog.create()
         with self.assertRaises(STACError):
            cat.add_catalog({})
-
-    def test_publish(self):
-        path = os.path.join(self.path, 'test_publish')
-        shutil.copytree(os.path.join(testpath, 'catalog'), path)
-        cat = Catalog.open(os.path.join(path, 'catalog.json'))
-        cat.publish('https://my.cat')
-        item = Item.open(os.path.join(path, 'eo/landsat-8-l1/item.json'))
-        assert(item.links('self')[0] == 'https://my.cat/eo/landsat-8-l1/item.json')

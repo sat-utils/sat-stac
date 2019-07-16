@@ -41,6 +41,7 @@ The table below shows the corresponding versions between sat-stac and STAC:
 | sat-stac | STAC  |
 | -------- | ----  |
 | 0.1.x    | 0.6.x |
+| 0.2.x    | 0.7.x |
 
 ## Tutorials
 

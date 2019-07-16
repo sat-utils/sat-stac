@@ -22,32 +22,32 @@ class Collection(Catalog):
 
     @property
     def title(self):
-        return self.data.get('title', '')
+        return self._data.get('title', '')
 
     @property
     def keywords(self):
-        return self.data.get('keywords', [])
+        return self._data.get('keywords', [])
 
     @property
     def version(self):
-        return self.data.get('version', '')
+        return self._data.get('version', '')
 
     @property
     def license(self):
-        return self.data.get('license')
+        return self._data.get('license')
 
     @property
     def providers(self):
-        return self.data.get('providers', [])
+        return self._data.get('providers', [])
 
     @property
     def extent(self):
-        return self.data.get('extent')
+        return self._data.get('extent')
 
     @property
     def properties(self):
         """ Get dictionary of properties """
-        return self.data.get('properties', {})
+        return self._data.get('properties', {})
 
     @functools.lru_cache()
     def parent_catalog(self, path):
@@ -63,7 +63,7 @@ class Collection(Catalog):
             except STACError as err:
                 # create a new sub-catalog
                 subcat = self.create(id=d, description='%s catalog' % var_names[i])
-                subcat.save_as(fname)
+                subcat.save(filename=fname)
                 # add the sub-catalog to this catalog
                 cat.add_catalog(subcat)
             cat = subcat
@@ -88,13 +88,12 @@ class Collection(Catalog):
 
         # create links from item
         item.clean_hierarchy()
-        item.add_link('self', os.path.join(self.endpoint(), os.path.relpath(item_fname, root_path)))
         item.add_link('root', os.path.relpath(root_link, item_path))
         item.add_link('parent', os.path.relpath(parent.filename, item_path))
         # this assumes the item has been added to a Collection, not a Catalog
         item.add_link('collection', os.path.relpath(self.filename, item_path))
 
         # save item
-        item.save_as(item_fname)
+        item.save(filename=item_fname)
         logger.debug('Added %s in %s seconds' % (item.filename, datetime.now()-start))
         return self
