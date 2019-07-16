@@ -65,12 +65,12 @@ class Catalog(Thing):
         for child in self.children():
             yield from child.items()
 
-    def add_catalog(self, catalog):
+    def add_catalog(self, catalog, basename='catalog'):
         """ Add a catalog to this catalog """
         if self.filename is None:
             raise STACError('Save catalog before adding sub-catalogs')
         # add new catalog child link
-        child_link = '%s/catalog.json' % catalog.id
+        child_link = '%s/%s.json' % (catalog.id, basename)
         child_fname = os.path.join(self.path, child_link)
         child_path = os.path.dirname(child_fname)
         root_links = self.links('root')
@@ -85,6 +85,10 @@ class Catalog(Thing):
         # create catalog file
         catalog.save(filename=child_fname)
         return self
+
+    def add_collection(self, catalog, basename='collection'):
+        """ Add a collection to this catalog """
+        return self.add_catalog(catalog, basename=basename)
 
 
 # import and end of module prevents problems with circular dependencies.
