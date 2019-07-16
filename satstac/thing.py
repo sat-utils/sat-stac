@@ -84,7 +84,7 @@ class Thing(object):
             for l in links:
                 if os.path.isabs(l) or l[0:4] == 'http':
                     # if absolute or https 
-                    link = l 
+                    link = l
                 else:
                     # relative path
                     if self.filename[0:4] == 'http':
@@ -101,7 +101,8 @@ class Thing(object):
         if len(links) == 1:
             return self.open(links[0])
         elif len(links) == 0:
-            return None
+            # i'm the root of myself
+            return self
         else:
             raise STACError('More than one root provided')
 
@@ -128,18 +129,6 @@ class Thing(object):
             l['title'] = title
         self._data['links'].append(l)
 
-    def add_self(self, endpoint, root):
-        """ Update self link with endpoint """
-        if self.filename is None:
-            raise STACError('No filename, use save_as() first')
-        # keep everything except self and root
-        links = [l for l in self._data['links'] if l['rel'] not in ['self', 'root']]
-        to_item = os.path.relpath(self.filename, os.path.dirname(root))
-        to_root = os.path.relpath(root, os.path.dirname(self.filename))
-        links.insert(0, {'rel': 'root', 'href': to_root})
-        links.insert(0, {'rel': 'self', 'href': os.path.join(endpoint, to_item)})
-        self._data['links'] = links
-        self.save()
 
     def clean_hierarchy(self):
         """ Clean links of self, parent, and child links (for moving and publishing) """

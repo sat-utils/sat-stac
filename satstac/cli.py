@@ -47,8 +47,8 @@ def cli():
             cat = Catalog.create(id=args['id'], description=args['description'])
             root.add_catalog(cat)
         else:
-            cat = Catalog.create(id=args['id'], description=args['description'], root=args['endpoint'])
-            cat.save_as(args['filename'])
+            cat = Catalog.create(id=args['id'], description=args['description'])
+            cat.save(filename=args['filename'])
 
 
 if __name__ == "__main__":

@@ -109,11 +109,11 @@ class Items(object):
 
     def geojson(self):
         """ Get Items as GeoJSON FeatureCollection """
-        features = [s.data for s in self._items]
+        features = [s._data for s in self._items]
         geoj = {
             'type': 'FeatureCollection',
             'features': features,
-            'collections': [c.data for c in self._collections],
+            'collections': [c._data for c in self._collections],
         }
         if self._search is not None:
             geoj['search'] = self._search

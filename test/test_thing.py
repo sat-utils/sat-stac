@@ -32,7 +32,7 @@ class Test(unittest.TestCase):
         assert(thing1.id == 'stac')
         assert(len(thing1.links()) == 3)
         assert(len(thing1.links('self')) == 1)
-        data = thing1.data
+        data = thing1._data
         del data['links']
         thing2 = Thing(data)
         assert(thing2.links() == [])
@@ -57,7 +57,7 @@ class Test(unittest.TestCase):
     def test_open_remote(self):
         thing = Thing.open('https://landsat-stac.s3.amazonaws.com/catalog.json')
         assert(thing.id == 'landsat-stac')
-        assert(len(thing.data['links']) == 3)
+        assert(len(thing._data['links']) == 3)
 
     def test_open_missing_remote(self):
         with self.assertRaises(STACError):
@@ -65,10 +65,10 @@ class Test(unittest.TestCase):
 
     def test_thing(self):
         thing = self.get_thing()
-        assert('id' in thing.data.keys())
-        assert('links' in thing.data.keys())
-        del thing.data['links']
-        assert('links' not in thing.data.keys())
+        assert('id' in thing._data.keys())
+        assert('links' in thing._data.keys())
+        del thing._data['links']
+        assert('links' not in thing._data.keys())
         assert(thing.links() == [])
 
     def test_get_links(self):
@@ -97,7 +97,7 @@ class Test(unittest.TestCase):
             thing.root()
         thing.clean_hierarchy()
         root = thing.root()
-        assert(root is None)
+        assert(root == thing)
 
     def test_get_parent(self):
         thing = Thing.open(os.path.join(testpath, 'catalog/eo/catalog.json'))
@@ -140,16 +140,3 @@ class Test(unittest.TestCase):
             thing.save('https://landsat-stac.s3.amazonaws.com/test/thing.json')
         os.environ.clear()
         os.environ.update(envs)
-
-    def test_add_self(self):
-        thing = self.get_thing()
-        fout = os.path.join(self.path, 'test-save.json')
-        thing.save(fout)
-        thing.add_self('https://my.cat', root=fout)
-        assert(thing.links('self')[0] == 'https://my.cat/test-save.json')
-
-    def test_add_self_without_saving(self):
-        thing = self.get_thing()
-        thing.filename = None
-        with self.assertRaises(STACError):
-            thing.add_self('https://my.cat', root=None)
