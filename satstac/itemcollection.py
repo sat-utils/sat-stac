@@ -5,7 +5,7 @@ from .item import Item
 from .utils import terminal_calendar
 
 
-class Items(object):
+class ItemCollection(object):
     """ A GeoJSON FeatureCollection of STAC Items with associated Collections """
 
     def __init__(self, items, collections=[], search={}):
