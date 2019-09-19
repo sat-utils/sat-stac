@@ -1,7 +1,7 @@
 import os
 import unittest
 
-from satstac import Items, Item
+from satstac import ItemCollection, Item
 from shutil import rmtree
 
 testpath = os.path.dirname(__file__)
@@ -18,7 +18,7 @@ class Test(unittest.TestCase):
             rmtree(cls.path)
 
     def load_items(self):
-        return Items.load(os.path.join(testpath, 'items.json'))
+        return ItemCollection.load(os.path.join(testpath, 'items.json'))
 
     def test_load(self):
         """ Initialize Scenes with list of Scene objects """

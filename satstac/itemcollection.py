@@ -5,7 +5,7 @@ from .item import Item
 from .utils import terminal_calendar
 
 
-class Items(object):
+class ItemCollection(object):
     """ A GeoJSON FeatureCollection of STAC Items with associated Collections """
 
     def __init__(self, items, collections=[], search={}):
@@ -16,9 +16,11 @@ class Items(object):
         # link Items to their Collections
         cols = {c.id: c for c in self._collections}
         for i in self._items:
-            if 'collection' in i.properties:
-                if i['collection'] in cols:
-                    i._collection = cols[i['collection']]
+            # backwards compatible to STAC 0.6.0 where collection is in properties
+            col = i._data.get('collection', None)
+            if col is not None:
+                if col in cols:
+                    i._collection = cols[col]
 
     @classmethod
     def load(cls, filename):
@@ -50,8 +52,8 @@ class Items(object):
 
     def bbox(self):
         """ Get bounding box of search """
-        if 'intersects' in self._search:
-            coords = self._search['intersects']['geometry']['coordinates']
+        if 'intersects' in self._search.get('parameters', {}):
+            coords = self._search['parameters']['intersects']['geometry']['coordinates']
             lats = [c[1] for c in coords[0]]
             lons = [c[0] for c in coords[0]]
             return [min(lons), min(lats), max(lons), max(lats)]
@@ -59,8 +61,8 @@ class Items(object):
             return None
 
     def center(self):
-        if 'intersects' in self._search:
-            coords = self._search['intersects']['geometry']['coordinates']
+        if 'intersects' in self._search.get('parameters', {}):
+            coords = self._search['parameters']['intersects']['geometry']['coordinates']
             lats = [c[1] for c in coords[0]]
             lons = [c[0] for c in coords[0]]
             return [(min(lats) + max(lats))/2.0, (min(lons) + max(lons))/2.0]
@@ -68,8 +70,8 @@ class Items(object):
             return None
 
     def search_geometry(self):
-        if 'intersects' in self._search:
-            return self._search['intersects']
+        if 'intersects' in self._search.get('parameters', {}):
+            return self._search['parameters']['intersects']
         else:
             return None
 
@@ -93,7 +95,6 @@ class Items(object):
     def calendar(self):
         """ Get calendar for dates """
         date_labels = {}
-        dates = self.dates()
         for d in self.dates():
             sensors = self.properties('eo:platform', d)
             if len(sensors) > 1:
