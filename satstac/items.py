@@ -16,9 +16,11 @@ class Items(object):
         # link Items to their Collections
         cols = {c.id: c for c in self._collections}
         for i in self._items:
-            if 'collection' in i.properties:
-                if i['collection'] in cols:
-                    i._collection = cols[i['collection']]
+            # backwards compatible to STAC 0.6.0 where collection is in properties
+            col = i._data.get('collection', i.properties.get('collection', None))
+            if col is not None:
+                if col in cols:
+                    i._collection = cols[col]
 
     @classmethod
     def load(cls, filename):
