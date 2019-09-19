@@ -6,10 +6,13 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
-## [v0.2.1] - 2019-09-19
+## [v0.3.0] - 2019-09-19
 
 ### Fixed
-- Loading Items now looks for collection at Item root level rather than in properties (STAC 0.6.0). If not found it will look in properties making it backward compatible.
+- Loading Items now properly looks for collection at Item root level rather than in properties (STAC 0.6.0).
+
+### Changed
+- Format of saved search results now follows new [Single File STAC extension](https://github.com/radiantearth/stac-spec/tree/v0.8.0-rc1/extensions/single-file-stac).
 
 ## [v0.2.0] - 2019-07-16
 
@@ -53,7 +56,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 Initial Release
 
 [Unreleased]: https://github.com/sat-utils/sat-stac/compare/master...develop
-[v0.2.1]: https://github.com/sat-utils/sat-stac/compare/0.2.0...v0.2.1
+[v0.2.1]: https://github.com/sat-utils/sat-stac/compare/0.2.0...v0.3.0
 [v0.2.0]: https://github.com/sat-utils/sat-stac/compare/0.1.3...v0.2.0
 [v0.1.3]: https://github.com/sat-utils/sat-stac/compare/0.1.2...v0.1.3
 [v0.1.2]: https://github.com/sat-utils/sat-stac/compare/0.1.1...v0.1.2
