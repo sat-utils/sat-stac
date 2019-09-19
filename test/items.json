@@ -4,6 +4,7 @@
         {
             "type": "Feature",
             "id": "LC81920292019008LGN00",
+            "collection": "landsat-8-l1",
             "bbox": [
                 10.08618,
                 43.51506,
@@ -38,7 +39,6 @@
                 ]
             },
             "properties": {
-                "collection": "landsat-8-l1",
                 "datetime": "2019-01-08T09:58:37.383486+00:00",
                 "eo:sun_azimuth": 159.81253587,
                 "eo:sun_elevation": 20.58119436,
@@ -188,6 +188,7 @@
         {
             "type": "Feature",
             "id": "LC81920282019008LGN00",
+            "collection": "landsat-8-l1",
             "bbox": [
                 10.56211,
                 44.93214,
@@ -222,7 +223,6 @@
                 ]
             },
             "properties": {
-                "collection": "landsat-8-l1",
                 "datetime": "2019-01-08T09:58:13.500919+00:00",
                 "eo:sun_azimuth": 160.38505554,
                 "eo:sun_elevation": 19.34446022,
@@ -631,40 +631,43 @@
         }
     ],
     "search": {
-        "intersects": {
-            "type": "Feature",
-            "properties": {},
-            "geometry": {
-                "type": "Polygon",
-                "coordinates": [
-                    [
+        "endpoint": "https://sat-api.developmentseed.org",
+        "parameters": {
+            "intersects": {
+                "type": "Feature",
+                "properties": {},
+                "geometry": {
+                    "type": "Polygon",
+                    "coordinates": [
                         [
-                            11.984710693359375,
-                            44.815941348210835
-                        ],
-                        [
-                            12.752380371093748,
-                            44.815941348210835
-                        ],
-                        [
-                            12.752380371093748,
-                            45.67740123855739
-                        ],
-                        [
-                            11.984710693359375,
-                            45.67740123855739
-                        ],
-                        [
-                            11.984710693359375,
-                            44.815941348210835
+                            [
+                                11.984710693359375,
+                                44.815941348210835
+                            ],
+                            [
+                                12.752380371093748,
+                                44.815941348210835
+                            ],
+                            [
+                                12.752380371093748,
+                                45.67740123855739
+                            ],
+                            [
+                                11.984710693359375,
+                                45.67740123855739
+                            ],
+                            [
+                                11.984710693359375,
+                                44.815941348210835
+                            ]
                         ]
                     ]
-                ]
-            }
-        },
-        "query": {
-            "collection": {
-                "eq": "landsat-8-l1"
+                }
+            },
+            "query": {
+                "collection": {
+                    "eq": "landsat-8-l1"
+                }
             }
         }
     }
