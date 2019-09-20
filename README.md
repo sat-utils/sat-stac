@@ -49,4 +49,4 @@ The table below shows the corresponding versions between sat-stac and STAC:
 There are two tutorials. [Tutorial-1](tutorial-1.ipynb) includes an overview of how to create and manipulate STAC static catalogs. [Tutorial-2](tutorial-2.ipynb) is on the Python classes that reflect STAC entities: Catalogs, Collections, and Items.
 
 ## About
-[sat-stac](https://github.com/sat-utils/sat-stac) was created by [Development Seed](<http://developmentseed.org>) and is part of a collection of tools called [sat-utils](https://github.com/sat-utils).
+[sat-stac](https://github.com/sat-utils/sat-stac) is part of a collection of tools called [sat-utils](https://github.com/sat-utils).
