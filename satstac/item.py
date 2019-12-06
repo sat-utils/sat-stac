@@ -114,7 +114,9 @@ class Item(Thing):
         string = string.replace(':', '_colon_')
         subs = {}
         for key in [i[1] for i in Formatter().parse(string.rstrip('/')) if i[1] is not None]:
-            if key == 'id':
+            if key == 'collection':
+                subs[key] = self.collection
+            elif key == 'id':
                 subs[key] = self.id
             elif key in ['date', 'year', 'month', 'day']:
                 vals = {'date': self.date, 'year': self.date.year, 'month': self.date.month, 'day': self.date.day}
