@@ -1,8 +1,14 @@
 import json
+import os.path as op
+import requests
 
+from logging import getLogger
 from .collection import Collection
 from .item import Item
-from .utils import terminal_calendar
+from .thing import STACError
+from .utils import terminal_calendar, get_s3_signed_url
+
+logger = getLogger(__name__)
 
 
 class ItemCollection(object):
@@ -23,13 +29,42 @@ class ItemCollection(object):
                     i._collection = cols[col]
 
     @classmethod
-    def load(cls, filename):
+    def open_remote(self, url, headers={}):
+        """ Open remote file """
+        resp = requests.get(url, headers=headers)
+        if resp.status_code == 200:
+            dat = resp.text
+        else:
+            raise STACError('Unable to open %s' % url)
+        return json.loads(dat)
+
+    @classmethod
+    def open(cls, filename):
         """ Load an Items class from a GeoJSON FeatureCollection """
-        with open(filename) as f:
-            geoj = json.loads(f.read())
-        collections = [Collection(col) for col in geoj['collections']]
-        items = [Item(feature) for feature in geoj['features']]
-        return cls(items, collections=collections, search=geoj.get('search'))
+        """ Open an existing JSON data file """
+        logger.debug('Opening %s' % filename)
+        if filename[0:5] == 'https':
+            try:
+                data = cls.open_remote(filename)
+            except STACError as err:
+                # try signed URL
+                url, headers = get_s3_signed_url(filename)
+                data = cls.open_remote(url, headers)
+        else:
+            if op.exists(filename):
+                data = open(filename).read()
+                data = json.loads(data)
+            else:
+                raise STACError('%s does not exist locally' % filename)
+        collections = [Collection(col) for col in data['collections']]
+        items = [Item(feature) for feature in data['features']]
+        return cls(items, collections=collections, search=data.get('search'))
+
+    @classmethod
+    def load(cls, *args, **kwargs):
+        """ Load an Items class from a GeoJSON FeatureCollection """
+        logger.warning(f"ItemCollection.load() is deprecated, use ItemCollection.open()")
+        return cls.open(*args, **kwargs)
 
     def __len__(self):
         """ Number of scenes """

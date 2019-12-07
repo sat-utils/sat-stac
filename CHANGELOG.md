@@ -6,6 +6,15 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [v0.3.1] - 2019-12-06
+
+### Fixed
+- Item constructor now properly accepts passing in the collection
+- Item.substitute and item.get_filename now properly accept ${collection} as a template parameter
+
+### Deprecated
+- ItemCollection.load() is now ItemCollection.open() and behaves like Item.open() (able to read remote files)
+
 ## [v0.3.0] - 2019-09-19
 
 ### Fixed
@@ -56,7 +65,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 Initial Release
 
 [Unreleased]: https://github.com/sat-utils/sat-stac/compare/master...develop
-[v0.2.1]: https://github.com/sat-utils/sat-stac/compare/0.2.0...v0.3.0
+[v0.3.0]: https://github.com/sat-utils/sat-stac/compare/0.2.0...v0.3.0
 [v0.2.0]: https://github.com/sat-utils/sat-stac/compare/0.1.3...v0.2.0
 [v0.1.3]: https://github.com/sat-utils/sat-stac/compare/0.1.2...v0.1.3
 [v0.1.2]: https://github.com/sat-utils/sat-stac/compare/0.1.1...v0.1.2
