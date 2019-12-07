@@ -6,8 +6,14 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [v0.3.1] - 2019-12-06
+
 ### Fixed
 - Item constructor now properly accepts passing in the collection
+- Item.substitute and item.get_filename now properly accept ${collection} as a template parameter
+
+### Deprecated
+- ItemCollection.load() is now ItemCollection.open() and behaves like Item.open() (able to read remote files)
 
 ## [v0.3.0] - 2019-09-19
 
