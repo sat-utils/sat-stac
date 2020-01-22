@@ -63,7 +63,7 @@ class ItemCollection(object):
     @classmethod
     def load(cls, *args, **kwargs):
         """ Load an Items class from a GeoJSON FeatureCollection """
-        logger.warning(f"ItemCollection.load() is deprecated, use ItemCollection.open()")
+        logger.warning("ItemCollection.load() is deprecated, use ItemCollection.open()")
         return cls.open(*args, **kwargs)
 
     def __len__(self):
