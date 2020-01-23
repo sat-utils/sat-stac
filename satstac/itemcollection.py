@@ -127,15 +127,15 @@ class ItemCollection(object):
             txt += ''.join(['{:<25} '.format(s.substitute('${%s}' % p)) for p in params]) + '\n'
         return txt
 
-    def calendar(self):
+    def calendar(self, group='platform'):
         """ Get calendar for dates """
         date_labels = {}
         for d in self.dates():
-            sensors = self.properties('eo:platform', d)
-            if len(sensors) > 1:
+            groups = self.properties(group, d)
+            if len(groups) > 1:
                 date_labels[d] = 'Multiple'
             else:
-                date_labels[d] = sensors[0]
+                date_labels[d] = groups[0]
         return terminal_calendar(date_labels)
 
     def save(self, filename):
