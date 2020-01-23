@@ -6,7 +6,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
-## [v0.3.2] - 2020-01-022
+## [v0.3.2] - 2020-01-22
 
 ### Changed
 - sat-stac now compatible with Python3 versions < 3.6 ()
