@@ -52,14 +52,14 @@ def dict_merge(dct, merge_dct, add_keys=True):
     return dct
 
 
-def download_file(url, filename=None, requestor_pays=False):
+def download_file(url, filename=None, requester_pays=False):
     """ Download a file as filename """
     filename = os.path.basename(url) if filename is None else filename
     logger.info('Downloading %s as %s' % (url, filename))
     headers = {}
     # check if on s3, if so try to sign it
     if 's3.amazonaws.com' in url:
-        signed_url, signed_headers = get_s3_signed_url(url, requestor_pays=requestor_pays)
+        signed_url, signed_headers = get_s3_signed_url(url, requester_pays=requester_pays)
         resp = requests.get(signed_url, headers=signed_headers, stream=True)
         if resp.status_code != 200:
             resp = requests.get(url, headers=headers, stream=True)
@@ -98,7 +98,7 @@ def splitall(path):
     return allparts
 
 
-def get_s3_signed_url(url, rtype='GET', public=False, requestor_pays=False, content_type=None):
+def get_s3_signed_url(url, rtype='GET', public=False, requester_pays=False, content_type=None):
     access_key = os.environ.get('AWS_BUCKET_ACCESS_KEY_ID', os.environ.get('AWS_ACCESS_KEY_ID'))
     secret_key = os.environ.get('AWS_BUCKET_SECRET_ACCESS_KEY', os.environ.get('AWS_SECRET_ACCESS_KEY'))
     region = os.environ.get('AWS_BUCKET_REGION', os.environ.get('AWS_REGION', 'eu-central-1'))
@@ -142,7 +142,7 @@ def get_s3_signed_url(url, rtype='GET', public=False, requestor_pays=False, cont
         'x-amz-content-sha256': payload_hash,
         'x-amz-date': amzdate
     }
-    if requestor_pays:
+    if requester_pays:
         headers['x-amz-request-payer'] = 'requester'
     if public:
         headers['x-amz-acl'] = 'public-read'

@@ -134,7 +134,7 @@ class Item(Thing):
             filenames.append(self.download(key, **kwargs))
         return filenames
 
-    def download(self, key, overwrite=False, path='', filename='${id}', requestor_pays=False):
+    def download(self, key, overwrite=False, path='', filename='${id}', requester_pays=False):
         """ Download this key (e.g., a band, or metadata file) from the scene """
         asset = self.asset(key)
         if asset is None:
@@ -148,7 +148,7 @@ class Item(Thing):
             ext = os.path.splitext(asset['href'])[1]
             fout = os.path.join(_path, fname + '_' + key + ext)
             if not os.path.exists(fout) or overwrite:
-                _filename = utils.download_file(asset['href'], filename=fout, requestor_pays=requestor_pays)
+                _filename = utils.download_file(asset['href'], filename=fout, requester_pays=requester_pays)
             else:
                 _filename = fout
         except Exception as e:
