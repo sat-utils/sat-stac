@@ -111,7 +111,7 @@ class Item(Thing):
 
     def substitute(self, string):
         """ Substitute envvars in string with Item values """
-        string = string.replace(':', '_colon_')
+        string = string.replace(':', '__colon__')
         subs = {}
         for key in [i[1] for i in Formatter().parse(string.rstrip('/')) if i[1] is not None]:
             if key == 'collection':
@@ -122,8 +122,8 @@ class Item(Thing):
                 vals = {'date': self.date, 'year': self.date.year, 'month': self.date.month, 'day': self.date.day}
                 subs[key] = vals[key]
             else:
-                subs[key] = self[key.replace('_colon_', ':')]
-        return Template(string).substitute(**subs)   
+                subs[key] = self[key.replace('__colon__', ':')]
+        return Template(string).substitute(**subs).replace('__colon__', ':')
 
     def download_assets(self, keys=None, **kwargs):
         """ Download multiple assets """
