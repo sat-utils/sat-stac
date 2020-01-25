@@ -124,7 +124,7 @@ class ItemCollection(object):
         txt = 'Items (%s):\n' % len(self._items)
         txt += ''.join(['{:<25} '.format(p) for p in params]) + '\n'
         for s in self._items:
-            txt += ''.join(['{:<25} '.format(s.substitute('${%s}' % p)) for p in params]) + '\n'
+            txt += ''.join(['{:<25} '.format(s.get_path('${%s}' % p)) for p in params]) + '\n'
         return txt
 
     def calendar(self, group='platform'):
