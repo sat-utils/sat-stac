@@ -6,13 +6,13 @@ import unittest
 
 from satstac import Item
 
-
 testpath = os.path.dirname(__file__)
 
 
 class Test(unittest.TestCase):
 
     path = os.path.join(testpath, 'test-item')
+    path_template = os.path.join(path, '${collection}/${id}')
     filename = os.path.join(testpath, 'catalog/eo/landsat-8-l1/item.json')
 
     @classmethod
@@ -75,39 +75,39 @@ class Test(unittest.TestCase):
         item = Item.open(self.filename)
         assert(item.asset('no-such-asset') == None)
 
-    def test_substitute(self):
-        """ Test string substitution with item fields """
+    def test_get_path(self):
+        """ Test string templating with item fields """
         item = Item.open(self.filename)
-        st = item.substitute('${collection}/${date}')
+        st = item.get_path('${collection}/${date}')
         assert(st == 'landsat-8-l1/2018-10-12')
-        st = item.substitute('nosub')
+        st = item.get_path('nosub')
         assert(st == 'nosub')
 
     def test_download_thumbnail(self):
         """ Get thumbnail for item """
         item = Item.open(self.filename)
-        fname = item.download(key='thumbnail', path=self.path)
+        fname = item.download(key='thumbnail', path_template=self.path_template)
         assert(os.path.exists(fname))
 
     def test_download(self):
         """ Retrieve a data file """
         item = Item.open(self.filename)
-        fname = item.download(key='MTL', path=self.path)
+        fname = item.download(key='MTL', path_template=self.path_template)
         assert(os.path.exists(fname))
-        fname = item.download(key='MTL', path=self.path)
+        fname = item.download(key='MTL', path_template=self.path_template)
         assert(os.path.exists(fname))
 
     def test_download_assets(self):
         """ Retrieve multiple data files """
         item = Item.open(self.filename)
-        fnames = item.download_assets(keys=['MTL', 'ANG'], path=self.path)
+        fnames = item.download_assets(keys=['MTL', 'ANG'], path_template=self.path_template)
         for f in fnames:
             assert(os.path.exists(f))
 
     def test_download_nonexist(self):
         """ Test downloading of non-existent file """
         item = Item.open(self.filename)
-        fname = item.download(key='fake_asset', path=self.path)
+        fname = item.download(key='fake_asset', path_template=self.path_template)
         assert(fname is None)
 
     def _test_download_paths(self):

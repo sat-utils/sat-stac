@@ -101,7 +101,7 @@ class Test(unittest.TestCase):
     def test_download_assets(self):
         """ Download multiple assets from all items """
         items = self.load_items()
-        filenames = items.download_assets(keys=['MTL', 'ANG'], path=self.path)
+        filenames = items.download_assets(keys=['MTL', 'ANG'], path_template=self.path)
         assert(len(filenames) == 2)
         for fnames in filenames:
             assert(len(fnames) == 2)
@@ -112,7 +112,7 @@ class Test(unittest.TestCase):
         """ Download a data file from all items """
         items = self.load_items()
         
-        fnames = items.download(key='MTL', path=self.path)
+        fnames = items.download(key='MTL', path_template=self.path)
         assert(len(fnames) == 2)
         for f in fnames:
             assert(os.path.exists(f))
