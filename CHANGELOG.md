@@ -7,14 +7,20 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 ## [Unreleased]
 
 ### Added
-- In README, Directed users who want to do large scale creation or updating of catalogs to the [PySTAC](https://github.com/azavea/pystac) library instead.
+- In README, Directed users who want to do large scale creation or updating of catalogs to the [PySTAC](https://github.com/azavea/pystac) library instead
+- STAC_PATH_TEMPLATE envvar added to store default path template for saving downloaded flies
 
 ### Changed
 - Environment variable SATUTILS_STAC_VERSION changed to STAC_VERSION
 - Default STAC_VERSION changed to 0.9.0
+- Item.get_filename replaced with Item.get_path which takes in single template string rather than separate `path` and `filename` arguments
+- Collection.add_item() function input keywords changed to `path_template` and `filename_template`
 
 ### Fixed
 - Substitution of templates on Windows: [issue](https://github.com/sat-utils/sat-stac/issues/51)
+
+### Removed
+- Item.get_filename removed in favor of Item.get_path
 
 ## [v0.3.3] - 2020-01-23
 
