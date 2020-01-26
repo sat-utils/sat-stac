@@ -4,12 +4,13 @@
 
 This is a Python 3 library for working with [Spatio-Temporal Asset Catalogs (STAC)](https://github.com/radiantearth/stac-spec). It can be used to
 
-- Open and update existing catalogs
-- Traverse through catalogs
-- Create a new catalogs
-- Add or remove a STAC Collection from a catalog
-- Add or remove STAC Items from a catalog
-- Create a hierarchical STAC catalog from STAC Items.
+- Open and traverse STAC catalogs
+- Download assets from STAC Items, using templated path names
+- Save and load [Self-contained STAC catalogs](https://github.com/radiantearth/stac-spec/tree/v0.9.0-rc1/extensions/single-file-stac)
+- Create and update catalogs*
+- Add or remove a STAC Collections of Items from a catalog*
+
+* sat-stac works for small catalogs or a small rate of updates. It is more useful for reading existing catalogs (either static or dynamic). For creating or large updating of catalogs, [PySTAC](https://github.com/azavea/pystac) is the better alternative.
 
 ## Installation
 

@@ -57,6 +57,9 @@ def download_file(url, filename=None, requester_pays=False):
     filename = os.path.basename(url) if filename is None else filename
     logger.info('Downloading %s as %s' % (url, filename))
     headers = {}
+    _path = os.path.dirname(filename)
+    if not os.path.exists(_path):
+        mkdirp(_path)
     # check if on s3, if so try to sign it
     if 's3.amazonaws.com' in url:
         signed_url, signed_headers = get_s3_signed_url(url, requester_pays=requester_pays)

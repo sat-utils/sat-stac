@@ -8,7 +8,7 @@ from datetime import datetime
 from dateutil.parser import parse as dateparse
 
 from satstac import __version__, STACError, Thing, utils
-
+from .config import STAC_PATH_TEMPLATE
 
 logger = logging.getLogger(__name__)
 
@@ -102,18 +102,11 @@ class Item(Thing):
         logging.warning('No such asset (%s)' % key)
         return None
 
-    def get_filename(self, path='', filename='${id}', extension='.json'):
-        """ Get complete path with filename to this item """
-        return os.path.join(
-            self.substitute(path),
-            self.substitute(filename) + extension
-        )
-
-    def substitute(self, string):
-        """ Substitute envvars in string with Item values """
-        string = string.replace(':', '_colon_')
+    def get_path(self, template):
+        """ Substitute envvars in template with Item values """
+        _template = template.replace(':', '__colon__')
         subs = {}
-        for key in [i[1] for i in Formatter().parse(string.rstrip('/')) if i[1] is not None]:
+        for key in [i[1] for i in Formatter().parse(_template.rstrip('/')) if i[1] is not None]:
             if key == 'collection':
                 subs[key] = self._data['collection']
             elif key == 'id':
@@ -122,8 +115,8 @@ class Item(Thing):
                 vals = {'date': self.date, 'year': self.date.year, 'month': self.date.month, 'day': self.date.day}
                 subs[key] = vals[key]
             else:
-                subs[key] = self[key.replace('_colon_', ':')]
-        return Template(string).substitute(**subs)   
+                subs[key] = self[key.replace('__colon__', ':')]
+        return Template(_template).substitute(**subs).replace('__colon__', ':')
 
     def download_assets(self, keys=None, **kwargs):
         """ Download multiple assets """
@@ -134,28 +127,22 @@ class Item(Thing):
             filenames.append(self.download(key, **kwargs))
         return filenames
 
-    def download(self, key, overwrite=False, path='', filename='${id}', requester_pays=False):
+    def download(self, key, overwrite=False, path_template=STAC_PATH_TEMPLATE, requester_pays=False):
         """ Download this key (e.g., a band, or metadata file) from the scene """
         asset = self.asset(key)
         if asset is None:
             return None
 
-        _path = self.substitute(path)
-        utils.mkdirp(_path)
-        _filename = None
-        try:
-            fname = self.substitute(filename)
-            ext = os.path.splitext(asset['href'])[1]
-            fout = os.path.join(_path, fname + '_' + key + ext)
-            if not os.path.exists(fout) or overwrite:
-                _filename = utils.download_file(asset['href'], filename=fout, requester_pays=requester_pays)
-            else:
-                _filename = fout
-        except Exception as e:
-            _filename = None
-            logger.error('Unable to download %s: %s' % (asset['href'], str(e)))
-            logger.debug(traceback.format_exc())
-        return _filename
+        ext = os.path.splitext(asset['href'])[1]
+        filename = self.get_path(path_template) + '_' + key + ext
+        if not os.path.exists(filename) or overwrite:
+            try:
+                utils.download_file(asset['href'], filename=filename, requester_pays=requester_pays)
+            except Exception as e:
+                filename = None
+                logger.error('Unable to download %s: %s' % (asset['href'], str(e)))
+                logger.debug(traceback.format_exc())
+        return filename
 
     '''
     @classmethod

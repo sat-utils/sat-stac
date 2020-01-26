@@ -50,12 +50,12 @@ class Collection(Catalog):
         return self._data.get('properties', {})
 
     @functools.lru_cache()
-    def parent_catalog(self, path):
-        """ Given path to a new Item find parent catalog """
+    def parent_catalog(self, item, path_template):
+        """ Given relative filename to a new Item find parent catalog """
         cat = self
-        dirs = utils.splitall(path)
-        var_names = [v.strip('$').strip('{}') for v in dirs]
-        for i, d in enumerate(dirs):
+        path = item.get_path(path_template)
+        var_names = [v.strip('$').strip('{}') for v in utils.splitall(path_template)]
+        for i, d in enumerate(utils.splitall(path)):
             fname = os.path.join(os.path.join(cat.path, d), 'catalog.json')
             # open existing sub-catalog or create new one
             try:
@@ -69,18 +69,18 @@ class Collection(Catalog):
             cat = subcat
         return cat.filename
 
-    def add_item(self, item, path='', filename='${id}'):
+    def add_item(self, item, path_template='', filename_template='${id}.json'):
         """ Add an item to this collection """
         start = datetime.now()
         if self.filename is None:
             raise STACError('Save catalog before adding items')
-        item_link = item.get_filename(path, filename)
+        item_link = os.path.join(item.get_path(os.path.join(path_template, filename_template)))
         item_fname = os.path.join(self.path, item_link)
         item_path = os.path.dirname(item_fname)
         root_link = self.links('root')[0]
-        root_path = os.path.dirname(root_link)
+        #root_path = os.path.dirname(root_link)
 
-        parent = Catalog.open(self.parent_catalog(item.substitute(path)))
+        parent = Catalog.open(self.parent_catalog(item, path_template))
         
         # create link to item
         parent.add_link('item', os.path.relpath(item_fname, parent.path))
