@@ -6,9 +6,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [v0.4.0-rc1] - 2020-01-26
+
 ### Added
 - In README, Directed users who want to do large scale creation or updating of catalogs to the [PySTAC](https://github.com/azavea/pystac) library instead
-- STAC_PATH_TEMPLATE envvar added to store default path template for saving downloaded flies
+- STAC_PATH_TEMPLATE envvar added to store default path template for saving downloaded files, defaults to `${collection}/${id}`, files are then downloaded in that directory with a name equal to `<id>_<assetkey>.<ext>`
 
 ### Changed
 - Environment variable SATUTILS_STAC_VERSION changed to STAC_VERSION
@@ -95,7 +97,7 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 Initial Release
 
 [Unreleased]: https://github.com/sat-utils/sat-stac/compare/master...develop
-[v0.4.0]: https://github.com/sat-utils/sat-stac/compare/0.3.3...v0.4.0
+[v0.4.0-rc1]: https://github.com/sat-utils/sat-stac/compare/0.3.3...v0.4.0-rc1
 [v0.3.3]: https://github.com/sat-utils/sat-stac/compare/0.3.2...v0.3.3
 [v0.3.2]: https://github.com/sat-utils/sat-stac/compare/0.3.1...v0.3.2
 [v0.3.1]: https://github.com/sat-utils/sat-stac/compare/0.3.0...v0.3.1
