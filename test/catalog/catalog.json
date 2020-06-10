@@ -1,1 +1,19 @@
-{"id": "stac", "description": "A STAC of public datasets", "stac_version": "0.6.0", "links": [{"rel": "self", "href": "catalog.json"}, {"rel": "root", "href": "catalog.json"}, {"rel": "child", "href": "eo/catalog.json"}]}
+{
+    "id": "stac-catalog",
+    "description": "An example STAC catalog",
+    "stac_version": "1.0.0-beta.1",
+    "links": [
+        {
+            "rel": "self",
+            "href": "catalog.json"
+        },
+        {
+            "rel": "root",
+            "href": "catalog.json"
+        },
+        {
+            "rel": "child",
+            "href": "eo/catalog.json"
+        }
+    ]
+}

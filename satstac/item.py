@@ -108,7 +108,7 @@ class Item(Thing):
         subs = {}
         for key in [i[1] for i in Formatter().parse(_template.rstrip('/')) if i[1] is not None]:
             if key == 'collection':
-                subs[key] = self._data['collection']
+                subs[key] = self['collection']
             elif key == 'id':
                 subs[key] = self.id
             elif key in ['date', 'year', 'month', 'day']:

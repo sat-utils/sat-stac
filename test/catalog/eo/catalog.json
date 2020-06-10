@@ -1,7 +1,7 @@
 {
-    "id": "stac-eo",
-    "description": "A STAC of EO Data",
-    "stac_version": "0.6.0",
+    "id": "stac-catalog-eo",
+    "description": "An example STAC sub-catalog of EO Data",
+    "stac_version": "1.0.0-beta.1",
     "links": [
         {
             "rel": "self",
