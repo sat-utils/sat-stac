@@ -8,9 +8,10 @@ from datetime import datetime
 from dateutil.parser import parse as dateparse
 
 from satstac import __version__, STACError, Thing, utils
-from .config import STAC_PATH_TEMPLATE
 
 logger = logging.getLogger(__name__)
+
+FILENAME_TEMPLATE = os.getenv('SATSEARCH_FILENAME_TEMPLATE', '${collection}/${date}/${id}')
 
 
 class Item(Thing):
@@ -119,14 +120,14 @@ class Item(Thing):
             filenames.append(self.download(key, **kwargs))
         return filenames
 
-    def download(self, key, overwrite=False, path_template=STAC_PATH_TEMPLATE, requester_pays=False):
+    def download(self, key, overwrite=False, filename_template=FILENAME_TEMPLATE, requester_pays=False):
         """ Download this key (e.g., a band, or metadata file) from the scene """
         asset = self.asset(key)
         if asset is None:
             return None
 
         ext = os.path.splitext(asset['href'])[1]
-        filename = self.get_path(path_template) + '_' + key + ext
+        filename = self.get_path(filename_template) + '_' + key + ext
         if not os.path.exists(filename) or overwrite:
             try:
                 utils.download_file(asset['href'], filename=filename, requester_pays=requester_pays)

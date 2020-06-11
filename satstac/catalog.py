@@ -3,7 +3,8 @@ import os
 
 from .version import __version__
 from .thing import Thing, STACError
-from .config import STAC_VERSION
+
+STAC_VERSION = os.getenv('STAC_VERSION', '1.0.0-beta.1')
 
 
 class Catalog(Thing):
