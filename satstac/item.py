@@ -36,15 +36,6 @@ class Item(Thing):
         return self._collection
 
     @property
-    def eobands(self):
-        """ Get eo:bands from Item or from Collection """
-        if 'eo:bands' in self.properties:
-            return self.properties['eo:bands']
-        elif self.collection() is not None and 'eo:bands' in self.collection().properties:
-                return self.collection()['eo:bands']
-        return []
-
-    @property
     def properties(self):
         """ Get dictionary of properties """
         return self._data.get('properties', {})
@@ -83,12 +74,12 @@ class Item(Thing):
     @property
     def assets_by_common_name(self):
         """ Get assets by common band name (only works for assets containing 1 band """
-        if self._assets_by_common_name is None and len(self.eobands) > 0:
+        if self._assets_by_common_name is None:
             self._assets_by_common_name = {}
             for a in self.assets:
                 bands = self.assets[a].get('eo:bands', [])
                 if len(bands) == 1:
-                    eo_band = self.eobands[bands[0]].get('common_name')
+                    eo_band = bands[0].get('common_name')
                     if eo_band:
                         self._assets_by_common_name[eo_band] = self.assets[a]
         return self._assets_by_common_name
@@ -108,7 +99,8 @@ class Item(Thing):
         subs = {}
         for key in [i[1] for i in Formatter().parse(_template.rstrip('/')) if i[1] is not None]:
             if key == 'collection':
-                subs[key] = self['collection']
+                # make this compatible with older versions of stac where collection is in properties
+                subs[key] = self._data.get('collection', self['collection'])
             elif key == 'id':
                 subs[key] = self.id
             elif key in ['date', 'year', 'month', 'day']:

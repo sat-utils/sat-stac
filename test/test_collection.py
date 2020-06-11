@@ -33,15 +33,12 @@ class Test(unittest.TestCase):
         keys = cat.keywords
         assert(len(keys) == 1)
         assert(keys[0] == 'landsat')
-        version = cat.version
-        assert(version == '0.1.0')
         license = cat.license
         assert(license == 'PDDL-1.0')
         assert(len(cat.providers) == 4)
         ext = cat.extent
         assert('spatial' in ext)
         assert('temporal' in ext)
-        assert(len(cat.properties))
 
     def test_add_item(self):
         cat = Catalog.create(root='http://my.cat').save(os.path.join(self.path, 'catalog.json'))

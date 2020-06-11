@@ -34,11 +34,6 @@ class Test(unittest.TestCase):
         item = Item(data)
         assert(item.id == data['id'])
         assert(item.collection() is None)
-        assert(item.eobands == [])
-        # now put collection properties here
-        data['properties'].update(coldata['properties'])
-        item = Item(data)
-        assert(len(item.eobands) == 11)
     
     def test_open(self):
         """ Initialize an item """
@@ -54,8 +49,10 @@ class Test(unittest.TestCase):
     def test_open_with_collection(self):
         item = Item.open(self.filename)
         assert(item.collection().id == 'landsat-8-l1')
-        assert(len(item['eo:bands']) == 11)
-        assert(item['eo:off_nadir'] == 0)
+        sum = item.collection().summaries
+        assert(len(sum) == 4)
+        assert(len(sum['platform']) == 1)
+        assert('landsat-8' in sum['platform'])
 
     def test_class_properties(self):
         """ Test the property functions of the Item class """
@@ -79,7 +76,7 @@ class Test(unittest.TestCase):
         """ Test string templating with item fields """
         item = Item.open(self.filename)
         st = item.get_path('${collection}/${date}')
-        assert(st == 'landsat-8-l1/2018-10-12')
+        assert(st == 'landsat-8-l1/2020-06-11')
         st = item.get_path('nosub')
         assert(st == 'nosub')
 
@@ -94,8 +91,8 @@ class Test(unittest.TestCase):
         item = Item.open(self.filename)
         fname = item.download(key='MTL', path_template=self.path_template)
         assert(os.path.exists(fname))
-        fname = item.download(key='MTL', path_template=self.path_template)
-        assert(os.path.exists(fname))
+        #fname = item.download(key='MTL', path_template=self.path_template)
+        #assert(os.path.exists(fname))
 
     def test_download_assets(self):
         """ Retrieve multiple data files """

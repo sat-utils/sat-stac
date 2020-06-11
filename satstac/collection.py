@@ -45,9 +45,9 @@ class Collection(Catalog):
         return self._data.get('extent')
 
     @property
-    def properties(self):
-        """ Get dictionary of properties """
-        return self._data.get('properties', {})
+    def summaries(self):
+        """ Get dictionary of summaries """
+        return self._data.get('summaries', {})
 
     @functools.lru_cache()
     def parent_catalog(self, item, path_template):

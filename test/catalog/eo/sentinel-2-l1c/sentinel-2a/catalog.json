@@ -1,7 +1,7 @@
 {
     "id": "sentinel-2a-catalog",
-    "description": "An examole STAC sub-catalog of Sentinel-2A imagery",
-    "stac_version": "0.6.0",
+    "description": "An example STAC sub-catalog of Sentinel-2A imagery",
+    "stac_version": "1.0.0-beta.1",
     "links": [
         {
             "rel": "self",
@@ -16,8 +16,8 @@
             "href": "catalog.json"
         },
         {
-            "rel": "collection",
-            "href": "../catalog.json"
+            "rel": "item",
+            "href": "item.json"
         }
     ]
 }
