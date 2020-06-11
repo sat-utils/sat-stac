@@ -1,9 +1,6 @@
 import os
 import unittest
 
-#import satsearch.config as config
-
-#from satsearch.scene import Scenes
 from datetime import datetime
 from satstac import utils
 

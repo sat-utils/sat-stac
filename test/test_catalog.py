@@ -3,7 +3,7 @@ import os
 import unittest
 import shutil
 
-from satstac import __version__, Catalog, STACError, Item, config
+from satstac import __version__, Catalog, STACError, Item
 
 
 testpath = os.path.dirname(__file__)
@@ -44,7 +44,7 @@ class Test(unittest.TestCase):
 
     def test_properties(self):
         cat = self.get_catalog()
-        assert(cat.stac_version == config.STAC_VERSION)
+        assert(cat.stac_version == '1.0.0-beta.1')
         assert(cat.description == 'An example STAC catalog')
 
     def test_create(self):
