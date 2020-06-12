@@ -14,11 +14,10 @@ logger = getLogger(__name__)
 class ItemCollection(object):
     """ A GeoJSON FeatureCollection of STAC Items with associated Collections """
 
-    def __init__(self, items, collections=[], search={}):
+    def __init__(self, items, collections=[]):
         """ Initialize with a list of Item objects """
         self._collections = collections
         self._items = items
-        self._search = search
         # link Items to their Collections
         cols = {c.id: c for c in self._collections}
         for i in self._items:
@@ -58,7 +57,7 @@ class ItemCollection(object):
                 raise STACError('%s does not exist locally' % filename)
         collections = [Collection(col) for col in data['collections']]
         items = [Item(feature) for feature in data['features']]
-        return cls(items, collections=collections, search=data.get('search'))
+        return cls(items, collections=collections)
 
     @classmethod
     def load(cls, *args, **kwargs):
@@ -82,31 +81,6 @@ class ItemCollection(object):
         cols = [c for c in self._collections if c.id == id]
         if len(cols) == 1:
             return cols[0]
-        else:
-            return None
-
-    def bbox(self):
-        """ Get bounding box of search """
-        if 'intersects' in self._search.get('parameters', {}):
-            coords = self._search['parameters']['intersects']['geometry']['coordinates']
-            lats = [c[1] for c in coords[0]]
-            lons = [c[0] for c in coords[0]]
-            return [min(lons), min(lats), max(lons), max(lats)]
-        else:
-            return None
-
-    def center(self):
-        if 'intersects' in self._search.get('parameters', {}):
-            coords = self._search['parameters']['intersects']['geometry']['coordinates']
-            lats = [c[1] for c in coords[0]]
-            lons = [c[0] for c in coords[0]]
-            return [(min(lats) + max(lats))/2.0, (min(lons) + max(lons))/2.0]
-        else:
-            return None
-
-    def search_geometry(self):
-        if 'intersects' in self._search.get('parameters', {}):
-            return self._search['parameters']['intersects']
         else:
             return None
 
@@ -138,6 +112,23 @@ class ItemCollection(object):
                 date_labels[d] = groups[0]
         return terminal_calendar(date_labels)
 
+    def assets_definition(self):
+        fields = ['Key', 'Title', 'Common Name(s)', 'Type']
+        w = [12, 35, 20, 50]
+        for c in self._collections:
+            txt = f"Collection: {c.id}\n"
+            txt += ''.join([f"{fields[i]:{w[i]}}" for i in range(len(w))]) + '\n'
+            for key in c._data['item_assets']:
+                asset = c._data['item_assets'][key]
+                if 'eo:bands' in asset:
+                    bands = ', '.join([b.get('common_name', None) for b in asset['eo:bands'] if 'common_name' in b])
+                else:
+                    bands = ''
+                #import pdb; pdb.set_trace()
+                vals = [key, asset['title'], bands, asset['type']]
+                txt += ''.join([f"{vals[i]:{w[i]}}" for i in range(len(w))]) + '\n'
+        return txt
+
     def save(self, filename):
         """ Save scene metadata """
         with open(filename, 'w') as f:
@@ -151,8 +142,6 @@ class ItemCollection(object):
             'features': features,
             'collections': [c._data for c in self._collections],
         }
-        if self._search is not None:
-            geoj['search'] = self._search
         return geoj
 
     def filter(self, key, values):
