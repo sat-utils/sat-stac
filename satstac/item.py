@@ -78,7 +78,12 @@ class Item(Thing):
         if self._assets_by_common_name is None:
             self._assets_by_common_name = {}
             for a in self.assets:
-                bands = self.assets[a].get('eo:bands', [])
+                bands = []
+                col = self.collection()._data
+                if 'eo:bands' in self.assets[a]:
+                    bands = self.assets[a]['eo:bands']
+                elif 'item_assets' in col:
+                    bands = col['item_assets'][a].get('eo:bands', [])
                 if len(bands) == 1:
                     eo_band = bands[0].get('common_name')
                     if eo_band:
@@ -87,7 +92,7 @@ class Item(Thing):
 
     def asset(self, key):
         """ Get asset for this key OR common_name """
-        if key in self.assets:
+        if key in self.assets.keys():
             return self.assets[key]
         elif key in self.assets_by_common_name:
             return self.assets_by_common_name[key]
