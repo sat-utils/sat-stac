@@ -33,19 +33,19 @@ class Test(unittest.TestCase):
         with open(os.path.join(testpath, 'catalog/catalog.json')) as f:
             data = json.loads(f.read())
         cat = Catalog(data)
-        assert(cat.id == 'stac')
+        assert(cat.id == 'stac-catalog')
 
     def test_open(self):
         """ Initialize Catalog with a file """
         cat = self.get_catalog()
         assert(len(cat._data.keys()) == 4)
-        assert(cat.id == 'stac')
+        assert(cat.id == 'stac-catalog')
         assert(len(cat.links())==3)
 
     def test_properties(self):
         cat = self.get_catalog()
-        assert(cat.stac_version == '0.6.0')
-        assert(cat.description == 'A STAC of public datasets')
+        assert(cat.stac_version == '1.0.0-beta.1')
+        assert(cat.description == 'An example STAC catalog')
 
     def test_create(self):
         """ Create new catalog file """
@@ -70,8 +70,8 @@ class Test(unittest.TestCase):
     def test_get_collections(self):
         collections = [i for i in self.get_catalog().collections()]
         assert(len(collections) == 2)
-        assert(collections[0].id in ['landsat-8-l1', 'sentinel-2-l1c'])
-        assert(collections[1].id in ['landsat-8-l1', 'sentinel-2-l1c'])
+        assert(collections[0].id in ['landsat-8-l1', 'sentinel-s2-l1c'])
+        assert(collections[1].id in ['landsat-8-l1', 'sentinel-s2-l1c'])
 
     def test_get_items(self):
         items = [i for i in self.get_catalog().items()]

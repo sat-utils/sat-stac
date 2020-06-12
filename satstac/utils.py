@@ -1,6 +1,5 @@
 import base64
 import calendar
-import collections
 import datetime
 import hashlib
 import hmac
@@ -9,6 +8,8 @@ import os
 import requests
 import sys
 import time
+
+from collections.abc import Mapping
 
 logger = logging.getLogger(__name__)
 
@@ -44,7 +45,7 @@ def dict_merge(dct, merge_dct, add_keys=True):
 
     for k, v in merge_dct.items():
         if (k in dct and isinstance(dct[k], dict)
-                and isinstance(merge_dct[k], collections.Mapping)):
+                and isinstance(merge_dct[k], Mapping)):
             dct[k] = dict_merge(dct[k], merge_dct[k], add_keys=add_keys)
         else:
             dct[k] = merge_dct[k]

@@ -12,7 +12,7 @@ testpath = os.path.dirname(__file__)
 class Test(unittest.TestCase):
 
     path = os.path.join(testpath, 'test-item')
-    path_template = os.path.join(path, '${collection}/${id}')
+    filename_template = os.path.join(path, '${collection}/${id}')
     filename = os.path.join(testpath, 'catalog/eo/landsat-8-l1/item.json')
 
     @classmethod
@@ -20,11 +20,6 @@ class Test(unittest.TestCase):
         """ Remove test files """
         if os.path.exists(cls.path):
             shutil.rmtree(cls.path)
-
-    #@classmethod
-    #def setUpClass(cls):
-    #    """ Configure testing class """
-    #    config.DATADIR = os.path.join(testpath, config.DATADIR)
 
     def test_init_without_collection(self):
         with open(self.filename) as f:
@@ -34,11 +29,6 @@ class Test(unittest.TestCase):
         item = Item(data)
         assert(item.id == data['id'])
         assert(item.collection() is None)
-        assert(item.eobands == [])
-        # now put collection properties here
-        data['properties'].update(coldata['properties'])
-        item = Item(data)
-        assert(len(item.eobands) == 11)
     
     def test_open(self):
         """ Initialize an item """
@@ -54,8 +44,10 @@ class Test(unittest.TestCase):
     def test_open_with_collection(self):
         item = Item.open(self.filename)
         assert(item.collection().id == 'landsat-8-l1')
-        assert(len(item['eo:bands']) == 11)
-        assert(item['eo:off_nadir'] == 0)
+        sum = item.collection().summaries
+        assert(len(sum) == 4)
+        assert(len(sum['platform']) == 1)
+        assert('landsat-8' in sum['platform'])
 
     def test_class_properties(self):
         """ Test the property functions of the Item class """
@@ -79,56 +71,33 @@ class Test(unittest.TestCase):
         """ Test string templating with item fields """
         item = Item.open(self.filename)
         st = item.get_path('${collection}/${date}')
-        assert(st == 'landsat-8-l1/2018-10-12')
+        assert(st == 'landsat-8-l1/2020-06-11')
         st = item.get_path('nosub')
         assert(st == 'nosub')
 
     def test_download_thumbnail(self):
         """ Get thumbnail for item """
         item = Item.open(self.filename)
-        fname = item.download(key='thumbnail', path_template=self.path_template)
+        fname = item.download(key='thumbnail', filename_template=self.filename_template)
         assert(os.path.exists(fname))
 
     def test_download(self):
         """ Retrieve a data file """
         item = Item.open(self.filename)
-        fname = item.download(key='MTL', path_template=self.path_template)
+        fname = item.download(key='MTL', filename_template=self.filename_template)
         assert(os.path.exists(fname))
-        fname = item.download(key='MTL', path_template=self.path_template)
-        assert(os.path.exists(fname))
+        #fname = item.download(key='MTL', filename_template=self.filename_template)
+        #assert(os.path.exists(fname))
 
     def test_download_assets(self):
         """ Retrieve multiple data files """
         item = Item.open(self.filename)
-        fnames = item.download_assets(keys=['MTL', 'ANG'], path_template=self.path_template)
+        fnames = item.download_assets(keys=['MTL', 'ANG'], filename_template=self.filename_template)
         for f in fnames:
             assert(os.path.exists(f))
 
     def test_download_nonexist(self):
         """ Test downloading of non-existent file """
         item = Item.open(self.filename)
-        fname = item.download(key='fake_asset', path_template=self.path_template)
+        fname = item.download(key='fake_asset', filename_template=self.filename_template)
         assert(fname is None)
-
-    def _test_download_paths(self):
-        """ Testing of download paths and filenames """
-        item = Item.open(self.filename)
-        datadir = config.DATADIR
-        filename = config.FILENAME
-        config.DATADIR = os.path.join(testpath, '${date}')
-        config.FILENAME = '${date}_${id}'
-        fname = scene.download('MTL')
-        _fname = os.path.join(testpath, '2017-01-01/2017-01-01_testscene_MTL.txt')
-        assert(fname == _fname)
-        assert(os.path.exists(fname))
-        config.DATADIR = datadir
-        config.FILENAME = filename
-        shutil.rmtree(os.path.join(testpath, '2017-01-01'))
-        assert(os.path.exists(fname) == False)
-
-    def _test_create_derived(self):
-        """ Create single derived scene """
-        scenes = [self.get_test_scene(), self.get_test_scene()]
-        scene = Item.create_derived(scenes)
-        assert(scene.date == scenes[0].date)
-        assert(scene['c:id'] == scenes[0]['c:id'])

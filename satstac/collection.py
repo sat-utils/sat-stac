@@ -45,15 +45,15 @@ class Collection(Catalog):
         return self._data.get('extent')
 
     @property
-    def properties(self):
-        """ Get dictionary of properties """
-        return self._data.get('properties', {})
+    def summaries(self):
+        """ Get dictionary of summaries """
+        return self._data.get('summaries', {})
 
     @functools.lru_cache()
     def parent_catalog(self, item, path_template):
         """ Given relative filename to a new Item find parent catalog """
         cat = self
-        path = item.get_path(path_template)
+        path = item.get_path(os.path.dirname(path_template))
         var_names = [v.strip('$').strip('{}') for v in utils.splitall(path_template)]
         for i, d in enumerate(utils.splitall(path)):
             fname = os.path.join(os.path.join(cat.path, d), 'catalog.json')
@@ -69,18 +69,17 @@ class Collection(Catalog):
             cat = subcat
         return cat.filename
 
-    def add_item(self, item, path_template='', filename_template='${id}.json'):
+    def add_item(self, item, filename_template='${id}.json'):
         """ Add an item to this collection """
         start = datetime.now()
         if self.filename is None:
             raise STACError('Save catalog before adding items')
-        item_link = os.path.join(item.get_path(os.path.join(path_template, filename_template)))
+        item_link = os.path.join(item.get_path(os.path.join(filename_template)))
         item_fname = os.path.join(self.path, item_link)
         item_path = os.path.dirname(item_fname)
         root_link = self.links('root')[0]
         #root_path = os.path.dirname(root_link)
-
-        parent = Catalog.open(self.parent_catalog(item, path_template))
+        parent = Catalog.open(self.parent_catalog(item, filename_template))
         
         # create link to item
         parent.add_link('item', os.path.relpath(item_fname, parent.path))
@@ -94,6 +93,8 @@ class Collection(Catalog):
         item.add_link('collection', os.path.relpath(self.filename, item_path))
 
         # save item
+        
         item.save(filename=item_fname)
         logger.debug('Added %s in %s seconds' % (item.filename, datetime.now()-start))
+        
         return self

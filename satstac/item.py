@@ -8,9 +8,10 @@ from datetime import datetime
 from dateutil.parser import parse as dateparse
 
 from satstac import __version__, STACError, Thing, utils
-from .config import STAC_PATH_TEMPLATE
 
 logger = logging.getLogger(__name__)
+
+FILENAME_TEMPLATE = os.getenv('SATSEARCH_FILENAME_TEMPLATE', '${collection}/${date}/${id}')
 
 
 class Item(Thing):
@@ -34,15 +35,6 @@ class Item(Thing):
             if len(link) == 1:
                 self._collection = Collection.open(link[0])
         return self._collection
-
-    @property
-    def eobands(self):
-        """ Get eo:bands from Item or from Collection """
-        if 'eo:bands' in self.properties:
-            return self.properties['eo:bands']
-        elif self.collection() is not None and 'eo:bands' in self.collection().properties:
-                return self.collection()['eo:bands']
-        return []
 
     @property
     def properties(self):
@@ -83,12 +75,12 @@ class Item(Thing):
     @property
     def assets_by_common_name(self):
         """ Get assets by common band name (only works for assets containing 1 band """
-        if self._assets_by_common_name is None and len(self.eobands) > 0:
+        if self._assets_by_common_name is None:
             self._assets_by_common_name = {}
             for a in self.assets:
                 bands = self.assets[a].get('eo:bands', [])
                 if len(bands) == 1:
-                    eo_band = self.eobands[bands[0]].get('common_name')
+                    eo_band = bands[0].get('common_name')
                     if eo_band:
                         self._assets_by_common_name[eo_band] = self.assets[a]
         return self._assets_by_common_name
@@ -108,7 +100,8 @@ class Item(Thing):
         subs = {}
         for key in [i[1] for i in Formatter().parse(_template.rstrip('/')) if i[1] is not None]:
             if key == 'collection':
-                subs[key] = self._data['collection']
+                # make this compatible with older versions of stac where collection is in properties
+                subs[key] = self._data.get('collection', self['collection'])
             elif key == 'id':
                 subs[key] = self.id
             elif key in ['date', 'year', 'month', 'day']:
@@ -127,14 +120,14 @@ class Item(Thing):
             filenames.append(self.download(key, **kwargs))
         return filenames
 
-    def download(self, key, overwrite=False, path_template=STAC_PATH_TEMPLATE, requester_pays=False):
+    def download(self, key, overwrite=False, filename_template=FILENAME_TEMPLATE, requester_pays=False):
         """ Download this key (e.g., a band, or metadata file) from the scene """
         asset = self.asset(key)
         if asset is None:
             return None
 
         ext = os.path.splitext(asset['href'])[1]
-        filename = self.get_path(path_template) + '_' + key + ext
+        filename = self.get_path(filename_template) + '_' + key + ext
         if not os.path.exists(filename) or overwrite:
             try:
                 utils.download_file(asset['href'], filename=filename, requester_pays=requester_pays)

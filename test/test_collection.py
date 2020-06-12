@@ -33,15 +33,12 @@ class Test(unittest.TestCase):
         keys = cat.keywords
         assert(len(keys) == 1)
         assert(keys[0] == 'landsat')
-        version = cat.version
-        assert(version == '0.1.0')
         license = cat.license
         assert(license == 'PDDL-1.0')
         assert(len(cat.providers) == 4)
         ext = cat.extent
         assert('spatial' in ext)
         assert('temporal' in ext)
-        assert(len(cat.properties))
 
     def test_add_item(self):
         cat = Catalog.create(root='http://my.cat').save(os.path.join(self.path, 'catalog.json'))
@@ -62,11 +59,9 @@ class Test(unittest.TestCase):
         col = Collection.open(os.path.join(testpath, 'catalog/eo/landsat-8-l1/catalog.json'))
         cat.add_catalog(col)
         item = Item.open(os.path.join(testpath, 'catalog/eo/landsat-8-l1/item.json'))
-        col.add_item(item, path_template='${landsat:path}/${landsat:row}',
-                     filename_template='${date}/${id}.json')
+        col.add_item(item, filename_template='${landsat:path}/${landsat:row}/${date}/${id}.json')
         assert(item.root().id == cat.id)
         assert(item.collection().id == col.id)
         # test code using existing catalogs
-        col.add_item(item, path_template='${landsat:path}/${landsat:row}',
-                     filename_template='${date}/${id}.json')
+        col.add_item(item, filename_template='${landsat:path}/${landsat:row}/${date}/${id}.json')
         assert(item.root().id == cat.id)

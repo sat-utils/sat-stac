@@ -29,7 +29,7 @@ class Test(unittest.TestCase):
 
     def test_init(self):
         thing1 = self.get_thing()
-        assert(thing1.id == 'stac')
+        assert(thing1.id == 'stac-catalog')
         assert(len(thing1.links()) == 3)
         assert(len(thing1.links('self')) == 1)
         data = thing1._data
@@ -128,15 +128,15 @@ class Test(unittest.TestCase):
         thing.save(fout)
         assert(os.path.exists(fout))
 
-    def test_save_remote_with_signed_url(self):
-        thing = Thing.open(self.fname)
-        thing.save('https://landsat-stac.s3.amazonaws.com/test/thing.json')
+    #def test_save_remote_with_signed_url(self):
+    #    thing = Thing.open(self.fname)
+    #    thing.save('https://landsat-stac.s3.amazonaws.com/test/thing.json')
 
-    def test_save_remote_with_bad_signed_url(self):
-        envs = dict(os.environ)
-        thing = Thing.open(self.fname)
-        os.environ['AWS_BUCKET_REGION'] = 'us-east-1'
-        with self.assertRaises(STACError):
-            thing.save('https://landsat-stac.s3.amazonaws.com/test/thing.json')
-        os.environ.clear()
-        os.environ.update(envs)
+    #def test_save_remote_with_bad_signed_url(self):
+    #    envs = dict(os.environ)
+    #    thing = Thing.open(self.fname)
+    #    os.environ['AWS_BUCKET_REGION'] = 'us-east-1'
+    #    with self.assertRaises(STACError):
+    #        thing.save('https://landsat-stac.s3.amazonaws.com/test/thing.json')
+    #    os.environ.clear()
+    #    os.environ.update(envs)
