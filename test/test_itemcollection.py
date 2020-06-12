@@ -48,17 +48,6 @@ class Test(unittest.TestCase):
         col = items.collection('nosuchcollection')
         assert(col is None)
 
-    def test_bbox(self):
-        items = self.load_items()
-        bbox = items.bbox()
-        assert(len(bbox) == 4)
-        assert(bbox == [11.984710693359375, 44.815941348210835, 12.752380371093748, 45.67740123855739])
-
-    def test_center(self):
-        items = self.load_items()
-        center = items.center()
-        assert(center == [45.24667129338411, 12.368545532226562])
-
     def test_get_properties(self):
         """ Get set of properties """
         items = self.load_items()
