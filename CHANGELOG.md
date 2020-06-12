@@ -6,23 +6,23 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
-## [v0.4.0-rc1] - 2020-01-26
+## [v0.4.0] - 2020-06-11
 
 ### Added
-- In README, Directed users who want to do large scale creation or updating of catalogs to the [PySTAC](https://github.com/azavea/pystac) library instead
-- STAC_PATH_TEMPLATE envvar added to store default path template for saving downloaded files, defaults to `${collection}/${id}`, files are then downloaded in that directory with a name equal to `<id>_<assetkey>.<ext>`
+- README directs users who want to do large scale creation or updating of catalogs to the [PySTAC](https://github.com/azavea/pystac) library instead
+- ItemCollections.asset_defnition function for printing info on assets
 
 ### Changed
-- Environment variable SATUTILS_STAC_VERSION changed to STAC_VERSION
-- Default STAC_VERSION changed to 0.9.0
+- Default STAC_VERSION changed to 1.0.0-beta.1
 - Item.get_filename replaced with Item.get_path which takes in single template string rather than separate `path` and `filename` arguments
-- Collection.add_item() function input keywords changed to `path_template` and `filename_template`
+- Collection.add_item() function input keywords changed `filename_template`
 
 ### Fixed
 - Substitution of templates on Windows: [issue](https://github.com/sat-utils/sat-stac/issues/51)
 
 ### Removed
 - Item.get_filename removed in favor of Item.get_path
+- Storing search information in an ItemCollections file (and associated functions)
 
 ## [v0.3.3] - 2020-01-23
 
