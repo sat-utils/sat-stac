@@ -125,7 +125,7 @@ class Item(Thing):
             filenames.append(self.download(key, **kwargs))
         return filenames
 
-    def download(self, key, overwrite=False, filename_template=FILENAME_TEMPLATE, requester_pays=False):
+    def download(self, key, overwrite=False, filename_template=FILENAME_TEMPLATE, requester_pays=False, headers={}):
         """ Download this key (e.g., a band, or metadata file) from the scene """
         asset = self.asset(key)
         if asset is None:
@@ -135,7 +135,7 @@ class Item(Thing):
         filename = self.get_path(filename_template) + '_' + key + ext
         if not os.path.exists(filename) or overwrite:
             try:
-                utils.download_file(asset['href'], filename=filename, requester_pays=requester_pays)
+                utils.download_file(asset['href'], filename=filename, requester_pays=requester_pays, headers=headers)
             except Exception as e:
                 filename = None
                 logger.error('Unable to download %s: %s' % (asset['href'], str(e)))
@@ -169,7 +169,7 @@ class Item(Thing):
             'links': links,
             'assets': {}
         }
-        return Item(item)        
+        return Item(item)
     '''
 
 # import and end of module prevents problems with circular dependencies.
