@@ -8,6 +8,9 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [v0.4.1] - 2021-01-24
 
+### Added
+- User can now provide custom headers to download function
+
 ### Changed
 - Allow reading in of ItemCollections without collections
 
