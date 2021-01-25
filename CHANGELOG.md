@@ -6,6 +6,19 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [v0.4.1] - 2021-01-24
+
+### Added
+- User can now provide custom headers to download function
+- `id` and `description` keywords added to itemcollection.save() and itemcollection.geojson() for user to supply values to save single file STAC
+
+### Changed
+- Allow reading in of ItemCollections without collections
+- Default STAC_VERSION updated to 1.0.0-beta.2
+
+### Fixed
+- Saved ItemCollections now adhere to STAC single-file-stac spec
+
 ## [v0.4.0] - 2020-06-11
 
 ### Added

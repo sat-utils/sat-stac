@@ -3,6 +3,7 @@ import os.path as op
 import requests
 
 from logging import getLogger
+from .catalog import STAC_VERSION
 from .collection import Collection
 from .item import Item
 from .thing import STACError
@@ -55,7 +56,7 @@ class ItemCollection(object):
                 data = json.loads(data)
             else:
                 raise STACError('%s does not exist locally' % filename)
-        collections = [Collection(col) for col in data['collections']]
+        collections = [Collection(col) for col in data.get('collections', [])]
         items = [Item(feature) for feature in data['features']]
         return cls(items, collections=collections)
 
@@ -129,18 +130,23 @@ class ItemCollection(object):
                 txt += ''.join([f"{vals[i]:{w[i]}}" for i in range(len(w))]) + '\n'
         return txt
 
-    def save(self, filename):
+    def save(self, filename, **kwargs):
         """ Save scene metadata """
         with open(filename, 'w') as f:
-            f.write(json.dumps(self.geojson()))
+            f.write(json.dumps(self.geojson(**kwargs)))
 
-    def geojson(self):
+    def geojson(self, id='STAC', description='Single file STAC'):
         """ Get Items as GeoJSON FeatureCollection """
         features = [s._data for s in self._items]
         geoj = {
+            'id': id,
+            'description': description,
+            'stac_version': STAC_VERSION,
+            'stac_extensions': ['single-file-stac'],
             'type': 'FeatureCollection',
             'features': features,
             'collections': [c._data for c in self._collections],
+            'links': []
         }
         return geoj
 

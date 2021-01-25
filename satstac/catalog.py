@@ -4,7 +4,7 @@ import os
 from .version import __version__
 from .thing import Thing, STACError
 
-STAC_VERSION = os.getenv('STAC_VERSION', '1.0.0-beta.1')
+STAC_VERSION = os.getenv('STAC_VERSION', '1.0.0-beta.2')
 
 
 class Catalog(Thing):
