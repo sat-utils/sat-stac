@@ -53,11 +53,10 @@ def dict_merge(dct, merge_dct, add_keys=True):
     return dct
 
 
-def download_file(url, filename=None, requester_pays=False):
+def download_file(url, filename=None, requester_pays=False, headers={}):
     """ Download a file as filename """
     filename = os.path.basename(url) if filename is None else filename
     logger.info('Downloading %s as %s' % (url, filename))
-    headers = {}
     _path = os.path.dirname(filename)
     if not os.path.exists(_path):
         mkdirp(_path)
@@ -67,6 +66,9 @@ def download_file(url, filename=None, requester_pays=False):
         resp = requests.get(signed_url, headers=signed_headers, stream=True)
         if resp.status_code != 200:
             resp = requests.get(url, headers=headers, stream=True)
+    elif 'eosdis.nasa.gov' in url:
+        url = url.replace('/archive/', '/api/v2/content/archives/')
+        resp = requests.get(url, headers=headers, stream=True)
     else:
         resp = requests.get(url, headers=headers, stream=True)
     if resp.status_code != 200:
@@ -76,7 +78,6 @@ def download_file(url, filename=None, requester_pays=False):
             if chunk:  # filter out keep-alive new chunks
                 f.write(chunk)
     return filename
-
 
 def mkdirp(path):
     """ Recursively make directory """
@@ -165,7 +166,7 @@ def get_s3_signed_url(url, rtype='GET', public=False, requester_pays=False, cont
     signature = hmac.new(signing_key, string_to_sign.encode('utf-8'), hashlib.sha256).hexdigest()
     authorization_header = algorithm + ' ' + 'Credential=' + access_key + '/' + credential_scope + ', ' \
         + 'SignedHeaders=' + signed_headers + ', ' + 'Signature=' + signature
-    
+
     request_url = 'https://%s%s' % (host, canonical_uri)
     headers['Authorization'] = authorization_header
     if content_type is not None:
