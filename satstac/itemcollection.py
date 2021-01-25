@@ -55,7 +55,7 @@ class ItemCollection(object):
                 data = json.loads(data)
             else:
                 raise STACError('%s does not exist locally' % filename)
-        collections = [Collection(col) for col in data['collections']]
+        collections = [Collection(col) for col in data.get('collections', [])]
         items = [Item(feature) for feature in data['features']]
         return cls(items, collections=collections)
 

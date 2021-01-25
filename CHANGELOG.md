@@ -6,6 +6,11 @@ and this project adheres to [Semantic Versioning](http://semver.org/spec/v2.0.0.
 
 ## [Unreleased]
 
+## [v0.4.1] - 2021-01-24
+
+### Changed
+- Allow reading in of ItemCollections without collections
+
 ## [v0.4.0] - 2020-06-11
 
 ### Added
